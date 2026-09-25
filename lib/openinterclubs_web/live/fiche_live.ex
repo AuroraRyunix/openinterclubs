@@ -23,6 +23,7 @@ defmodule OpenInterclubsWeb.FicheLive do
        team: nil,
        fiche: nil,
        token: session["kbsb_token"],
+       kbsb_club: session["kbsb_club"],
        kbsb_user: session["kbsb_user"]
      )}
   end
@@ -106,28 +107,19 @@ defmodule OpenInterclubsWeb.FicheLive do
      assign(socket, fiche: Fiche.clear(socket.assigns.fiche, String.to_existing_atom(side)))}
   end
 
-  # When logged in, ask the club endpoint for both clubs of the encounter;
-  # the KBSB only answers for the user's own club, the other just fails.
-  defp with_club_lineups(fiche, %{assigns: %{token: nil}} = socket), do: {fiche, socket}
-
-  defp with_club_lineups(fiche, socket) do
-    token = socket.assigns.token
-
-    Enum.reduce([fiche.home.idclub, fiche.visit.idclub], {fiche, socket}, fn idclub, {f, sock} ->
-      case Kbsb.club_series(token, idclub, fiche.round) do
-        {:ok, series} ->
-          {Fiche.merge_club_series(f, series), sock}
-
-        {:error, :unauthorized} ->
-          {f, sock}
-
-        {:error, reason} ->
-          require Logger
-          Logger.warning("club_series #{idclub}: #{inspect(reason)}")
-          {f, sock}
-      end
-    end)
+  # When logged in, ask the club endpoint for the user's own club only, and
+  # only take that club's side of the encounter. Fail closed otherwise.
+  defp with_club_lineups(fiche, %{assigns: %{token: token, kbsb_club: club}} = socket)
+       when is_binary(token) and is_integer(club) do
+    with side when side != nil <- Fiche.own_side(fiche, club),
+         {:ok, series} <- Kbsb.club_series(token, club, fiche.round) do
+      {Fiche.merge_club_series(fiche, series, club), socket}
+    else
+      _ -> {fiche, socket}
+    end
   end
+
+  defp with_club_lineups(fiche, socket), do: {fiche, socket}
 
   defp select(params, socket) do
     params =

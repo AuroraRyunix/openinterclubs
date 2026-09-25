@@ -28,26 +28,42 @@ defmodule OpenInterclubs.Kbsb do
   # ---- authenticated (club) endpoints ------------------------------------
 
   @doc """
-  Log in with a KBSB member number (or account e-mail) and password.
-  Returns `{:ok, token}`. Nothing is cached or stored here.
+  Log in with a KBSB member login. Returns `{:ok, token, idclub}` where
+  `idclub` is the member's own club; lineups are only ever used for that
+  club. Nothing is cached or stored here.
   """
   def login(user, password) do
     user = String.trim(user)
 
-    case post("/api/v1/member/login", %{email: user, password: password}) do
-      {:ok, token} ->
-        {:ok, token}
+    with {:ok, body} <- post("/api/v1/member/login", %{email: user, password: password}),
+         {:ok, token} <- extract_token(body),
+         {:ok, idnumber} <- member_number(body, user),
+         {:ok, idclub} <- member_club(idnumber) do
+      {:ok, token, idclub}
+    end
+  end
 
-      {:error, _} = member_error ->
-        # Staff accounts log in on a different endpoint.
-        case post("/api/v1/accounts/anon/login", %{
-               logintype: "email",
-               username: user,
-               password: password
-             }) do
-          {:ok, token} -> {:ok, token}
-          _ -> member_error
-        end
+  # member/login answers [idnumber, token]
+  defp member_number(body, user) do
+    from_body = if is_list(body), do: Enum.find(body, &is_integer/1)
+
+    cond do
+      is_integer(from_body) -> {:ok, from_body}
+      match?({_, ""}, Integer.parse(user)) -> {:ok, String.to_integer(user)}
+      true -> {:error, :unknown_member}
+    end
+  end
+
+  defp member_club(idnumber) do
+    url = root_url() <> "/api/v1/member/anon/member/#{idnumber}"
+
+    case Req.get(url, [retry: false] ++ req_options()) do
+      {:ok, %Req.Response{status: 200, body: %{"idclub" => idclub}}}
+      when is_integer(idclub) and idclub > 0 ->
+        {:ok, idclub}
+
+      _ ->
+        {:error, :unknown_club}
     end
   end
 
@@ -69,7 +85,7 @@ defmodule OpenInterclubs.Kbsb do
 
   defp post(path, body) do
     case Req.post(root_url() <> path, [json: body, retry: false] ++ req_options()) do
-      {:ok, %Req.Response{status: 200, body: body}} -> extract_token(body)
+      {:ok, %Req.Response{status: 200, body: body}} -> {:ok, body}
       {:ok, %Req.Response{body: %{"detail" => detail}}} -> {:error, detail}
       {:ok, %Req.Response{status: s}} -> {:error, {:http, s}}
       {:error, reason} -> {:error, reason}

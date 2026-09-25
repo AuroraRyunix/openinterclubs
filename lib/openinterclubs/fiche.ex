@@ -122,10 +122,26 @@ defmodule OpenInterclubs.Fiche do
     do: %{fiche | api_boards: fresh.api_boards}
 
   @doc """
-  Take lineups from the authenticated club endpoint (`Kbsb.club_series/3`
-  output) into `api_boards`, for whichever side the logged-in club is.
+  Take the logged-in club's own lineup from the authenticated club endpoint
+  (`Kbsb.club_series/3` output) into `api_boards`.
+
+  Only the side played by `own_club` is ever filled; whatever the endpoint
+  returns about the opponent is ignored. The fiche is returned unchanged
+  when `own_club` doesn't play in this encounter.
   """
-  def merge_club_series(%__MODULE__{} = fiche, series_list) do
+  def merge_club_series(%__MODULE__{} = fiche, series_list, own_club) do
+    case own_side(fiche, own_club) do
+      nil -> fiche
+      side -> merge_side(fiche, series_list, side)
+    end
+  end
+
+  @doc "Which side (:home/:visit) `idclub` plays in this encounter, if any."
+  def own_side(%__MODULE__{home: %{idclub: c}}, c) when is_integer(c), do: :home
+  def own_side(%__MODULE__{visit: %{idclub: c}}, c) when is_integer(c), do: :visit
+  def own_side(_, _), do: nil
+
+  defp merge_side(fiche, series_list, side) do
     enc =
       Enum.find_value(series_list, fn s ->
         (s["division"] == fiche.division and (s["index"] || "") == (fiche.index || "")) &&
@@ -146,11 +162,9 @@ defmodule OpenInterclubs.Fiche do
           |> Enum.map(fn {b, i} ->
             g = Enum.at(games, i, %{})
 
-            %{
-              b
-              | home: b.home || from_options(fiche.home.options, g["idnumber_home"]),
-                visit: b.visit || from_options(fiche.visit.options, g["idnumber_visit"])
-            }
+            key = if side == :home, do: "idnumber_home", else: "idnumber_visit"
+            options = Map.fetch!(fiche, side).options
+            Map.put(b, side, Map.get(b, side) || from_options(options, g[key]))
           end)
 
         %{fiche | api_boards: api}

@@ -55,15 +55,35 @@ defmodule OpenInterclubs.FicheTest do
     assert %{visit: nil} = Enum.at(fiche.boards, 2)
   end
 
-  test "merge_club_series takes the lineup from the club endpoint" do
+  test "merge_club_series only fills the logged-in club's own side" do
     {:ok, enc} = Fiche.find_encounter(@series, 2, 1)
-    fiche = Fiche.build(@series, 1, %{enc | "games" => []}, @club["players"], [])
-    fiche = %{fiche | home: %{fiche.home | options: Fiche.player_options(@club["players"])}}
-    refute Fiche.api_lineup?(fiche, :home)
+    # The club endpoint answer contains BOTH sides' lineups.
+    games = Enum.map(enc["games"], &Map.put(&1, "idnumber_visit", 6530))
 
-    club_series = [@series |> put_in(["rounds"], [%{"round" => 1, "encounters" => [enc]}])]
-    fiche = fiche |> Fiche.merge_club_series(club_series) |> Fiche.fill(:home)
+    club_series = [
+      put_in(@series, ["rounds"], [%{"round" => 1, "encounters" => [%{enc | "games" => games}]}])
+    ]
 
-    assert %{home: %{idnumber: 14108, name: "Goddé Matthias"}} = hd(fiche.boards)
+    fiche = Fiche.build(@series, 1, %{enc | "games" => []}, @club["players"], @club["players"])
+
+    fiche = %{
+      fiche
+      | home: %{fiche.home | options: Fiche.player_options(@club["players"])},
+        visit: %{fiche.visit | options: Fiche.player_options(@club["players"])}
+    }
+
+    # Logged in as the home club (472): home filled, opponent never.
+    own = fiche |> Fiche.merge_club_series(club_series, 472) |> Fiche.fill(:all)
+    assert %{home: %{idnumber: 14108, name: "Goddé Matthias"}, visit: nil} = hd(own.boards)
+    refute Fiche.api_lineup?(own, :visit)
+
+    # Logged in as the visiting club (402): only its own side is taken.
+    away = Fiche.merge_club_series(fiche, club_series, 402)
+    refute Fiche.api_lineup?(away, :home)
+    assert Fiche.api_lineup?(away, :visit)
+
+    # A club that doesn't play this match gets nothing.
+    other = Fiche.merge_club_series(fiche, club_series, 999)
+    refute Fiche.api_lineup?(other, :home) or Fiche.api_lineup?(other, :visit)
   end
 end

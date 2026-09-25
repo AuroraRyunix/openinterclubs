@@ -13,10 +13,11 @@ defmodule OpenInterclubsWeb.SessionController do
 
   def create(conn, %{"user" => user, "password" => password} = params) do
     case Kbsb.login(user, password) do
-      {:ok, token} ->
+      {:ok, token, idclub} ->
         conn
         |> configure_session(renew: true)
         |> put_session(:kbsb_token, token)
+        |> put_session(:kbsb_club, idclub)
         |> put_session(:kbsb_user, String.trim(user))
         |> put_flash(:info, "Aangemeld bij de KBSB.")
         |> redirect(to: safe_return(params["return_to"]))
@@ -40,6 +41,8 @@ defmodule OpenInterclubsWeb.SessionController do
   end
 
   defp describe("WrongUsernamePasswordCombination"), do: "Verkeerd lidnummer of wachtwoord."
+  defp describe(:unknown_member), do: "Meld je aan met je KBSB-lidnummer."
+  defp describe(:unknown_club), do: "Je club kon niet bepaald worden bij de KBSB."
   defp describe(reason) when is_binary(reason), do: "KBSB: #{reason}"
   defp describe(reason), do: "Aanmelden mislukt (#{inspect(reason)})."
 
