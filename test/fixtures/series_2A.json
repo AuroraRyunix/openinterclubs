@@ -1,0 +1,316 @@
+{
+ "division": 2,
+ "index": "A",
+ "teams": [
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 109,
+   "index": "A",
+   "name": "Borgerhout 1",
+   "pairingnumber": 1,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 472,
+   "index": "A",
+   "name": "de Mercatel 1",
+   "pairingnumber": 2,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 174,
+   "index": "A",
+   "name": "Brasschaat 1",
+   "pairingnumber": 3,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 401,
+   "index": "A",
+   "name": "KGSRL 2",
+   "pairingnumber": 4,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 462,
+   "index": "A",
+   "name": "Zottegem 1",
+   "pairingnumber": 5,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 261,
+   "index": "A",
+   "name": "Gambiet Opwijk 1",
+   "pairingnumber": 6,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 301,
+   "index": "A",
+   "name": "KOSK 1",
+   "pairingnumber": 7,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 432,
+   "index": "A",
+   "name": "Wetteren 2",
+   "pairingnumber": 8,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 124,
+   "index": "A",
+   "name": "Deurne 1",
+   "pairingnumber": 9,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 244,
+   "index": "A",
+   "name": "Brussels 1",
+   "pairingnumber": 10,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 402,
+   "index": "A",
+   "name": "Jean Jaures Gent 1",
+   "pairingnumber": 11,
+   "teamforfeit": false
+  },
+  {
+   "division": 2,
+   "titular": [],
+   "idclub": 436,
+   "index": "A",
+   "name": "LSV-Chesspirant 1",
+   "pairingnumber": 12,
+   "teamforfeit": false
+  }
+ ],
+ "rounds": [
+  {
+   "round": 1,
+   "rdate": "2026-09-27",
+   "encounters": [
+    {
+     "icclub_home": 109,
+     "icclub_visit": 436,
+     "pairingnr_home": 1,
+     "pairingnr_visit": 12,
+     "matchpoint_home": 0,
+     "matchpoint_visit": 0,
+     "boardpoint2_home": 0,
+     "boardpoint2_visit": 0,
+     "games": [],
+     "played": false,
+     "signhome_idnumber": 0,
+     "signhome_ts": null,
+     "signvisit_idnumber": 0,
+     "signvisit_ts": null
+    },
+    {
+     "icclub_home": 472,
+     "icclub_visit": 402,
+     "pairingnr_home": 2,
+     "pairingnr_visit": 11,
+     "matchpoint_home": 0,
+     "matchpoint_visit": 0,
+     "boardpoint2_home": 0,
+     "boardpoint2_visit": 0,
+     "games": [
+      {
+       "idnumber_home": 14108,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 17780,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 10184,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 52361,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 40568,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 11400,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 30732,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 42889,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      }
+     ],
+     "played": false,
+     "signhome_idnumber": 0,
+     "signhome_ts": null,
+     "signvisit_idnumber": 0,
+     "signvisit_ts": null
+    },
+    {
+     "icclub_home": 174,
+     "icclub_visit": 244,
+     "pairingnr_home": 3,
+     "pairingnr_visit": 10,
+     "matchpoint_home": 0,
+     "matchpoint_visit": 0,
+     "boardpoint2_home": 0,
+     "boardpoint2_visit": 0,
+     "games": [],
+     "played": false,
+     "signhome_idnumber": 0,
+     "signhome_ts": null,
+     "signvisit_idnumber": 0,
+     "signvisit_ts": null
+    },
+    {
+     "icclub_home": 401,
+     "icclub_visit": 124,
+     "pairingnr_home": 4,
+     "pairingnr_visit": 9,
+     "matchpoint_home": 0,
+     "matchpoint_visit": 0,
+     "boardpoint2_home": 0,
+     "boardpoint2_visit": 0,
+     "games": [],
+     "played": false,
+     "signhome_idnumber": 0,
+     "signhome_ts": null,
+     "signvisit_idnumber": 0,
+     "signvisit_ts": null
+    },
+    {
+     "icclub_home": 462,
+     "icclub_visit": 432,
+     "pairingnr_home": 5,
+     "pairingnr_visit": 8,
+     "matchpoint_home": 0,
+     "matchpoint_visit": 0,
+     "boardpoint2_home": 0,
+     "boardpoint2_visit": 0,
+     "games": [],
+     "played": false,
+     "signhome_idnumber": 0,
+     "signhome_ts": null,
+     "signvisit_idnumber": 0,
+     "signvisit_ts": null
+    },
+    {
+     "icclub_home": 261,
+     "icclub_visit": 301,
+     "pairingnr_home": 6,
+     "pairingnr_visit": 7,
+     "matchpoint_home": 0,
+     "matchpoint_visit": 0,
+     "boardpoint2_home": 0,
+     "boardpoint2_visit": 0,
+     "games": [
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      },
+      {
+       "idnumber_home": 0,
+       "idnumber_visit": 0,
+       "result": "",
+       "overruled": "NOR"
+      }
+     ],
+     "played": false,
+     "signhome_idnumber": 0,
+     "signhome_ts": null,
+     "signvisit_idnumber": 0,
+     "signvisit_ts": null
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,293 @@
+{
+ "idclub": 472,
+ "name": "de Mercatel",
+ "players": [
+  {
+   "idnumber": 6530,
+   "first_name": "Rudy",
+   "last_name": "Coupe",
+   "assignedrating": 1755,
+   "titular": "de Mercatel 2"
+  },
+  {
+   "idnumber": 30732,
+   "first_name": "Koen",
+   "last_name": "Achtergaele",
+   "assignedrating": 1959,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 17961,
+   "first_name": "Ruben",
+   "last_name": "Burssens",
+   "assignedrating": 1502,
+   "titular": "de Mercatel 4"
+  },
+  {
+   "idnumber": 16894,
+   "first_name": "Maya",
+   "last_name": "Burssens",
+   "assignedrating": 1688,
+   "titular": ""
+  },
+  {
+   "idnumber": 19833,
+   "first_name": "Guy",
+   "last_name": "Burssens",
+   "assignedrating": 1661,
+   "titular": ""
+  },
+  {
+   "idnumber": 33455,
+   "first_name": "Jacob",
+   "last_name": "Callant",
+   "assignedrating": 1403,
+   "titular": ""
+  },
+  {
+   "idnumber": 22074,
+   "first_name": "Mels",
+   "last_name": "Claproth",
+   "assignedrating": 1756,
+   "titular": "de Mercatel 3"
+  },
+  {
+   "idnumber": 30372,
+   "first_name": "Rubens",
+   "last_name": "Claracq",
+   "assignedrating": 1475,
+   "titular": ""
+  },
+  {
+   "idnumber": 33382,
+   "first_name": "Jules",
+   "last_name": "Colle",
+   "assignedrating": 1601,
+   "titular": ""
+  },
+  {
+   "idnumber": 22077,
+   "first_name": "Joren",
+   "last_name": "Cousaert",
+   "assignedrating": 1402,
+   "titular": ""
+  },
+  {
+   "idnumber": 22075,
+   "first_name": "Jens",
+   "last_name": "Cousaert",
+   "assignedrating": 1401,
+   "titular": ""
+  },
+  {
+   "idnumber": 50458,
+   "first_name": "Yves",
+   "last_name": "De Smedt",
+   "assignedrating": 1649,
+   "titular": ""
+  },
+  {
+   "idnumber": 14108,
+   "first_name": "Matthias",
+   "last_name": "Goddé",
+   "assignedrating": 2129,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 52361,
+   "first_name": "Stijn",
+   "last_name": "Hertele",
+   "assignedrating": 2020,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 23671,
+   "first_name": "Rudy",
+   "last_name": "Himpe",
+   "assignedrating": 1553,
+   "titular": "de Mercatel 4"
+  },
+  {
+   "idnumber": 31854,
+   "first_name": "Eric",
+   "last_name": "Mertens",
+   "assignedrating": 1639,
+   "titular": "de Mercatel 4"
+  },
+  {
+   "idnumber": 16841,
+   "first_name": "Maya",
+   "last_name": "Murania",
+   "assignedrating": 1600,
+   "titular": ""
+  },
+  {
+   "idnumber": 16179,
+   "first_name": "Micha",
+   "last_name": "Plomp",
+   "assignedrating": 2172,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 17780,
+   "first_name": "Mateo",
+   "last_name": "Plomp",
+   "assignedrating": 2112,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 18157,
+   "first_name": "Luka",
+   "last_name": "Plomp",
+   "assignedrating": 1775,
+   "titular": ""
+  },
+  {
+   "idnumber": 46400,
+   "first_name": "Joannes",
+   "last_name": "Raepsaet",
+   "assignedrating": 1699,
+   "titular": ""
+  },
+  {
+   "idnumber": 34843,
+   "first_name": "Stefaan",
+   "last_name": "Six",
+   "assignedrating": 1863,
+   "titular": ""
+  },
+  {
+   "idnumber": 31446,
+   "first_name": "Peter",
+   "last_name": "Surnak",
+   "assignedrating": 1916,
+   "titular": "de Mercatel 2"
+  },
+  {
+   "idnumber": 29069,
+   "first_name": "Tyrese",
+   "last_name": "Taylor",
+   "assignedrating": 1799,
+   "titular": "de Mercatel 3"
+  },
+  {
+   "idnumber": 10184,
+   "first_name": "Mardoek",
+   "last_name": "Thienpondt",
+   "assignedrating": 2071,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 44725,
+   "first_name": "Bert",
+   "last_name": "Tollenaere",
+   "assignedrating": 1803,
+   "titular": "de Mercatel 2"
+  },
+  {
+   "idnumber": 25476,
+   "first_name": "Victor",
+   "last_name": "Van Damme Bricout",
+   "assignedrating": 1415,
+   "titular": ""
+  },
+  {
+   "idnumber": 29232,
+   "first_name": "Toon",
+   "last_name": "Van De Velde",
+   "assignedrating": 1660,
+   "titular": ""
+  },
+  {
+   "idnumber": 25689,
+   "first_name": "Kamiel",
+   "last_name": "Van Den Eeckhout",
+   "assignedrating": 1404,
+   "titular": ""
+  },
+  {
+   "idnumber": 25170,
+   "first_name": "Thomas",
+   "last_name": "Van Der Paelt",
+   "assignedrating": 1651,
+   "titular": ""
+  },
+  {
+   "idnumber": 27827,
+   "first_name": "Silas",
+   "last_name": "Van Helleputte- Vereecken",
+   "assignedrating": 1414,
+   "titular": ""
+  },
+  {
+   "idnumber": 28914,
+   "first_name": "Daan",
+   "last_name": "Van Looy",
+   "assignedrating": 1800,
+   "titular": "de Mercatel 3"
+  },
+  {
+   "idnumber": 13352,
+   "first_name": "Jeroen",
+   "last_name": "Vanacker",
+   "assignedrating": 1880,
+   "titular": "de Mercatel 2"
+  },
+  {
+   "idnumber": 26811,
+   "first_name": "Amedee",
+   "last_name": "Vandelanotte",
+   "assignedrating": 1499,
+   "titular": "de Mercatel 3"
+  },
+  {
+   "idnumber": 11400,
+   "first_name": "Elias",
+   "last_name": "Verhalle",
+   "assignedrating": 1927,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 29048,
+   "first_name": "Oscar",
+   "last_name": "Vieren",
+   "assignedrating": 1487,
+   "titular": "de Mercatel 4"
+  },
+  {
+   "idnumber": 42889,
+   "first_name": "Jan",
+   "last_name": "Watte",
+   "assignedrating": 1915,
+   "titular": ""
+  },
+  {
+   "idnumber": 40568,
+   "first_name": "Benny",
+   "last_name": "Willen",
+   "assignedrating": 2007,
+   "titular": "de Mercatel 1"
+  },
+  {
+   "idnumber": 80714,
+   "first_name": "Michiel",
+   "last_name": "De Laender",
+   "assignedrating": 1580,
+   "titular": ""
+  },
+  {
+   "idnumber": 39985,
+   "first_name": "Simeon",
+   "last_name": "Bruyland",
+   "assignedrating": 1861,
+   "titular": ""
+  },
+  {
+   "idnumber": 23759,
+   "first_name": "Seppe",
+   "last_name": "Van Neer",
+   "assignedrating": 1695,
+   "titular": ""
+  }
+ ]
+}
