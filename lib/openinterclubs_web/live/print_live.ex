@@ -29,7 +29,14 @@ defmodule OpenInterclubsWeb.PrintLive do
       end
 
     {:ok,
-     assign(socket, name: name, idclub: idclub, round: round, fiches: fiches, filled: filled)}
+     assign(socket,
+       name: name,
+       idclub: idclub,
+       round: round,
+       fiches: with_filenames(fiches, name, idclub, round),
+       zip: "#{slug(name)}_#{idclub}_R#{pad(round)}.zip",
+       filled: filled
+     )}
   end
 
   defp with_club_lineups({:ok, fiche}, token, round) when is_binary(token) do
@@ -42,6 +49,42 @@ defmodule OpenInterclubsWeb.PrintLive do
   end
 
   defp with_club_lineups(result, _token, _round), do: result
+
+  # clubname_clubnumber_RXX_series.pdf; when a club has two teams in the
+  # same series the team number is added so the files don't overwrite.
+  defp with_filenames(fiches, name, idclub, round) do
+    base = fn f -> "#{slug(name)}_#{idclub}_R#{pad(round)}_#{series(f)}" end
+    counts = Enum.frequencies_by(fiches, base)
+
+    Enum.map(fiches, fn f ->
+      own = if to_string(f.home.idclub) == to_string(idclub), do: f.home, else: f.visit
+
+      number =
+        case Regex.run(~r/(\d+)\s*$/, own.name || "") do
+          [_, n] -> n
+          _ -> "1"
+        end
+
+      file =
+        if counts[base.(f)] > 1, do: "#{base.(f)}_ploeg#{number}.pdf", else: "#{base.(f)}.pdf"
+
+      {f, file}
+    end)
+  end
+
+  defp series(%{division: 1}), do: "1"
+  defp series(f), do: "#{f.division}#{f.index}"
+
+  defp pad(n), do: n |> to_string() |> String.pad_leading(2, "0")
+
+  # "Jean Jaurès Gent" -> "Jean_Jaures_Gent"
+  defp slug(name) do
+    name
+    |> to_string()
+    |> String.normalize(:nfd)
+    |> String.replace(~r/[^A-Za-z0-9]+/, "_")
+    |> String.trim("_")
+  end
 
   @impl true
   def render(assigns) do
@@ -57,10 +100,13 @@ defmodule OpenInterclubsWeb.PrintLive do
           {if @filled, do: "Uitploeg leeg laten", else: "Ook uitploeg invullen"}
         </.link>
         <button class="btn btn-primary" onclick="window.print()">Alles afdrukken</button>
+        <button :if={@fiches != []} id="export-pdfs" class="btn" phx-hook="ExportPdfs" data-zip={@zip}>
+          Download als aparte PDF's
+        </button>
         <span>{@name} — ronde {@round}: {length(@fiches)} fiche(s)</span>
       </div>
       <p :if={@fiches == []}>Geen ontmoetingen gevonden.</p>
-      <div :for={f <- @fiches} class="page">
+      <div :for={{f, file} <- @fiches} class="page" data-filename={file}>
         <.fiche fiche={f} />
       </div>
     </Layouts.app>
