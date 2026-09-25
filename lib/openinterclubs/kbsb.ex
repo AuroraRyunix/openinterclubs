@@ -28,44 +28,35 @@ defmodule OpenInterclubs.Kbsb do
   # ---- authenticated (club) endpoints ------------------------------------
 
   @doc """
-  Log in with a KBSB member login. Returns `{:ok, token, idclub}` where
-  `idclub` is the member's own club; lineups are only ever used for that
-  club. Nothing is cached or stored here.
+  Log in with a KBSB member login. Returns `{:ok, token}`. Nothing is
+  cached or stored here.
   """
   def login(user, password) do
-    user = String.trim(user)
-
-    with {:ok, body} <- post("/api/v1/member/login", %{email: user, password: password}),
-         {:ok, token} <- extract_token(body),
-         {:ok, idnumber} <- member_number(body, user),
-         {:ok, idclub} <- member_club(idnumber) do
-      {:ok, token, idclub}
+    with {:ok, body} <-
+           post("/api/v1/member/login", %{email: String.trim(user), password: password}) do
+      extract_token(body)
     end
   end
 
-  # member/login answers [idnumber, token]
-  defp member_number(body, user) do
-    from_body = if is_list(body), do: Enum.find(body, &is_integer/1)
+  @roles ~w(InterclubAdmin ClubAdmin InterclubCaptain)
 
-    cond do
-      is_integer(from_body) -> {:ok, from_body}
-      match?({_, ""}, Integer.parse(user)) -> {:ok, String.to_integer(user)}
-      true -> {:error, :unknown_member}
-    end
+  @doc """
+  Whether the token's owner holds a club role (interclub admin, club admin
+  or captain) for `idclub`, as confirmed by the KBSB itself. Lineups are
+  only ever used for clubs where this is true.
+  """
+  def club_access?(token, idclub) when is_binary(token) and is_integer(idclub) do
+    Enum.any?(@roles, fn role ->
+      url = root_url() <> "/api/v1/clubs/clb/club/#{idclub}/access/#{role}"
+
+      match?(
+        {:ok, %Req.Response{status: 200, body: true}},
+        Req.get(url, [auth: {:bearer, token}, retry: false] ++ req_options())
+      )
+    end)
   end
 
-  defp member_club(idnumber) do
-    url = root_url() <> "/api/v1/member/anon/member/#{idnumber}"
-
-    case Req.get(url, [retry: false] ++ req_options()) do
-      {:ok, %Req.Response{status: 200, body: %{"idclub" => idclub}}}
-      when is_integer(idclub) and idclub > 0 ->
-        {:ok, idclub}
-
-      _ ->
-        {:error, :unknown_club}
-    end
-  end
+  def club_access?(_, _), do: false
 
   @doc "Series of a club as the club sees them, lineups included (needs a token)."
   def club_series(token, idclub, round) do

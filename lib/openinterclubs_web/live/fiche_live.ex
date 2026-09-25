@@ -23,7 +23,7 @@ defmodule OpenInterclubsWeb.FicheLive do
        team: nil,
        fiche: nil,
        token: session["kbsb_token"],
-       kbsb_club: session["kbsb_club"],
+       club_access: %{},
        kbsb_user: session["kbsb_user"]
      )}
   end
@@ -107,19 +107,13 @@ defmodule OpenInterclubsWeb.FicheLive do
      assign(socket, fiche: Fiche.clear(socket.assigns.fiche, String.to_existing_atom(side)))}
   end
 
-  # When logged in, ask the club endpoint for the user's own club only, and
-  # only take that club's side of the encounter. Fail closed otherwise.
-  defp with_club_lineups(fiche, %{assigns: %{token: token, kbsb_club: club}} = socket)
-       when is_binary(token) and is_integer(club) do
-    with side when side != nil <- Fiche.own_side(fiche, club),
-         {:ok, series} <- Kbsb.club_series(token, club, fiche.round) do
-      {Fiche.merge_club_series(fiche, series, club), socket}
-    else
-      _ -> {fiche, socket}
-    end
-  end
+  # Only clubs the user manages (KBSB-verified), only their own side.
+  defp with_club_lineups(fiche, socket) do
+    {fiche, access} =
+      OpenInterclubs.ClubLineups.apply(fiche, socket.assigns.token, socket.assigns.club_access)
 
-  defp with_club_lineups(fiche, socket), do: {fiche, socket}
+    {fiche, assign(socket, club_access: access)}
+  end
 
   defp select(params, socket) do
     params =

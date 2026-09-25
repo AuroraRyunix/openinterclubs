@@ -16,13 +16,16 @@ defmodule OpenInterclubsWeb.PrintLive do
           fiches =
             club["teams"]
             |> Enum.map(&Fiche.fetch(&1, round))
-            |> Enum.map(
-              &with_club_lineups(&1, session["kbsb_token"], session["kbsb_club"], round)
-            )
             |> Enum.flat_map(fn
-              {:ok, f} -> [Fiche.fill(f, if(filled, do: :all, else: :home))]
+              {:ok, f} -> [f]
               _ -> []
             end)
+            |> Enum.map_reduce(
+              %{},
+              &OpenInterclubs.ClubLineups.apply(&1, session["kbsb_token"], &2)
+            )
+            |> elem(0)
+            |> Enum.map(&Fiche.fill(&1, if(filled, do: :all, else: :home)))
 
           {club["name"], fiches}
 
@@ -40,19 +43,6 @@ defmodule OpenInterclubsWeb.PrintLive do
        filled: filled
      )}
   end
-
-  # Own club only, own side only; see FicheLive.
-  defp with_club_lineups({:ok, fiche}, token, club, round)
-       when is_binary(token) and is_integer(club) do
-    with side when side != nil <- Fiche.own_side(fiche, club),
-         {:ok, series} <- OpenInterclubs.Kbsb.club_series(token, club, round) do
-      {:ok, Fiche.merge_club_series(fiche, series, club)}
-    else
-      _ -> {:ok, fiche}
-    end
-  end
-
-  defp with_club_lineups(result, _token, _club, _round), do: result
 
   # clubname_clubnumber_RXX_series.pdf; when a club has two teams in the
   # same series the team number is added so the files don't overwrite.
