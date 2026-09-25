@@ -108,7 +108,7 @@ defmodule OpenInterclubsWeb.FicheLive do
         do: Map.delete(params, "team"),
         else: params
 
-    {:noreply, push_patch(socket, to: ~p"/?#{params}")}
+    {:noreply, push_patch(socket, to: ~p"/fiche?#{params}")}
   end
 
   defp club_label(club), do: "#{club["name"]} (#{club["idclub"]})"

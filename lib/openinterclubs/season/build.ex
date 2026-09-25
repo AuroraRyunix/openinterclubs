@@ -250,9 +250,11 @@ defmodule OpenInterclubs.Season.Build do
           |> Map.update(e.visit, empty, &add(&1, e.mp_visit, e.bp_visit, e.bp_home))
       end
 
+    order = teams |> Enum.with_index() |> Map.new()
+
     acc
     |> Enum.map(fn {team, row} -> Map.put(row, :team, team) end)
-    |> Enum.sort_by(&{-&1.mp, -&1.bp})
+    |> Enum.sort_by(&{-&1.mp, -&1.bp, Map.get(order, &1.team, 999)})
     |> Enum.with_index(1)
     |> Enum.map(fn {row, rank} -> Map.put(row, :rank, rank) end)
   end

@@ -17,7 +17,17 @@ defmodule OpenInterclubsWeb.Router do
   scope "/", OpenInterclubsWeb do
     pipe_through :browser
 
-    live "/", FicheLive
+    live "/", HomeLive
+    live "/rounds", RoundLive
+    live "/rounds/:round", RoundLive
+    live "/divisions", DivisionsLive
+    live "/divisions/:series", DivisionLive
+    live "/match/:series/:round/:club/:team", MatchLive
+    live "/clubs/:id", ClubLive
+    live "/clubs/:id/teams/:number", TeamLive
+    live "/players/:id", PlayerLive
+    live "/top", TopLive
+    live "/fiche", FicheLive
     live "/print/:idclub/:round", PrintLive
   end
 

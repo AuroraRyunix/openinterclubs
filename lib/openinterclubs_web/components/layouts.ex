@@ -35,21 +35,54 @@ defmodule OpenInterclubsWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8 screen-only">
-      <div class="flex-1">
-        <a href="/" class="text-lg font-semibold">OpenInterclubs</a>
-        <span class="ml-3 text-sm opacity-70">Uitslagenfiches interclub KBSB</span>
+    <header class="screen-only sticky top-0 z-30 border-b border-base-300 bg-base-100/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3 sm:px-6">
+        <a href="/" class="flex items-center gap-2 font-bold tracking-tight">
+          <span class="grid size-8 place-items-center rounded-lg bg-primary text-lg text-primary-content">
+            ♞
+          </span>
+          <span class="hidden sm:inline">OpenInterclubs</span>
+        </a>
+        <nav class="flex flex-1 gap-1 overflow-x-auto text-sm">
+          <.nav_link href={~p"/rounds"}>Rondes</.nav_link>
+          <.nav_link href={~p"/divisions"}>Afdelingen</.nav_link>
+          <.nav_link href={~p"/top"}>Toplijst</.nav_link>
+          <.nav_link href={~p"/fiche"}>Uitslagenfiche</.nav_link>
+        </nav>
+        <.theme_toggle />
       </div>
-      <div class="flex-none"><.theme_toggle /></div>
     </header>
 
-    <main class="px-4 py-8 sm:px-6 lg:px-8 print:p-0">
-      <div class="mx-auto max-w-5xl">
+    <main class="px-4 py-8 sm:px-6 print:p-0">
+      <div class="mx-auto max-w-6xl">
         {render_slot(@inner_block)}
       </div>
     </main>
 
+    <footer class="screen-only mx-auto max-w-6xl px-4 pb-10 pt-4 text-xs opacity-60 sm:px-6">
+      Gegevens: publieke API van de
+      <a class="underline" href="https://www.frbe-kbsb-ksb.be">KBSB/FRBE</a>
+      · Feedback of fout gezien?
+      <a class="underline" href="https://github.com/AuroraRyunix/openinterclubs/issues">
+        Meld het op GitHub
+      </a>
+    </footer>
+
     <.flash_group flash={@flash} />
+    """
+  end
+
+  attr :href, :string, required: true
+  slot :inner_block, required: true
+
+  defp nav_link(assigns) do
+    ~H"""
+    <.link
+      navigate={@href}
+      class="whitespace-nowrap rounded-lg px-3 py-1.5 font-medium opacity-75 transition hover:bg-base-200 hover:opacity-100"
+    >
+      {render_slot(@inner_block)}
+    </.link>
     """
   end
 

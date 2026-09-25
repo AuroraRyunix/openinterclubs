@@ -1,7 +1,7 @@
 defmodule OpenInterclubs.Season.BuildTest do
   use ExUnit.Case, async: true
 
-  alias OpenInterclubs.Season.{Build, Result, Tpr}
+  alias OpenInterclubs.Season.{Result, Tpr}
 
   import OpenInterclubs.SeasonFixtures
 
@@ -16,14 +16,14 @@ defmodule OpenInterclubs.Season.BuildTest do
     assert Enum.map(e1.games, & &1.white) == [:home, :visit, :home, :visit]
 
     [e2] = r2.encounters
-    assert %{bp_home: 0.0, bp_visit: 1.0, status: :live} = e2
+    assert %{bp_home: +0.0, bp_visit: 1.0, status: :live} = e2
   end
 
   test "standings order by match points then board points", %{model: m} do
     [first, second, third] = m.series[{4, "B"}].standings
     assert %{team: {401, 1}, mp: 4, bp: 3.5, played: 2, won: 2} = first
     assert %{team: {472, 2}, mp: 0, bp: 1.5} = second
-    assert %{team: {109, 3}, mp: 0, bp: 0.0} = third
+    assert %{team: {109, 3}, mp: 0, bp: +0.0} = third
   end
 
   test "player stats: score, colours, TPR without forfeits", %{model: m} do

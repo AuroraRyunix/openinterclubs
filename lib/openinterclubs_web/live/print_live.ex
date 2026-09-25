@@ -36,7 +36,7 @@ defmodule OpenInterclubsWeb.PrintLive do
     ~H"""
     <Layouts.app flash={@flash}>
       <div class="screen-only flex items-center gap-3 mb-6">
-        <.link class="btn" navigate={~p"/?#{%{club: @idclub, round: @round}}"}>← Terug</.link>
+        <.link class="btn" navigate={~p"/fiche?#{%{club: @idclub, round: @round}}"}>← Terug</.link>
         <.link
           id="toggle-filled"
           class="btn"

@@ -229,4 +229,59 @@ defmodule OpenInterclubsWeb.UI do
     </.link>
     """
   end
+
+  attr :players, :list, required: true
+  attr :show_club, :boolean, default: false
+  attr :offset, :integer, default: 0
+
+  def player_table(assigns) do
+    ~H"""
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="text-left text-xs uppercase opacity-60">
+          <tr>
+            <th :if={@offset > 0 or @show_club} class="py-2 pr-2">#</th>
+            <th class="py-2">Speler</th>
+            <th :if={@show_club} class="py-2">Club</th>
+            <th class="px-2 text-right">Rating</th>
+            <th class="px-2 text-right">FIDE</th>
+            <th class="px-2 text-right">Score</th>
+            <th class="px-2 text-right">TPR</th>
+            <th class="px-2 text-right">+/−</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={{p, i} <- Enum.with_index(@players, @offset + 1)}
+            class="border-t border-base-200 transition hover:bg-base-200/60"
+          >
+            <td :if={@offset > 0 or @show_club} class="py-2 pr-2 opacity-50">{i}</td>
+            <td class="py-2">
+              <.player_link id={p.id} />
+              <span :if={p.titular} class="ml-1 text-xs opacity-50">{p.titular}</span>
+            </td>
+            <td :if={@show_club} class="py-2">
+              <.link navigate={club_path(p.club_id)} class="opacity-70 hover:text-primary">
+                {OpenInterclubsWeb.Fmt.club_name(p.club_id)}
+              </.link>
+            </td>
+            <td class="px-2 text-right tabular-nums">{rating(p.rating)}</td>
+            <td class="px-2 text-right tabular-nums opacity-70">{rating(p.fide)}</td>
+            <td class="px-2 text-right tabular-nums">
+              <span :if={p.played > 0}>{points(p.score)}/{p.played}</span>
+            </td>
+            <td class="px-2 text-right font-semibold tabular-nums">{p.tpr}</td>
+            <td class={[
+              "px-2 text-right tabular-nums",
+              p.diff && p.diff > 0 && "text-success",
+              p.diff && p.diff < 0 && "text-error"
+            ]}>
+              {p.diff && if(p.diff > 0, do: "+#{p.diff}", else: p.diff)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
 end

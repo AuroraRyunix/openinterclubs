@@ -36,6 +36,13 @@ defmodule OpenInterclubsWeb.Fmt do
 
   def team_name(_), do: "?"
 
+  def club_name(id) do
+    case Season.club(id) do
+      %{name: n} -> n
+      _ -> to_string(id)
+    end
+  end
+
   def player_name(nil), do: "—"
 
   def player_name(id) do
