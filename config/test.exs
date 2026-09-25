@@ -22,3 +22,6 @@ config :phoenix,
   sort_verified_routes_query_params: true
 
 config :openinterclubs, season_autoload: false
+
+# Route KBSB API calls to Req.Test stubs.
+config :openinterclubs, kbsb_req_options: [plug: {Req.Test, OpenInterclubs.Kbsb}]

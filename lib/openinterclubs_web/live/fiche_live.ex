@@ -8,14 +8,23 @@ defmodule OpenInterclubsWeb.FicheLive do
   @rounds 1..11
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     clubs =
       case Kbsb.clubs() do
         {:ok, clubs} -> Enum.filter(clubs, &(&1["teams"] != []))
         _ -> []
       end
 
-    {:ok, assign(socket, clubs: clubs, rounds: @rounds, club: nil, team: nil, fiche: nil)}
+    {:ok,
+     assign(socket,
+       clubs: clubs,
+       rounds: @rounds,
+       club: nil,
+       team: nil,
+       fiche: nil,
+       token: session["kbsb_token"],
+       kbsb_user: session["kbsb_user"]
+     )}
   end
 
   @impl true
@@ -30,6 +39,7 @@ defmodule OpenInterclubsWeb.FicheLive do
       if team && round do
         case Fiche.fetch(team, round) do
           {:ok, fiche} ->
+            {fiche, socket} = with_club_lineups(fiche, socket)
             assign(socket, fiche: Fiche.fill(fiche, :home))
 
           {:error, :no_encounter} ->
@@ -75,6 +85,7 @@ defmodule OpenInterclubsWeb.FicheLive do
 
     case Fiche.fetch(team, round, fresh: true) do
       {:ok, fresh} ->
+        {fresh, socket} = with_club_lineups(fresh, socket)
         fiche = fiche |> Fiche.refresh_api(fresh) |> Fiche.fill(side)
         sides = if side == :all, do: [:home, :visit], else: [side]
 
@@ -93,6 +104,29 @@ defmodule OpenInterclubsWeb.FicheLive do
   def handle_event("clear", %{"side" => side}, socket) when side in ["home", "visit", "all"] do
     {:noreply,
      assign(socket, fiche: Fiche.clear(socket.assigns.fiche, String.to_existing_atom(side)))}
+  end
+
+  # When logged in, ask the club endpoint for both clubs of the encounter;
+  # the KBSB only answers for the user's own club, the other just fails.
+  defp with_club_lineups(fiche, %{assigns: %{token: nil}} = socket), do: {fiche, socket}
+
+  defp with_club_lineups(fiche, socket) do
+    token = socket.assigns.token
+
+    Enum.reduce([fiche.home.idclub, fiche.visit.idclub], {fiche, socket}, fn idclub, {f, sock} ->
+      case Kbsb.club_series(token, idclub, fiche.round) do
+        {:ok, series} ->
+          {Fiche.merge_club_series(f, series), sock}
+
+        {:error, :unauthorized} ->
+          {f, sock}
+
+        {:error, reason} ->
+          require Logger
+          Logger.warning("club_series #{idclub}: #{inspect(reason)}")
+          {f, sock}
+      end
+    end)
   end
 
   defp select(params, socket) do
@@ -192,6 +226,19 @@ defmodule OpenInterclubsWeb.FicheLive do
           Alle ploegen van {@club["name"]} — ronde {@round}
         </.link>
       </div>
+
+      <p class="screen-only mb-4 text-sm">
+        <%= if @kbsb_user do %>
+          Aangemeld als <b>{@kbsb_user}</b>: je eigen opstelling wordt ingevuld.
+          <.link href={~p"/login"} class="underline">Beheer</.link>
+        <% else %>
+          Opstellingen zijn niet meer publiek.
+          <.link href={~p"/login?#{%{return_to: "/fiche"}}"} id="login-link" class="underline">
+            Meld je aan met je KBSB-login
+          </.link>
+          om je eigen opstelling in te vullen.
+        <% end %>
+      </p>
 
       <p :if={@fiche} class="screen-only text-sm opacity-70 mb-2">
         De thuisploeg staat ingevuld volgens de opstelling op de KBSB-site; de uitploeg blijft leeg.

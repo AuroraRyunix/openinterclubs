@@ -27,6 +27,10 @@ defmodule OpenInterclubsWeb.Router do
     live "/clubs/:id/teams/:number", TeamLive
     live "/players/:id", PlayerLive
     live "/top", TopLive
+    get "/login", SessionController, :new
+    post "/login", SessionController, :create
+    post "/logout", SessionController, :delete
+
     live "/fiche", FicheLive
     live "/print/:idclub/:round", PrintLive
   end

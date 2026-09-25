@@ -4,6 +4,9 @@ defmodule OpenInterclubsWeb.SeasonPagesTest do
   import Phoenix.LiveViewTest
 
   setup do
+    # The club page fetches venues in a background task.
+    Req.Test.set_req_test_to_shared()
+    Req.Test.stub(OpenInterclubs.Kbsb, &Req.Test.json(&1, %{"venues" => []}))
     OpenInterclubs.Season.put(OpenInterclubs.SeasonFixtures.model())
     :ok
   end

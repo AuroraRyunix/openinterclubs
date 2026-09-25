@@ -19,8 +19,75 @@ defmodule OpenInterclubs.Kbsb do
   def club(idclub), do: get("/icclub/#{idclub}")
 
   @doc "A series (division + index) with its teams and all rounds/encounters."
-  def series(1, _index), do: get("/icresults/1")
-  def series(division, index), do: get("/icresults/#{division}/#{index}")
+  def series(division, index) do
+    path = if division == 1, do: "/icresults/1", else: "/icresults/#{division}/#{index}"
+
+    with {:ok, s} <- get(path), do: {:ok, OpenInterclubs.Schedule.complete(s)}
+  end
+
+  # ---- authenticated (club) endpoints ------------------------------------
+
+  @doc """
+  Log in with a KBSB member number (or account e-mail) and password.
+  Returns `{:ok, token}`. Nothing is cached or stored here.
+  """
+  def login(user, password) do
+    user = String.trim(user)
+
+    case post("/api/v1/member/login", %{email: user, password: password}) do
+      {:ok, token} ->
+        {:ok, token}
+
+      {:error, _} = member_error ->
+        # Staff accounts log in on a different endpoint.
+        case post("/api/v1/accounts/anon/login", %{
+               logintype: "email",
+               username: user,
+               password: password
+             }) do
+          {:ok, token} -> {:ok, token}
+          _ -> member_error
+        end
+    end
+  end
+
+  @doc "Series of a club as the club sees them, lineups included (needs a token)."
+  def club_series(token, idclub, round) do
+    url = root_url() <> "/api/v1/interclubs/clb/icseries"
+
+    case Req.get(
+           url,
+           [params: [idclub: idclub, round: round], auth: {:bearer, token}, retry: false] ++
+             req_options()
+         ) do
+      {:ok, %Req.Response{status: 200, body: body}} when is_list(body) -> {:ok, body}
+      {:ok, %Req.Response{status: s}} when s in [401, 403] -> {:error, :unauthorized}
+      {:ok, %Req.Response{status: s, body: b}} -> {:error, {:http, s, b}}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp post(path, body) do
+    case Req.post(root_url() <> path, [json: body, retry: false] ++ req_options()) do
+      {:ok, %Req.Response{status: 200, body: body}} -> extract_token(body)
+      {:ok, %Req.Response{body: %{"detail" => detail}}} -> {:error, detail}
+      {:ok, %Req.Response{status: s}} -> {:error, {:http, s}}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  # member/login answers [idnumber, token]; accounts login answers a bare token.
+  defp extract_token(token) when is_binary(token), do: {:ok, token}
+
+  defp extract_token(list) when is_list(list),
+    do: list |> Enum.find(&is_binary/1) |> then(&if(&1, do: {:ok, &1}, else: {:error, :no_token}))
+
+  defp extract_token(%{"token" => t}), do: {:ok, t}
+  defp extract_token(%{"access_token" => t}), do: {:ok, t}
+  defp extract_token(_), do: {:error, :no_token}
+
+  defp root_url,
+    do: base_url() |> URI.parse() |> Map.merge(%{path: nil, query: nil}) |> URI.to_string()
 
   @doc "Playing halls of a club."
   def venue(idclub), do: get("/venue/#{idclub}")

@@ -44,6 +44,7 @@ defmodule OpenInterclubsWeb.Layouts do
           <.nav_link href={~p"/top"}>Spelers</.nav_link>
           <.nav_link href={~p"/fiche"}>Uitslagenfiche</.nav_link>
         </nav>
+        <a href={~p"/login"} class="text-sm opacity-75 hover:opacity-100">KBSB-login</a>
         <.theme_toggle />
       </div>
     </header>

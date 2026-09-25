@@ -52,4 +52,16 @@ defmodule OpenInterclubs.FicheTest do
     fiche = Fiche.set_player(fiche, 3, :visit, nil)
     assert %{visit: nil} = Enum.at(fiche.boards, 2)
   end
+
+  test "merge_club_series takes the lineup from the club endpoint" do
+    {:ok, enc} = Fiche.find_encounter(@series, 2, 1)
+    fiche = Fiche.build(@series, 1, %{enc | "games" => []}, @club["players"], [])
+    fiche = %{fiche | home: %{fiche.home | options: Fiche.player_options(@club["players"])}}
+    refute Fiche.api_lineup?(fiche, :home)
+
+    club_series = [@series |> put_in(["rounds"], [%{"round" => 1, "encounters" => [enc]}])]
+    fiche = fiche |> Fiche.merge_club_series(club_series) |> Fiche.fill(:home)
+
+    assert %{home: %{idnumber: 14108, name: "Goddé Matthias"}} = hd(fiche.boards)
+  end
 end

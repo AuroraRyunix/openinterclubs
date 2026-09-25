@@ -8,6 +8,9 @@ defmodule OpenInterclubsWeb.Endpoint do
     store: :cookie,
     key: "_openinterclubs_key",
     signing_salt: "JCo+JNr6",
+    # The session holds the user's KBSB token, so encrypt it, not just sign it.
+    encryption_salt: "tbsm2qyf",
+    max_age: 60 * 60 * 12,
     same_site: "Lax"
   ]
 

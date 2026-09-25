@@ -121,6 +121,56 @@ defmodule OpenInterclubs.Fiche do
   def refresh_api(%__MODULE__{} = fiche, %__MODULE__{} = fresh),
     do: %{fiche | api_boards: fresh.api_boards}
 
+  @doc """
+  Take lineups from the authenticated club endpoint (`Kbsb.club_series/3`
+  output) into `api_boards`, for whichever side the logged-in club is.
+  """
+  def merge_club_series(%__MODULE__{} = fiche, series_list) do
+    enc =
+      Enum.find_value(series_list, fn s ->
+        (s["division"] == fiche.division and (s["index"] || "") == (fiche.index || "")) &&
+          Enum.find_value(s["rounds"] || [], fn r ->
+            r["round"] == fiche.round &&
+              Enum.find(r["encounters"] || [], fn e ->
+                e["pairingnr_home"] == fiche.home.pairingnr and
+                  e["pairingnr_visit"] == fiche.visit.pairingnr
+              end)
+          end)
+      end)
+
+    case enc do
+      %{"games" => [_ | _] = games} ->
+        api =
+          fiche.api_boards
+          |> Enum.with_index()
+          |> Enum.map(fn {b, i} ->
+            g = Enum.at(games, i, %{})
+
+            %{
+              b
+              | home: b.home || from_options(fiche.home.options, g["idnumber_home"]),
+                visit: b.visit || from_options(fiche.visit.options, g["idnumber_visit"])
+            }
+          end)
+
+        %{fiche | api_boards: api}
+
+      _ ->
+        fiche
+    end
+  end
+
+  defp from_options(_options, id) when id in [nil, 0], do: nil
+
+  defp from_options(options, id) do
+    name =
+      Enum.find_value(options, fn {label, oid} ->
+        oid == id && String.replace(label, ~r/ \(\d+\)$/, "")
+      end)
+
+    %{idnumber: id, name: name}
+  end
+
   @doc "Whether the KBSB site has any lineup for that side."
   def api_lineup?(%__MODULE__{} = fiche, side),
     do: Enum.any?(fiche.api_boards, &Map.get(&1, side))

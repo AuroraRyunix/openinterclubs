@@ -6,7 +6,7 @@ defmodule OpenInterclubsWeb.PrintLive do
   import OpenInterclubsWeb.FicheComponents
 
   @impl true
-  def mount(%{"idclub" => idclub, "round" => round} = params, _session, socket) do
+  def mount(%{"idclub" => idclub, "round" => round} = params, session, socket) do
     round = String.to_integer(round)
     filled = params["filled"] == "1"
 
@@ -16,6 +16,7 @@ defmodule OpenInterclubsWeb.PrintLive do
           fiches =
             club["teams"]
             |> Enum.map(&Fiche.fetch(&1, round))
+            |> Enum.map(&with_club_lineups(&1, session["kbsb_token"], round))
             |> Enum.flat_map(fn
               {:ok, f} -> [Fiche.fill(f, if(filled, do: :all, else: :home))]
               _ -> []
@@ -30,6 +31,17 @@ defmodule OpenInterclubsWeb.PrintLive do
     {:ok,
      assign(socket, name: name, idclub: idclub, round: round, fiches: fiches, filled: filled)}
   end
+
+  defp with_club_lineups({:ok, fiche}, token, round) when is_binary(token) do
+    Enum.reduce([fiche.home.idclub, fiche.visit.idclub], {:ok, fiche}, fn idclub, {:ok, f} ->
+      case OpenInterclubs.Kbsb.club_series(token, idclub, round) do
+        {:ok, series} -> {:ok, Fiche.merge_club_series(f, series)}
+        _ -> {:ok, f}
+      end
+    end)
+  end
+
+  defp with_club_lineups(result, _token, _round), do: result
 
   @impl true
   def render(assigns) do
