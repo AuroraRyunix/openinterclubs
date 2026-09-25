@@ -54,9 +54,9 @@ defmodule OpenInterclubsWeb.DivisionLive do
         <.tabs
           active={@tab}
           tabs={[
-            {"stand", "Stand", ~p"/divisions/#{@s.label}"},
-            {"kruistabel", "Kruistabel", ~p"/divisions/#{@s.label}?tab=kruistabel"},
-            {"rondes", "Rondes", ~p"/divisions/#{@s.label}?tab=rondes&round=#{@round}"}
+            {"stand", "Rangschikking", ~p"/divisions/#{@s.label}"},
+            {"kruistabel", "Onderlinge resultaten", ~p"/divisions/#{@s.label}?tab=kruistabel"},
+            {"rondes", "Per ronde", ~p"/divisions/#{@s.label}?tab=rondes&round=#{@round}"}
           ]}
         />
 
@@ -67,12 +67,12 @@ defmodule OpenInterclubsWeb.DivisionLive do
                 <tr>
                   <th class="py-2 pr-2">#</th>
                   <th class="py-2">Ploeg</th>
-                  <th class="px-2 text-center">G</th>
-                  <th class="px-2 text-center">W</th>
-                  <th class="px-2 text-center">R</th>
-                  <th class="px-2 text-center">V</th>
-                  <th class="px-2 text-right">MP</th>
-                  <th class="px-2 text-right">BP</th>
+                  <th class="px-2 text-center" title="Gespeeld">Gesp.</th>
+                  <th class="px-2 text-center" title="Gewonnen">W</th>
+                  <th class="px-2 text-center" title="Gelijk">G</th>
+                  <th class="px-2 text-center" title="Verloren">V</th>
+                  <th class="px-2 text-right" title="Matchpunten">MP</th>
+                  <th class="px-2 text-right" title="Bordpunten">BP</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +124,7 @@ defmodule OpenInterclubsWeb.DivisionLive do
             </table>
           </div>
           <p class="mt-3 text-xs opacity-60">
-            Rij = thuisploeg, kolom = bezoekers. Klik op een uitslag voor de borden.
+            Rij = thuisploeg, kolom = uitploeg. Klik op een uitslag voor de borden.
           </p>
         </.card>
 

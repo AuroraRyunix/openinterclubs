@@ -55,7 +55,7 @@ defmodule OpenInterclubsWeb.MatchLive do
           </div>
           <div>
             <.team_link key={@e.visit} class="text-xl font-bold sm:text-2xl" />
-            <p class="text-xs uppercase opacity-50">Bezoekers</p>
+            <p class="text-xs uppercase opacity-50">Uit</p>
           </div>
         </div>
 

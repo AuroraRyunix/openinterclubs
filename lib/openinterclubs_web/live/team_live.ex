@@ -84,7 +84,7 @@ defmodule OpenInterclubsWeb.TeamLive do
             <.link navigate={club_path(@team.club_id)} class="hover:text-primary">{@team.club_name}</.link>
           </:subtitle>
           <:actions>
-            <.btn href={series_path(@team.series)}>Stand reeks</.btn>
+            <.btn href={series_path(@team.series)}>Rangschikking</.btn>
           </:actions>
         </.page_header>
 
@@ -92,7 +92,7 @@ defmodule OpenInterclubsWeb.TeamLive do
           <.stat label="Plaats" value={"#{@row.rank}/#{length(@series.teams)}"} />
           <.stat label="Matchpunten" value={@row.mp} />
           <.stat label="Bordpunten" value={points(@row.bp)} />
-          <.stat label="W / R / V" value={"#{@row.won}/#{@row.drawn}/#{@row.lost}"} />
+          <.stat label="W / G / V" value={"#{@row.won}/#{@row.drawn}/#{@row.lost}"} />
         </div>
 
         <.tabs
@@ -100,7 +100,7 @@ defmodule OpenInterclubsWeb.TeamLive do
           tabs={[
             {"uitslagen", "Uitslagen", team_path(@team.key)},
             {"spelers", "Spelers", team_path(@team.key) <> "?tab=spelers"},
-            {"rondes", "Rondes", team_path(@team.key) <> "?tab=rondes"}
+            {"rondes", "Per ronde", team_path(@team.key) <> "?tab=rondes"}
           ]}
         />
 

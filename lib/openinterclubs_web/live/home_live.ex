@@ -57,14 +57,8 @@ defmodule OpenInterclubsWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <section class="relative mb-10 overflow-hidden rounded-3xl bg-gradient-to-br from-primary/15 via-base-200 to-base-100 px-6 py-10 sm:px-10">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
-          KBSB · FRBE interclubs
-        </p>
-        <h1 class="mt-2 max-w-2xl text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Uitslagen, standen en spelers — live.
-        </h1>
-        <form id="search-form" phx-change="search" phx-submit="search" class="mt-6 max-w-xl">
+      <section class="mb-8">
+        <form id="search-form" phx-change="search" phx-submit="search" class="max-w-xl">
           <div class="relative">
             <.icon
               name="hero-magnifying-glass"
@@ -77,7 +71,7 @@ defmodule OpenInterclubsWeb.HomeLive do
               phx-debounce="150"
               autocomplete="off"
               placeholder="Zoek een club of speler (naam of nummer)…"
-              class="w-full rounded-2xl border border-base-300 bg-base-100 py-3.5 pl-12 pr-4 text-base shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15"
+              class="w-full rounded-xl border border-base-300 bg-base-100 py-2.5 pl-12 pr-4 text-base shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15"
             />
           </div>
         </form>

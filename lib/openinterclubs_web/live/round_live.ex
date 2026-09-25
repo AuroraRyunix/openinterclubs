@@ -29,7 +29,7 @@ defmodule OpenInterclubsWeb.RoundLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.page_header kicker="Alle afdelingen" title={"Ronde #{@round}"}>
+      <.page_header kicker="Uitslagen" title={"Ronde #{@round}"}>
         <:subtitle>{date(@date)}</:subtitle>
       </.page_header>
 

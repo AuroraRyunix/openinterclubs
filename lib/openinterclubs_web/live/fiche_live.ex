@@ -30,7 +30,7 @@ defmodule OpenInterclubsWeb.FicheLive do
       if team && round do
         case Fiche.fetch(team, round) do
           {:ok, fiche} ->
-            assign(socket, fiche: fiche)
+            assign(socket, fiche: Fiche.fill(fiche, :home))
 
           {:error, :no_encounter} ->
             put_flash(socket, :error, "Geen ontmoeting in ronde #{round}.")
@@ -194,8 +194,8 @@ defmodule OpenInterclubsWeb.FicheLive do
       </div>
 
       <p :if={@fiche} class="screen-only text-sm opacity-70 mb-2">
-        De fiche start leeg. „Vul in vanuit KBSB” haalt de laatst ingediende opstelling op
-        (per ploeg kan ook); borden kan je daarna nog aanpassen.
+        De thuisploeg staat ingevuld volgens de opstelling op de KBSB-site; de uitploeg blijft leeg.
+        Met „Invullen” of „Wissen” per ploeg haal je de laatste opstelling op of maak je ze leeg.
       </p>
 
       <.fiche :if={@fiche} fiche={@fiche} editable />

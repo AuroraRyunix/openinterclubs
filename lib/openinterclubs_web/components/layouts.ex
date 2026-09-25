@@ -37,16 +37,11 @@ defmodule OpenInterclubsWeb.Layouts do
     ~H"""
     <header class="screen-only sticky top-0 z-30 border-b border-base-300 bg-base-100/85 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3 sm:px-6">
-        <a href="/" class="flex items-center gap-2 font-bold tracking-tight">
-          <span class="grid size-8 place-items-center rounded-lg bg-primary text-lg text-primary-content">
-            ♞
-          </span>
-          <span class="hidden sm:inline">OpenInterclubs</span>
-        </a>
+        <a href="/" class="font-bold tracking-tight">OpenInterclubs</a>
         <nav class="flex flex-1 gap-1 overflow-x-auto text-sm">
-          <.nav_link href={~p"/rounds"}>Rondes</.nav_link>
+          <.nav_link href={~p"/rounds"}>Uitslagen</.nav_link>
           <.nav_link href={~p"/divisions"}>Afdelingen</.nav_link>
-          <.nav_link href={~p"/top"}>Toplijst</.nav_link>
+          <.nav_link href={~p"/top"}>Spelers</.nav_link>
           <.nav_link href={~p"/fiche"}>Uitslagenfiche</.nav_link>
         </nav>
         <.theme_toggle />

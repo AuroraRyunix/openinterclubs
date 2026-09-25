@@ -6,7 +6,7 @@ defmodule OpenInterclubsWeb.TopLive do
 
   @impl true
   def mount(_params, _session, socket),
-    do: {:ok, socket |> subscribe() |> assign(page_title: "Toplijst")}
+    do: {:ok, socket |> subscribe() |> assign(page_title: "Spelers")}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -58,8 +58,8 @@ defmodule OpenInterclubsWeb.TopLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <.page_header kicker="Seizoen" title="Toplijst">
-        <:subtitle>Beste prestaties (TPR zonder forfaits) · {@total} spelers</:subtitle>
+      <.page_header kicker="Seizoen" title="Rangschikking spelers">
+        <:subtitle>Prestatie (TPR, zonder forfaits) · {@total} spelers</:subtitle>
       </.page_header>
 
       <.form

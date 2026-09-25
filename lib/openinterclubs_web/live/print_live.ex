@@ -17,7 +17,7 @@ defmodule OpenInterclubsWeb.PrintLive do
             club["teams"]
             |> Enum.map(&Fiche.fetch(&1, round))
             |> Enum.flat_map(fn
-              {:ok, f} -> [if(filled, do: Fiche.fill(f, :all), else: f)]
+              {:ok, f} -> [Fiche.fill(f, if(filled, do: :all, else: :home))]
               _ -> []
             end)
 
@@ -42,7 +42,7 @@ defmodule OpenInterclubsWeb.PrintLive do
           class="btn"
           navigate={~p"/print/#{@idclub}/#{@round}?#{if(@filled, do: %{}, else: %{filled: 1})}"}
         >
-          {if @filled, do: "Leeg afdrukken", else: "Met KBSB-opstellingen"}
+          {if @filled, do: "Uitploeg leeg laten", else: "Ook uitploeg invullen"}
         </.link>
         <button class="btn btn-primary" onclick="window.print()">Alles afdrukken</button>
         <span>{@name} — ronde {@round}: {length(@fiches)} fiche(s)</span>
