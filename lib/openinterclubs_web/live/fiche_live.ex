@@ -229,8 +229,10 @@ defmodule OpenInterclubsWeb.FicheLive do
 
       <p class="screen-only mb-4 text-sm">
         <%= if @kbsb_user do %>
-          Aangemeld als <b>{@kbsb_user}</b>: je eigen opstelling wordt ingevuld.
-          <.link href={~p"/login"} class="underline">Beheer</.link>
+          Aangemeld bij de KBSB als <b>{@kbsb_user}</b>.
+          <.form for={%{}} action={~p"/logout"} method="post" class="inline">
+            <button id="logout" class="underline">Afmelden</button>
+          </.form>
         <% else %>
           Opstellingen zijn niet meer publiek.
           <.link href={~p"/login?#{%{return_to: "/fiche"}}"} id="login-link" class="underline">

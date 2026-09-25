@@ -28,7 +28,7 @@ defmodule OpenInterclubs.FicheTest do
     assert fiche.visit.name == "Jean Jaures Gent 1"
     assert length(fiche.boards) == 8
 
-    assert %{board: 1, home: %{idnumber: 14108, name: "Goddé Matthias"}, visit: nil} =
+    assert %{board: 1, home: %{idnumber: 14108, name: "Goddé Matthias", rating: 2129}, visit: nil} =
              hd(fiche.boards)
 
     assert Enum.all?(Fiche.clear(fiche, :home).boards, &(&1.home == nil))
@@ -47,7 +47,9 @@ defmodule OpenInterclubs.FicheTest do
     fiche = %{fiche | visit: %{fiche.visit | options: Fiche.player_options(@club["players"])}}
 
     fiche = Fiche.set_player(fiche, 3, :visit, 6530)
-    assert %{visit: %{idnumber: 6530, name: "Coupe Rudy"}} = Enum.at(fiche.boards, 2)
+
+    assert %{visit: %{idnumber: 6530, name: "Coupe Rudy", rating: 1755}} =
+             Enum.at(fiche.boards, 2)
 
     fiche = Fiche.set_player(fiche, 3, :visit, nil)
     assert %{visit: nil} = Enum.at(fiche.boards, 2)

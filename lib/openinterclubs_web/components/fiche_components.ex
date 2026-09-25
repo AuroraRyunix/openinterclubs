@@ -98,7 +98,10 @@ defmodule OpenInterclubsWeb.FicheComponents do
     assigns = assign(assigns, :current, Map.get(assigns.board, assigns.side))
 
     ~H"""
-    <span class={@editable && "print-only"}>{@current && (@current.name || "?")}</span>
+    <span class={@editable && "print-only"}>
+      {@current && (@current.name || "?")}
+      <span :if={@current && @current[:rating] not in [nil, 0]}>({@current.rating})</span>
+    </span>
     <form
       :if={@editable}
       id={"board-form-#{@board.board}-#{@side}"}

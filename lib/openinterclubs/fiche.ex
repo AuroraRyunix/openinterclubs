@@ -98,8 +98,8 @@ defmodule OpenInterclubs.Fiche do
 
   defp player(by_id, id) do
     case Map.get(by_id, id) do
-      nil -> %{idnumber: id, name: nil}
-      p -> %{idnumber: id, name: name(p)}
+      nil -> %{idnumber: id, name: nil, rating: nil}
+      p -> %{idnumber: id, name: name(p), rating: p["assignedrating"]}
     end
   end
 
@@ -162,13 +162,14 @@ defmodule OpenInterclubs.Fiche do
 
   defp from_options(_options, id) when id in [nil, 0], do: nil
 
+  # Option labels look like "Last First (1234)"; split off the rating.
   defp from_options(options, id) do
-    name =
-      Enum.find_value(options, fn {label, oid} ->
-        oid == id && String.replace(label, ~r/ \(\d+\)$/, "")
-      end)
+    label = Enum.find_value(options, fn {label, oid} -> oid == id && label end)
 
-    %{idnumber: id, name: name}
+    case label && Regex.run(~r/^(.*) \((\d+)\)$/, label) do
+      [_, name, rating] -> %{idnumber: id, name: name, rating: String.to_integer(rating)}
+      _ -> %{idnumber: id, name: label, rating: nil}
+    end
   end
 
   @doc "Whether the KBSB site has any lineup for that side."
@@ -177,12 +178,7 @@ defmodule OpenInterclubs.Fiche do
 
   @doc "Put a player (by idnumber, or nil to clear) on a board for :home or :visit."
   def set_player(%__MODULE__{} = fiche, board, side, idnumber) when side in [:home, :visit] do
-    name =
-      Enum.find_value(Map.fetch!(fiche, side).options, fn {label, id} ->
-        id == idnumber && label |> String.replace(~r/ \(\d+\)$/, "")
-      end)
-
-    value = if idnumber, do: %{idnumber: idnumber, name: name}
+    value = if idnumber, do: from_options(Map.fetch!(fiche, side).options, idnumber)
 
     boards =
       Enum.map(fiche.boards, fn
