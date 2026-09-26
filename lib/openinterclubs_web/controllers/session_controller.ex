@@ -13,10 +13,11 @@ defmodule OpenInterclubsWeb.SessionController do
 
   def create(conn, %{"user" => user, "password" => password} = params) do
     case Kbsb.login(user, password) do
-      {:ok, token} ->
+      {:ok, token, idnumber} ->
         conn
         |> configure_session(renew: true)
         |> put_session(:kbsb_token, token)
+        |> put_session(:kbsb_idnumber, idnumber)
         |> put_session(:kbsb_user, String.trim(user))
         |> put_flash(:info, "Aangemeld bij de KBSB.")
         |> redirect(to: safe_return(params["return_to"]))

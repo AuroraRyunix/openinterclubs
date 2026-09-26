@@ -28,35 +28,51 @@ defmodule OpenInterclubs.Kbsb do
   # ---- authenticated (club) endpoints ------------------------------------
 
   @doc """
-  Log in with a KBSB member login. Returns `{:ok, token}`. Nothing is
-  cached or stored here.
+  Log in with a KBSB member login. Returns `{:ok, token, idnumber}`;
+  `idnumber` is nil when the KBSB doesn't return it. Nothing is stored here.
   """
   def login(user, password) do
-    with {:ok, body} <-
-           post("/api/v1/member/login", %{email: String.trim(user), password: password}) do
-      extract_token(body)
+    user = String.trim(user)
+
+    with {:ok, body} <- post("/api/v1/member/login", %{email: user, password: password}),
+         {:ok, token} <- extract_token(body) do
+      idnumber =
+        cond do
+          is_list(body) and Enum.any?(body, &is_integer/1) -> Enum.find(body, &is_integer/1)
+          match?({_, ""}, Integer.parse(user)) -> String.to_integer(user)
+          true -> nil
+        end
+
+      {:ok, token, idnumber}
     end
   end
 
-  @roles ~w(InterclubAdmin ClubAdmin InterclubCaptain)
+  @roles ~w(ClubAdmin InterclubAdmin InterclubCaptain)
 
-  @doc """
-  Whether the token's owner holds a club role (interclub admin, club admin
-  or captain) for `idclub`, as confirmed by the KBSB itself. Lineups are
-  only ever used for clubs where this is true.
-  """
-  def club_access?(token, idclub) when is_binary(token) and is_integer(idclub) do
-    Enum.any?(@roles, fn role ->
-      url = root_url() <> "/api/v1/clubs/clb/club/#{idclub}/access/#{role}"
+  @doc "Member numbers holding a club role, from the club's public record."
+  def club_role_members(idclub) when is_integer(idclub) do
+    Cache.fetch("/clubs/anon/club/#{idclub}", fn ->
+      url = root_url() <> "/api/v1/clubs/anon/club/#{idclub}"
 
-      match?(
-        {:ok, %Req.Response{status: 200, body: true}},
-        Req.get(url, [auth: {:bearer, token}, retry: false] ++ req_options())
-      )
+      case Req.get(url, [retry: :transient, max_retries: 2] ++ req_options()) do
+        {:ok, %Req.Response{status: 200, body: %{"clubroles" => roles}}} when is_list(roles) ->
+          {:ok,
+           for(
+             %{"nature" => n, "memberlist" => m} <- roles,
+             n in @roles,
+             id <- m,
+             uniq: true,
+             do: id
+           )}
+
+        {:ok, %Req.Response{status: s}} ->
+          {:error, {:http, s}}
+
+        {:error, reason} ->
+          {:error, reason}
+      end
     end)
   end
-
-  def club_access?(_, _), do: false
 
   @doc "Series of a club as the club sees them, lineups included (needs a token)."
   def club_series(token, idclub, round) do

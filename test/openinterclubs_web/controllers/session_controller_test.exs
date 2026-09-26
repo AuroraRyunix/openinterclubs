@@ -11,6 +11,7 @@ defmodule OpenInterclubsWeb.SessionControllerTest do
     assert redirected_to(conn) == "/fiche"
     assert get_session(conn, :kbsb_token) == "jwt-token"
     assert get_session(conn, :kbsb_user) == "12345"
+    assert get_session(conn, :kbsb_idnumber) == 12345
   end
 
   test "wrong credentials show an error and store nothing", %{conn: conn} do

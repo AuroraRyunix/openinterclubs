@@ -8,6 +8,7 @@ defmodule OpenInterclubsWeb.PrintLive do
   @impl true
   def mount(%{"idclub" => idclub, "round" => round}, session, socket) do
     round = String.to_integer(round)
+    user = %{token: session["kbsb_token"], idnumber: session["kbsb_idnumber"]}
 
     {name, fiches} =
       case Kbsb.club(idclub) do
@@ -19,10 +20,7 @@ defmodule OpenInterclubsWeb.PrintLive do
               {:ok, f} -> [f]
               _ -> []
             end)
-            |> Enum.map_reduce(%{}, &ClubLineups.apply(&1, session["kbsb_token"], &2))
-            |> then(fn {fiches, access} ->
-              Enum.map(fiches, &ClubLineups.fill_managed(&1, access))
-            end)
+            |> Enum.map(&ClubLineups.fill(&1, user, club["idclub"]))
 
           {club["name"], fiches}
 

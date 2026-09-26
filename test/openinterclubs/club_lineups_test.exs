@@ -5,9 +5,11 @@ defmodule OpenInterclubs.ClubLineupsTest do
 
   @series "test/fixtures/series_2A.json" |> File.read!() |> Jason.decode!()
   @club "test/fixtures/club_472.json" |> File.read!() |> Jason.decode!()
+  @me 777
 
   # de Mercatel 1 (472, home) vs Jean Jaures Gent 1 (402, away), round 1.
   setup do
+    OpenInterclubs.Kbsb.Cache.clear()
     {:ok, enc} = Fiche.find_encounter(@series, 2, 1)
     fiche = Fiche.build(@series, 1, %{enc | "games" => []}, @club["players"], @club["players"])
     options = Fiche.player_options(@club["players"])
@@ -18,82 +20,77 @@ defmodule OpenInterclubs.ClubLineupsTest do
         visit: %{fiche.visit | options: options}
     }
 
-    # Like the real endpoint: whatever idclub is asked, BOTH sides come back.
+    # Like the real club endpoint: BOTH sides' lineups come back.
     games = Enum.map(enc["games"], &Map.put(&1, "idnumber_visit", 6530))
 
     series = [
       put_in(@series, ["rounds"], [%{"round" => 1, "encounters" => [%{enc | "games" => games}]}])
     ]
 
-    %{fiche: fiche, series: series}
+    %{fiche: fiche, series: series, user: %{token: "tok", idnumber: @me}}
   end
 
-  defp stub(series, managed) do
+  # `roles` maps idclub => member numbers with a club role.
+  defp stub(series, roles) do
     test = self()
 
     Req.Test.stub(OpenInterclubs.Kbsb, fn conn ->
       case String.split(conn.request_path, "/", trim: true) do
-        ["api", "v1", "clubs", "clb", "club", club, "access", _role] ->
-          send(test, {:access_checked, String.to_integer(club)})
-          Req.Test.json(conn, String.to_integer(club) in managed)
+        ["api", "v1", "clubs", "anon", "club", club] ->
+          members = Map.get(roles, String.to_integer(club), [])
+
+          Req.Test.json(conn, %{
+            "clubroles" => [%{"nature" => "InterclubAdmin", "memberlist" => members}]
+          })
 
         ["api", "v1", "interclubs", "clb", "icseries"] ->
-          send(test, {:series_requested, conn.query_string})
+          send(test, {:series_requested, URI.decode_query(conn.query_string)["idclub"]})
           Req.Test.json(conn, series)
       end
     end)
   end
 
-  test "manager of the home club gets the home side only", %{fiche: fiche, series: series} do
-    stub(series, [472])
-    {fiche, access} = ClubLineups.apply(fiche, "tok")
-
-    assert Fiche.api_lineup?(fiche, :home)
-    refute Fiche.api_lineup?(fiche, :visit)
-    assert access == %{472 => true, 402 => false}
-    # The opponent's club is never requested.
-    refute_received {:series_requested, "idclub=402" <> _}
+  defp filled_sides(fiche) do
+    for side <- [:home, :visit], Enum.any?(fiche.boards, &Map.get(&1, side)), do: side
   end
 
-  test "manager of the away club gets the away side only", %{fiche: fiche, series: series} do
-    stub(series, [402])
-    {fiche, access} = ClubLineups.apply(fiche, "tok")
-
-    refute Fiche.api_lineup?(fiche, :home)
-    assert Fiche.api_lineup?(fiche, :visit)
-
-    # Filling puts the own lineup in the right-hand (away) column only.
-    assert ClubLineups.managed_sides(fiche, access) == [:visit]
-    filled = ClubLineups.fill_managed(fiche, access)
-    assert Enum.all?(filled.boards, &(&1.home == nil))
-    assert %{visit: %{idnumber: 6530}} = hd(filled.boards)
+  test "home club manager: only the home column is filled", %{fiche: f, series: s, user: u} do
+    stub(s, %{472 => [@me]})
+    assert filled_sides(ClubLineups.fill(f, u, 472)) == [:home]
   end
 
-  test "no role for either club means no lineups at all", %{fiche: fiche, series: series} do
-    stub(series, [703])
-    {fiche, _} = ClubLineups.apply(fiche, "tok")
+  test "away club manager: only the away column is filled", %{fiche: f, series: s, user: u} do
+    stub(s, %{402 => [@me]})
+    assert filled_sides(ClubLineups.fill(f, u, 402)) == [:visit]
+  end
 
-    refute Fiche.api_lineup?(fiche, :home) or Fiche.api_lineup?(fiche, :visit)
+  test "managing both clubs still only fills the club being viewed", %{
+    fiche: f,
+    series: s,
+    user: u
+  } do
+    stub(s, %{472 => [@me], 402 => [@me]})
+    assert filled_sides(ClubLineups.fill(f, u, 472)) == [:home]
+    refute_received {:series_requested, "402"}
+  end
+
+  test "not listed in the club's roles: nothing requested, nothing filled", %{
+    fiche: f,
+    series: s,
+    user: u
+  } do
+    stub(s, %{472 => [1, 2, 3]})
+    assert filled_sides(ClubLineups.fill(f, u, 472)) == []
     refute_received {:series_requested, _}
   end
 
-  test "access answers are memoized across fiches", %{fiche: fiche, series: series} do
-    stub(series, [472])
-    {_, access} = ClubLineups.apply(fiche, "tok")
-    flush()
-    ClubLineups.apply(fiche, "tok", access)
-    refute_received {:access_checked, _}
+  test "a club that doesn't play this match gets nothing", %{fiche: f, series: s, user: u} do
+    stub(s, %{703 => [@me]})
+    assert filled_sides(ClubLineups.fill(f, u, 703)) == []
   end
 
-  test "without a token nothing is requested", %{fiche: fiche} do
-    assert {^fiche, %{}} = ClubLineups.apply(fiche, nil)
-  end
-
-  defp flush do
-    receive do
-      _ -> flush()
-    after
-      0 -> :ok
-    end
+  test "no login or unknown member number: nothing", %{fiche: f} do
+    assert ClubLineups.fill(f, %{token: nil, idnumber: nil}, 472) == f
+    assert ClubLineups.fill(f, %{token: "tok", idnumber: nil}, 472) == f
   end
 end

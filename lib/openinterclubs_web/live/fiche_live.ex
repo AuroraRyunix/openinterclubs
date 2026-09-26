@@ -23,7 +23,8 @@ defmodule OpenInterclubsWeb.FicheLive do
        team: nil,
        fiche: nil,
        token: session["kbsb_token"],
-       club_access: %{},
+       user: %{token: session["kbsb_token"], idnumber: session["kbsb_idnumber"]},
+       own_side: nil,
        kbsb_user: session["kbsb_user"]
      )}
   end
@@ -40,8 +41,9 @@ defmodule OpenInterclubsWeb.FicheLive do
       if team && round do
         case Fiche.fetch(team, round) do
           {:ok, fiche} ->
-            {fiche, socket} = with_club_lineups(fiche, socket)
-            assign(socket, fiche: ClubLineups.fill_managed(fiche, socket.assigns.club_access))
+            {fiche, side} = ClubLineups.merge(fiche, socket.assigns.user, club["idclub"])
+            fiche = if side, do: Fiche.fill(fiche, side), else: fiche
+            assign(socket, fiche: fiche, own_side: side)
 
           {:error, :no_encounter} ->
             put_flash(socket, :error, "Geen ontmoeting in ronde #{round}.")
@@ -80,36 +82,29 @@ defmodule OpenInterclubsWeb.FicheLive do
     {:noreply, assign(socket, fiche: fiche)}
   end
 
-  def handle_event("fill", %{"side" => side}, socket) when side in ["home", "visit", "all"] do
-    side = String.to_existing_atom(side)
-    %{team: team, round: round, fiche: fiche} = socket.assigns
+  def handle_event("fill", _params, socket) do
+    %{team: team, round: round, fiche: fiche, club: club} = socket.assigns
 
     case Fiche.fetch(team, round, fresh: true) do
       {:ok, fresh} ->
-        {fresh, socket} = with_club_lineups(fresh, socket)
-        fiche = Fiche.refresh_api(fiche, fresh)
-        managed = ClubLineups.managed_sides(fiche, socket.assigns.club_access)
-        # Only ever fill sides of clubs the user manages, never the opponent.
-        sides = if side == :all, do: managed, else: Enum.filter([side], &(&1 in managed))
-        fiche = Enum.reduce(sides, fiche, &Fiche.fill(&2, &1))
+        {fresh, side} = ClubLineups.merge(fresh, socket.assigns.user, club["idclub"])
 
-        socket =
-          cond do
-            sides == [] ->
-              put_flash(
-                socket,
-                :info,
-                "Je kan enkel de opstelling invullen van een club die je beheert."
-              )
+        cond do
+          is_nil(side) ->
+            {:noreply,
+             put_flash(
+               socket,
+               :info,
+               "Je kan enkel de opstelling invullen van een club die je beheert."
+             )}
 
-            not Enum.any?(sides, &Fiche.api_lineup?(fiche, &1)) ->
-              put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")
+          not Fiche.api_lineup?(fresh, side) ->
+            {:noreply, put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")}
 
-            true ->
-              socket
-          end
-
-        {:noreply, assign(socket, fiche: fiche)}
+          true ->
+            fiche = fiche |> Fiche.refresh_api(fresh) |> Fiche.fill(side)
+            {:noreply, assign(socket, fiche: fiche, own_side: side)}
+        end
 
       {:error, _} ->
         {:noreply, put_flash(socket, :error, "KBSB API niet bereikbaar, probeer later opnieuw.")}
@@ -119,14 +114,6 @@ defmodule OpenInterclubsWeb.FicheLive do
   def handle_event("clear", %{"side" => side}, socket) when side in ["home", "visit", "all"] do
     {:noreply,
      assign(socket, fiche: Fiche.clear(socket.assigns.fiche, String.to_existing_atom(side)))}
-  end
-
-  # Only clubs the user manages (KBSB-verified), only their own side.
-  defp with_club_lineups(fiche, socket) do
-    {fiche, access} =
-      OpenInterclubs.ClubLineups.apply(fiche, socket.assigns.token, socket.assigns.club_access)
-
-    {fiche, assign(socket, club_access: access)}
   end
 
   defp select(params, socket) do
@@ -216,11 +203,10 @@ defmodule OpenInterclubsWeb.FicheLive do
 
       <div :if={@club && @round} class="screen-only flex gap-3 mb-4">
         <button
-          :if={@fiche && ClubLineups.managed_sides(@fiche, @club_access) != []}
+          :if={@fiche && @own_side}
           id="fill-all"
           class="btn"
           phx-click="fill"
-          phx-value-side="all"
         >
           Mijn opstelling invullen
         </button>
