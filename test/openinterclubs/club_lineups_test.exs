@@ -30,18 +30,25 @@ defmodule OpenInterclubs.ClubLineupsTest do
     %{fiche: fiche, series: series, user: %{token: "tok", idnumber: @me}}
   end
 
-  # `roles` maps idclub => member numbers with a club role.
-  defp stub(series, roles) do
+  # `roles` maps idclub => member numbers with a club role (nil = the club
+  # publishes no role list); `access` lists clubs the KBSB check says yes to.
+  defp stub(series, roles, access \\ []) do
     test = self()
 
     Req.Test.stub(OpenInterclubs.Kbsb, fn conn ->
       case String.split(conn.request_path, "/", trim: true) do
         ["api", "v1", "clubs", "anon", "club", club] ->
-          members = Map.get(roles, String.to_integer(club), [])
+          roles =
+            case Map.get(roles, String.to_integer(club), []) do
+              nil -> nil
+              members -> [%{"nature" => "InterclubAdmin", "memberlist" => members}]
+            end
 
-          Req.Test.json(conn, %{
-            "clubroles" => [%{"nature" => "InterclubAdmin", "memberlist" => members}]
-          })
+          Req.Test.json(conn, %{"clubroles" => roles})
+
+        ["api", "v1", "clubs", "clb", "club", club, "access", _role] ->
+          send(test, {:access_checked, String.to_integer(club)})
+          Req.Test.json(conn, String.to_integer(club) in access)
 
         ["api", "v1", "interclubs", "clb", "icseries"] ->
           send(test, {:series_requested, URI.decode_query(conn.query_string)["idclub"]})
@@ -89,8 +96,27 @@ defmodule OpenInterclubs.ClubLineupsTest do
     assert filled_sides(ClubLineups.fill(f, u, 703)) == []
   end
 
-  test "no login or unknown member number: nothing", %{fiche: f} do
+  test "no login: nothing", %{fiche: f} do
     assert ClubLineups.fill(f, %{token: nil, idnumber: nil}, 472) == f
-    assert ClubLineups.fill(f, %{token: "tok", idnumber: nil}, 472) == f
+  end
+
+  test "club without a public role list falls back to the KBSB check", %{
+    fiche: f,
+    series: s,
+    user: u
+  } do
+    # Like Eisden (703): clubroles is null, the access check says yes.
+    stub(s, %{472 => nil}, [472])
+    assert filled_sides(ClubLineups.fill(f, u, 472)) == [:home]
+
+    # Only the viewed club is ever checked, never the opponent.
+    assert_received {:access_checked, 472}
+    refute_received {:access_checked, 402}
+  end
+
+  test "no role list and the KBSB says no: nothing", %{fiche: f, series: s, user: u} do
+    stub(s, %{472 => nil}, [])
+    assert filled_sides(ClubLineups.fill(f, u, 472)) == []
+    refute_received {:series_requested, _}
   end
 end

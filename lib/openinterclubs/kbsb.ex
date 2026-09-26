@@ -49,13 +49,33 @@ defmodule OpenInterclubs.Kbsb do
 
   @roles ~w(ClubAdmin InterclubAdmin InterclubCaptain)
 
+  @doc """
+  Whether the token's owner holds a club role for `idclub`, per the KBSB
+  (`clubs/clb/club/{idclub}/access/{role}`). Only ever asked for the one
+  club the user is viewing.
+  """
+  def club_access?(token, idclub) when is_binary(token) and is_integer(idclub) do
+    Enum.any?(@roles, fn role ->
+      url = root_url() <> "/api/v1/clubs/clb/club/#{idclub}/access/#{role}"
+
+      match?(
+        {:ok, %Req.Response{status: 200, body: true}},
+        Req.get(url, [auth: {:bearer, token}, retry: false] ++ req_options())
+      )
+    end)
+  end
+
+  def club_access?(_, _), do: false
+
   @doc "Member numbers holding a club role, from the club's public record."
   def club_role_members(idclub) when is_integer(idclub) do
     Cache.fetch("/clubs/anon/club/#{idclub}", fn ->
       url = root_url() <> "/api/v1/clubs/anon/club/#{idclub}"
 
       case Req.get(url, [retry: :transient, max_retries: 2] ++ req_options()) do
-        {:ok, %Req.Response{status: 200, body: %{"clubroles" => roles}}} when is_list(roles) ->
+        {:ok, %Req.Response{status: 200, body: %{"clubroles" => roles}}} ->
+          roles = roles || []
+
           {:ok,
            for(
              %{"nature" => n, "memberlist" => m} <- roles,
