@@ -2,13 +2,12 @@ defmodule OpenInterclubsWeb.PrintLive do
   @moduledoc "All fiches of one club for one round, one per printed page."
   use OpenInterclubsWeb, :live_view
 
-  alias OpenInterclubs.{Fiche, Kbsb}
+  alias OpenInterclubs.{ClubLineups, Fiche, Kbsb}
   import OpenInterclubsWeb.FicheComponents
 
   @impl true
-  def mount(%{"idclub" => idclub, "round" => round} = params, session, socket) do
+  def mount(%{"idclub" => idclub, "round" => round}, session, socket) do
     round = String.to_integer(round)
-    filled = params["filled"] == "1"
 
     {name, fiches} =
       case Kbsb.club(idclub) do
@@ -20,12 +19,10 @@ defmodule OpenInterclubsWeb.PrintLive do
               {:ok, f} -> [f]
               _ -> []
             end)
-            |> Enum.map_reduce(
-              %{},
-              &OpenInterclubs.ClubLineups.apply(&1, session["kbsb_token"], &2)
-            )
-            |> elem(0)
-            |> Enum.map(&Fiche.fill(&1, if(filled, do: :all, else: :home)))
+            |> Enum.map_reduce(%{}, &ClubLineups.apply(&1, session["kbsb_token"], &2))
+            |> then(fn {fiches, access} ->
+              Enum.map(fiches, &ClubLineups.fill_managed(&1, access))
+            end)
 
           {club["name"], fiches}
 
@@ -39,8 +36,7 @@ defmodule OpenInterclubsWeb.PrintLive do
        idclub: idclub,
        round: round,
        fiches: with_filenames(fiches, name, idclub, round),
-       zip: "#{slug(name)}_#{idclub}_R#{pad(round)}.zip",
-       filled: filled
+       zip: "#{slug(name)}_#{idclub}_R#{pad(round)}.zip"
      )}
   end
 
@@ -86,13 +82,6 @@ defmodule OpenInterclubsWeb.PrintLive do
     <Layouts.app flash={@flash}>
       <div class="screen-only flex items-center gap-3 mb-6">
         <.link class="btn" navigate={~p"/fiche?#{%{club: @idclub, round: @round}}"}>← Terug</.link>
-        <.link
-          id="toggle-filled"
-          class="btn"
-          navigate={~p"/print/#{@idclub}/#{@round}?#{if(@filled, do: %{}, else: %{filled: 1})}"}
-        >
-          {if @filled, do: "Uitploeg leeg laten", else: "Ook uitploeg invullen"}
-        </.link>
         <button class="btn btn-primary" onclick="window.print()">Alles afdrukken</button>
         <button :if={@fiches != []} id="export-pdfs" class="btn" phx-hook="ExportPdfs" data-zip={@zip}>
           Download als aparte PDF's

@@ -79,9 +79,6 @@ defmodule OpenInterclubsWeb.FicheComponents do
   defp side_actions(assigns) do
     ~H"""
     <div class="screen-only side-actions">
-      <button type="button" id={"fill-#{@side}"} phx-click="fill" phx-value-side={@side}>
-        Invullen
-      </button>
       <button type="button" id={"clear-#{@side}"} phx-click="clear" phx-value-side={@side}>
         Wissen
       </button>

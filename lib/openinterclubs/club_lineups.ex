@@ -29,4 +29,14 @@ defmodule OpenInterclubs.ClubLineups do
   end
 
   def apply(fiche, _token, access), do: {fiche, access}
+
+  @doc "Sides (:home/:visit) of the fiche whose club the user manages."
+  def managed_sides(%Fiche{} = fiche, access) do
+    for side <- [:home, :visit], Map.get(access, Map.fetch!(fiche, side).idclub) == true, do: side
+  end
+
+  @doc "Copy the KBSB lineup onto the sheet for the managed sides only."
+  def fill_managed(%Fiche{} = fiche, access) do
+    fiche |> managed_sides(access) |> Enum.reduce(fiche, &Fiche.fill(&2, &1))
+  end
 end

@@ -57,10 +57,16 @@ defmodule OpenInterclubs.ClubLineupsTest do
 
   test "manager of the away club gets the away side only", %{fiche: fiche, series: series} do
     stub(series, [402])
-    {fiche, _} = ClubLineups.apply(fiche, "tok")
+    {fiche, access} = ClubLineups.apply(fiche, "tok")
 
     refute Fiche.api_lineup?(fiche, :home)
     assert Fiche.api_lineup?(fiche, :visit)
+
+    # Filling puts the own lineup in the right-hand (away) column only.
+    assert ClubLineups.managed_sides(fiche, access) == [:visit]
+    filled = ClubLineups.fill_managed(fiche, access)
+    assert Enum.all?(filled.boards, &(&1.home == nil))
+    assert %{visit: %{idnumber: 6530}} = hd(filled.boards)
   end
 
   test "no role for either club means no lineups at all", %{fiche: fiche, series: series} do

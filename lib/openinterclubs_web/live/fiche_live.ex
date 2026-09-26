@@ -2,7 +2,7 @@ defmodule OpenInterclubsWeb.FicheLive do
   @moduledoc "Pick club → team → round and get a pre-filled, printable result sheet."
   use OpenInterclubsWeb, :live_view
 
-  alias OpenInterclubs.{Fiche, Kbsb}
+  alias OpenInterclubs.{ClubLineups, Fiche, Kbsb}
   import OpenInterclubsWeb.FicheComponents
 
   @rounds 1..11
@@ -41,7 +41,7 @@ defmodule OpenInterclubsWeb.FicheLive do
         case Fiche.fetch(team, round) do
           {:ok, fiche} ->
             {fiche, socket} = with_club_lineups(fiche, socket)
-            assign(socket, fiche: Fiche.fill(fiche, :home))
+            assign(socket, fiche: ClubLineups.fill_managed(fiche, socket.assigns.club_access))
 
           {:error, :no_encounter} ->
             put_flash(socket, :error, "Geen ontmoeting in ronde #{round}.")
@@ -87,13 +87,27 @@ defmodule OpenInterclubsWeb.FicheLive do
     case Fiche.fetch(team, round, fresh: true) do
       {:ok, fresh} ->
         {fresh, socket} = with_club_lineups(fresh, socket)
-        fiche = fiche |> Fiche.refresh_api(fresh) |> Fiche.fill(side)
-        sides = if side == :all, do: [:home, :visit], else: [side]
+        fiche = Fiche.refresh_api(fiche, fresh)
+        managed = ClubLineups.managed_sides(fiche, socket.assigns.club_access)
+        # Only ever fill sides of clubs the user manages, never the opponent.
+        sides = if side == :all, do: managed, else: Enum.filter([side], &(&1 in managed))
+        fiche = Enum.reduce(sides, fiche, &Fiche.fill(&2, &1))
 
         socket =
-          if Enum.any?(sides, &Fiche.api_lineup?(fiche, &1)),
-            do: socket,
-            else: put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")
+          cond do
+            sides == [] ->
+              put_flash(
+                socket,
+                :info,
+                "Je kan enkel de opstelling invullen van een club die je beheert."
+              )
+
+            not Enum.any?(sides, &Fiche.api_lineup?(fiche, &1)) ->
+              put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")
+
+            true ->
+              socket
+          end
 
         {:noreply, assign(socket, fiche: fiche)}
 
@@ -201,8 +215,14 @@ defmodule OpenInterclubsWeb.FicheLive do
       </form>
 
       <div :if={@club && @round} class="screen-only flex gap-3 mb-4">
-        <button :if={@fiche} id="fill-all" class="btn" phx-click="fill" phx-value-side="all">
-          Vul in vanuit KBSB
+        <button
+          :if={@fiche && ClubLineups.managed_sides(@fiche, @club_access) != []}
+          id="fill-all"
+          class="btn"
+          phx-click="fill"
+          phx-value-side="all"
+        >
+          Mijn opstelling invullen
         </button>
         <button :if={@fiche} id="clear-all" class="btn" phx-click="clear" phx-value-side="all">
           Alles wissen
@@ -229,8 +249,8 @@ defmodule OpenInterclubsWeb.FicheLive do
       </p>
 
       <p :if={@fiche} class="screen-only text-sm opacity-70 mb-2">
-        De thuisploeg staat ingevuld volgens de opstelling op de KBSB-site; de uitploeg blijft leeg.
-        Met „Invullen” of „Wissen” per ploeg haal je de laatste opstelling op of maak je ze leeg.
+        Je eigen ploeg wordt ingevuld met de opstelling van de KBSB-site, thuis of uit;
+        de tegenstander blijft leeg. „Mijn opstelling invullen” haalt de laatste versie op.
       </p>
 
       <.fiche :if={@fiche} fiche={@fiche} editable />
