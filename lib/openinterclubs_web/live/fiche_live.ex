@@ -41,9 +41,18 @@ defmodule OpenInterclubsWeb.FicheLive do
       if team && round do
         case Fiche.fetch(team, round) do
           {:ok, fiche} ->
-            {fiche, side} = ClubLineups.merge(fiche, socket.assigns.user, club["idclub"])
-            fiche = if side, do: Fiche.fill(fiche, side), else: fiche
-            assign(socket, fiche: fiche, own_side: side)
+            case ClubLineups.merge(fiche, socket.assigns.user, club["idclub"]) do
+              {:ok, fiche, side} ->
+                assign(socket, fiche: Fiche.fill(fiche, side), own_side: side)
+
+              {:error, reason} when reason in [:not_logged_in, :not_playing] ->
+                assign(socket, fiche: fiche, own_side: nil)
+
+              {:error, reason} ->
+                socket
+                |> assign(fiche: fiche, own_side: nil)
+                |> put_flash(:error, ClubLineups.error_message(reason, club["name"]))
+            end
 
           {:error, :no_encounter} ->
             put_flash(socket, :error, "Geen ontmoeting in ronde #{round}.")
@@ -87,23 +96,18 @@ defmodule OpenInterclubsWeb.FicheLive do
 
     case Fiche.fetch(team, round, fresh: true) do
       {:ok, fresh} ->
-        {fresh, side} = ClubLineups.merge(fresh, socket.assigns.user, club["idclub"])
+        case ClubLineups.merge(fresh, socket.assigns.user, club["idclub"]) do
+          {:ok, fresh, side} ->
+            if Fiche.api_lineup?(fresh, side) do
+              fiche = fiche |> Fiche.refresh_api(fresh) |> Fiche.fill(side)
+              {:noreply, assign(socket, fiche: fiche, own_side: side)}
+            else
+              {:noreply,
+               put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")}
+            end
 
-        cond do
-          is_nil(side) ->
-            {:noreply,
-             put_flash(
-               socket,
-               :info,
-               "Je kan enkel de opstelling invullen van een club die je beheert."
-             )}
-
-          not Fiche.api_lineup?(fresh, side) ->
-            {:noreply, put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")}
-
-          true ->
-            fiche = fiche |> Fiche.refresh_api(fresh) |> Fiche.fill(side)
-            {:noreply, assign(socket, fiche: fiche, own_side: side)}
+          {:error, reason} ->
+            {:noreply, put_flash(socket, :error, ClubLineups.error_message(reason, club["name"]))}
         end
 
       {:error, _} ->

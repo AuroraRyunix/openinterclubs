@@ -47,12 +47,12 @@ defmodule OpenInterclubs.Kbsb do
     end
   end
 
-  @roles ~w(ClubAdmin InterclubAdmin InterclubCaptain)
+  @roles ~w(InterclubAdmin InterclubCaptain ClubAdmin)
 
   @doc """
   Whether the token's owner holds a club role for `idclub`, per the KBSB
-  (`clubs/clb/club/{idclub}/access/{role}`). Only ever asked for the one
-  club the user is viewing.
+  (`clubs/clb/club/{idclub}/access/{role}`: true, or 403 when not).
+  Superusers pass for every club. Only asked for the club being viewed.
   """
   def club_access?(token, idclub) when is_binary(token) and is_integer(idclub) do
     Enum.any?(@roles, fn role ->
@@ -66,33 +66,6 @@ defmodule OpenInterclubs.Kbsb do
   end
 
   def club_access?(_, _), do: false
-
-  @doc "Member numbers holding a club role, from the club's public record."
-  def club_role_members(idclub) when is_integer(idclub) do
-    Cache.fetch("/clubs/anon/club/#{idclub}", fn ->
-      url = root_url() <> "/api/v1/clubs/anon/club/#{idclub}"
-
-      case Req.get(url, [retry: :transient, max_retries: 2] ++ req_options()) do
-        {:ok, %Req.Response{status: 200, body: %{"clubroles" => roles}}} ->
-          roles = roles || []
-
-          {:ok,
-           for(
-             %{"nature" => n, "memberlist" => m} <- roles,
-             n in @roles,
-             id <- m,
-             uniq: true,
-             do: id
-           )}
-
-        {:ok, %Req.Response{status: s}} ->
-          {:error, {:http, s}}
-
-        {:error, reason} ->
-          {:error, reason}
-      end
-    end)
-  end
 
   @doc "Series of a club as the club sees them, lineups included (needs a token)."
   def club_series(token, idclub, round) do

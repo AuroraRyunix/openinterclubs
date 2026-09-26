@@ -1,52 +1,48 @@
 defmodule OpenInterclubs.ClubLineups do
   @moduledoc """
-  Fills a fiche with the lineup of ONE club: the club the user is looking at
-  (selected on the fiche, or the club of the print/ZIP page).
+  Fills a fiche with the lineup of ONE club: the club the user selected
+  (on the fiche, or the club of the print/ZIP page).
 
-  That club's lineup is only used when the logged-in member holds a club
-  role there (club admin, interclub admin or captain): listed in the club's
-  public role list, or, when a club doesn't publish one, confirmed by the
-  KBSB access check. Only that club's own side of the encounter is ever
-  touched; the other club is never checked or requested.
+  Access is checked with the KBSB for that club only
+  (`clubs/clb/club/{idclub}/access/{role}`; superusers pass for every club).
+  Only that club's own side of the encounter is ever filled, never the
+  opponent's, whatever the user has access to.
   """
 
   alias OpenInterclubs.{Fiche, Kbsb}
 
-  @doc "Whether the logged-in user holds a role in `idclub`."
-  def manages?(%{token: token, idnumber: idnumber}, idclub)
-      when is_binary(token) and is_integer(idclub) do
-    case Kbsb.club_role_members(idclub) do
-      {:ok, [_ | _] = members} -> idnumber in members
-      # Club publishes no role list: ask the KBSB for this club only.
-      _ -> Kbsb.club_access?(token, idclub)
-    end
-  end
-
-  def manages?(_, _), do: false
-
   @doc """
-  Merge `club`'s own lineup into the fiche. Returns `{fiche, side}` where
-  `side` is the side that may be filled (`nil` when not allowed or `club`
-  doesn't play this encounter). If a club plays itself, only home counts.
+  Merge `club`'s own lineup into the fiche.
+
+  Returns `{:ok, fiche, side}`, or `{:error, reason}` with reason
+  `:not_logged_in`, `:not_playing` (club isn't in this encounter),
+  `:no_access` or an API error.
   """
-  def merge(%Fiche{} = fiche, %{token: token} = user, club)
-      when is_binary(token) and is_integer(club) do
-    with side when side != nil <- Fiche.own_side(fiche, club),
-         true <- manages?(user, club),
+  def merge(%Fiche{} = fiche, %{token: token}, club) when is_binary(token) and is_integer(club) do
+    with {:side, side} when side != nil <- {:side, Fiche.own_side(fiche, club)},
+         {:access, true} <- {:access, Kbsb.club_access?(token, club)},
          {:ok, series} <- Kbsb.club_series(token, club, fiche.round) do
-      {Fiche.merge_club_series(fiche, series, club), side}
+      {:ok, Fiche.merge_club_series(fiche, series, club), side}
     else
-      _ -> {fiche, nil}
+      {:side, nil} -> {:error, :not_playing}
+      {:access, false} -> {:error, :no_access}
+      {:error, reason} -> {:error, reason}
     end
   end
 
-  def merge(fiche, _user, _club), do: {fiche, nil}
+  def merge(_fiche, _user, _club), do: {:error, :not_logged_in}
 
   @doc "Merge and fill in one go (print page, ZIP export)."
   def fill(fiche, user, club) do
     case merge(fiche, user, club) do
-      {fiche, nil} -> fiche
-      {fiche, side} -> Fiche.fill(fiche, side)
+      {:ok, fiche, side} -> {:ok, Fiche.fill(fiche, side)}
+      {:error, reason} -> {:error, reason, fiche}
     end
   end
+
+  def error_message(:no_access, club_name),
+    do: "Je hebt geen toegang tot de opstellingen van #{club_name}."
+
+  def error_message(:unauthorized, _), do: "Je KBSB-sessie is verlopen; meld je opnieuw aan."
+  def error_message(_, _), do: "De opstelling kon niet opgehaald worden bij de KBSB."
 end

@@ -28,6 +28,24 @@ defmodule OpenInterclubsWeb.PrintLive do
           {idclub, []}
       end
 
+    # Show one error if the lineups couldn't be filled (e.g. no access).
+    error =
+      Enum.find_value(fiches, fn
+        {:error, reason, _} when reason not in [:not_logged_in, :not_playing] -> reason
+        _ -> nil
+      end)
+
+    fiches =
+      Enum.map(fiches, fn
+        {:ok, f} -> f
+        {:error, _, f} -> f
+      end)
+
+    socket =
+      if error,
+        do: put_flash(socket, :error, ClubLineups.error_message(error, name)),
+        else: socket
+
     {:ok,
      assign(socket,
        name: name,
