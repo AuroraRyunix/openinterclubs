@@ -39,7 +39,10 @@ defmodule OpenInterclubsWeb.Layouts do
     ~H"""
     <header class="screen-only sticky top-0 z-30 border-b border-base-300 bg-base-100/85 backdrop-blur">
       <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 sm:px-6 md:flex-nowrap md:py-3">
-        <a href="/" class="order-1 font-bold tracking-tight">OpenInterclubs</a>
+        <a href="/" class="order-1 flex items-center gap-2 font-bold tracking-tight">
+          <img src={~p"/images/logo-mark.svg"} alt="" class="size-7" />
+          <span>OpenInterclubs</span>
+        </a>
         <nav class="order-3 -mx-2 flex w-full gap-1 overflow-x-auto text-sm md:order-2 md:mx-0 md:w-auto md:flex-1">
           <.nav_link href={~p"/rounds"}>{t("Uitslagen")}</.nav_link>
           <.nav_link href={~p"/divisions"}>{t("Afdelingen")}</.nav_link>

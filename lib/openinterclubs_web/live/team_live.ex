@@ -114,9 +114,12 @@ defmodule OpenInterclubsWeb.TeamLive do
         />
 
         <.card :if={@tab == "uitslagen"} id="results">
-          <div :for={e <- @encounters} class="grid grid-cols-[3rem_5rem_1fr] items-center gap-2">
+          <div
+            :for={e <- @encounters}
+            class="grid grid-cols-[2.5rem_1fr] items-center gap-2 sm:grid-cols-[3rem_5rem_1fr]"
+          >
             <span class="text-sm font-semibold opacity-50">R{e.round}</span>
-            <span class="text-xs opacity-60">{short_date(e.date)}</span>
+            <span class="hidden text-xs opacity-60 sm:inline">{short_date(e.date)}</span>
             <.encounter_row e={e} highlight={@team.key} />
           </div>
         </.card>

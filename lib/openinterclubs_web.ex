@@ -17,7 +17,8 @@ defmodule OpenInterclubsWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt manifest.webmanifest sw.js)
+  def static_paths,
+    do: ~w(assets fonts images favicon.ico robots.txt manifest.webmanifest sw.js favicon.svg)
 
   def router do
     quote do

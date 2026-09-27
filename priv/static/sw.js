@@ -1,7 +1,7 @@
 // OpenInterclubs service worker: keeps the last visited pages and the static
 // assets so the app still opens without a connection (e.g. in a playing hall).
 // Network first for pages, so data is never staler than necessary.
-const CACHE = "openinterclubs-v1";
+const CACHE = "openinterclubs-v2";
 
 self.addEventListener("install", () => self.skipWaiting());
 

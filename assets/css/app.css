@@ -18,41 +18,39 @@
   themes: false;
 }
 
-/* daisyUI theme plugin.
-  We ship with two themes, a light one inspired on Phoenix colors and a dark one inspired
-  on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
+/* OpenInterclubs themes: calm navy, steel-blue accents, muted result colours. */
 @plugin "daisyui/packages/bundle/daisyui-theme" {
   name: "dark";
   default: false;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(30.33% 0.016 252.42);
-  --color-base-200: oklch(25.26% 0.014 253.1);
-  --color-base-300: oklch(20.15% 0.012 254.09);
-  --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: oklch(58% 0.233 277.117);
-  --color-primary-content: oklch(96% 0.018 272.314);
-  --color-secondary: oklch(58% 0.233 277.117);
-  --color-secondary-content: oklch(96% 0.018 272.314);
-  --color-accent: oklch(60% 0.25 292.717);
-  --color-accent-content: oklch(96% 0.016 293.756);
-  --color-neutral: oklch(37% 0.044 257.287);
-  --color-neutral-content: oklch(98% 0.003 247.858);
-  --color-info: oklch(58% 0.158 241.966);
-  --color-info-content: oklch(97% 0.013 236.62);
-  --color-success: oklch(60% 0.118 184.704);
-  --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(66% 0.179 58.318);
-  --color-warning-content: oklch(98% 0.022 95.277);
-  --color-error: oklch(58% 0.253 17.585);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.21875rem;
-  --size-field: 0.21875rem;
-  --border: 1.5px;
-  --depth: 1;
+  --color-base-100: #111a2b;
+  --color-base-200: #0c1422;
+  --color-base-300: #22304a;
+  --color-base-content: #e4e9f2;
+  --color-primary: #8fb3e0;
+  --color-primary-content: #0c1422;
+  --color-secondary: #5f7ea8;
+  --color-secondary-content: #0c1422;
+  --color-accent: #8fb3e0;
+  --color-accent-content: #0c1422;
+  --color-neutral: #2b3a57;
+  --color-neutral-content: #e4e9f2;
+  --color-info: #7aa7d6;
+  --color-info-content: #0c1422;
+  --color-success: #5cb88a;
+  --color-success-content: #0c1422;
+  --color-warning: #d9a74a;
+  --color-warning-content: #0c1422;
+  --color-error: #e07a73;
+  --color-error-content: #0c1422;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
   --noise: 0;
 }
 
@@ -61,34 +59,47 @@
   default: true;
   prefersdark: false;
   color-scheme: "light";
-  --color-base-100: oklch(98% 0 0);
-  --color-base-200: oklch(96% 0.001 286.375);
-  --color-base-300: oklch(92% 0.004 286.32);
-  --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: oklch(70% 0.213 47.604);
-  --color-primary-content: oklch(98% 0.016 73.684);
-  --color-secondary: oklch(55% 0.027 264.364);
-  --color-secondary-content: oklch(98% 0.002 247.839);
-  --color-accent: oklch(0% 0 0);
-  --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(44% 0.017 285.786);
-  --color-neutral-content: oklch(98% 0 0);
-  --color-info: oklch(62% 0.214 259.815);
-  --color-info-content: oklch(97% 0.014 254.604);
-  --color-success: oklch(70% 0.14 182.503);
-  --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(66% 0.179 58.318);
-  --color-warning-content: oklch(98% 0.022 95.277);
-  --color-error: oklch(58% 0.253 17.585);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.21875rem;
-  --size-field: 0.21875rem;
-  --border: 1.5px;
-  --depth: 1;
+  --color-base-100: #ffffff;
+  --color-base-200: #f3f5f9;
+  --color-base-300: #e2e7ef;
+  --color-base-content: #1a2436;
+  --color-primary: #1f3a5f;
+  --color-primary-content: #ffffff;
+  --color-secondary: #3e6a9e;
+  --color-secondary-content: #ffffff;
+  --color-accent: #3e6a9e;
+  --color-accent-content: #ffffff;
+  --color-neutral: #33425c;
+  --color-neutral-content: #ffffff;
+  --color-info: #3e6a9e;
+  --color-info-content: #ffffff;
+  --color-success: #2e7d57;
+  --color-success-content: #ffffff;
+  --color-warning: #a8741a;
+  --color-warning-content: #ffffff;
+  --color-error: #b8483f;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
   --noise: 0;
+}
+
+/* Typography: system UI stack, tabular figures for scores and ratings. */
+@layer base {
+  html {
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  body { background: var(--color-base-200); color: var(--color-base-content); }
+  h1, h2, h3 { letter-spacing: -0.015em; }
+  a { text-underline-offset: 3px; }
 }
 
 /* Add variants based on LiveView classes */

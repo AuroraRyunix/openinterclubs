@@ -89,9 +89,10 @@ defmodule OpenInterclubsWeb.HomeLive do
             <.link
               :for={c <- @results.clubs}
               navigate={club_path(c.id)}
-              class="flex justify-between rounded-lg px-2 py-1.5 transition hover:bg-base-200"
+              class="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition hover:bg-base-200"
             >
-              <span>{c.name}</span><span class="opacity-50">{c.id}</span>
+              <span class="flex items-center gap-2"><.club_badge id={c.id} name={c.name} />{c.name}</span>
+              <span class="opacity-50">{c.id}</span>
             </.link>
           </div>
           <div :if={@results.players != []} class="rounded-2xl bg-base-100 p-3 shadow-sm">
@@ -177,7 +178,10 @@ defmodule OpenInterclubsWeb.HomeLive do
                     navigate={club_path(c.id)}
                     class="flex justify-between rounded px-1 hover:text-primary"
                   >
-                    <span>{c.name}</span><span class="opacity-40">{c.id}</span>
+                    <span class="flex items-center gap-2">
+                      <.club_badge id={c.id} name={c.name} />{c.name}
+                    </span>
+                    <span class="opacity-40">{c.id}</span>
                   </.link>
                 </li>
               </ul>
