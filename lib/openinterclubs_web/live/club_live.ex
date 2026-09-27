@@ -52,6 +52,9 @@ defmodule OpenInterclubsWeb.ClubLive do
         <.page_header kicker={"Club #{@club.id} · #{@club.province}"} title={@club.name}>
           <:subtitle>{length(@teams)} ploegen · {length(@players)} spelers</:subtitle>
           <:actions>
+            <.btn href={~p"/beheer/#{@club.id}/#{Season.current_round()}"}>
+              <.icon name="hero-clipboard-document-list" class="size-4" /> Clubbeheer
+            </.btn>
             <.btn href={~p"/print/#{@club.id}/#{Season.current_round()}"}>
               <.icon name="hero-printer" class="size-4" /> Fiches ronde {Season.current_round()}
             </.btn>

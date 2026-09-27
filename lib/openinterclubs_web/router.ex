@@ -33,6 +33,7 @@ defmodule OpenInterclubsWeb.Router do
 
     live "/fiche", FicheLive
     live "/print/:idclub/:round", PrintLive
+    live "/beheer/:idclub/:round", ClubAdminLive
   end
 
   # Other scopes may use custom stacks.

@@ -83,6 +83,39 @@ defmodule OpenInterclubs.Kbsb do
     end
   end
 
+  @doc "Let the KBSB validate a club's planning. Returns `{:ok, errors}`."
+  def validate_planning(token, planning) do
+    case put("/api/v1/interclubs/clb/icplanningvalidate", token, planning) do
+      {:ok, errors} when is_list(errors) -> {:ok, errors}
+      {:ok, _} -> {:ok, []}
+      error -> error
+    end
+  end
+
+  @doc "Save a club's planning (lineups) for a round."
+  def save_planning(token, planning),
+    do: put("/api/v1/interclubs/clb/icplanning", token, planning) |> ok()
+
+  @doc "Save results of one or more encounters."
+  def save_results(token, results),
+    do: put("/api/v1/interclubs/clb/icresults", token, %{results: results}) |> ok()
+
+  defp ok({:ok, _}), do: :ok
+  defp ok(error), do: error
+
+  defp put(path, token, body) do
+    case Req.put(
+           root_url() <> path,
+           [json: body, auth: {:bearer, token}, retry: false] ++ req_options()
+         ) do
+      {:ok, %Req.Response{status: s, body: body}} when s in 200..299 -> {:ok, body}
+      {:ok, %Req.Response{status: s}} when s in [401, 403] -> {:error, :unauthorized}
+      {:ok, %Req.Response{body: %{"detail" => detail}}} -> {:error, detail}
+      {:ok, %Req.Response{status: s}} -> {:error, {:http, s}}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   defp post(path, body) do
     case Req.post(root_url() <> path, [json: body, retry: false] ++ req_options()) do
       {:ok, %Req.Response{status: 200, body: body}} -> {:ok, body}
