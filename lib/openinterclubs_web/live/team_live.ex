@@ -68,6 +68,7 @@ defmodule OpenInterclubsWeb.TeamLive do
             |> Enum.filter(&(&1.titular == team.name)),
           else: []
         ),
+      stats: if(team, do: OpenInterclubs.TeamStats.for_team(key), else: nil),
       page_title: team && team.name
     )
   end
@@ -107,7 +108,8 @@ defmodule OpenInterclubsWeb.TeamLive do
           tabs={[
             {"uitslagen", "Uitslagen", team_path(@team.key)},
             {"spelers", "Spelers", team_path(@team.key) <> "?tab=spelers"},
-            {"rondes", "Per ronde", team_path(@team.key) <> "?tab=rondes"}
+            {"rondes", "Per ronde", team_path(@team.key) <> "?tab=rondes"},
+            {"stats", "Statistieken", team_path(@team.key) <> "?tab=stats"}
           ]}
         />
 
@@ -176,6 +178,68 @@ defmodule OpenInterclubsWeb.TeamLive do
           <.card :if={@titulars != []} class="mt-4">
             <:title>Titularissen</:title>
             <.player_table players={@titulars} />
+          </.card>
+        </div>
+
+        <div :if={@tab == "stats"} id="stats" class="grid gap-5 lg:grid-cols-2">
+          <.card>
+            <:title>Per bord</:title>
+            <p :if={@stats.boards == []} class="opacity-60">Nog geen partijen gespeeld.</p>
+            <table :if={@stats.boards != []} class="w-full text-sm">
+              <thead class="text-left text-xs uppercase opacity-60">
+                <tr>
+                  <th class="py-2">Bord</th>
+                  <th class="text-right">Wij</th>
+                  <th class="text-right">Tegenstanders</th>
+                  <th class="text-right">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr :for={b <- @stats.boards} class="border-t border-base-200">
+                  <td class="py-1.5 font-semibold opacity-60">{b.board}</td>
+                  <td class="text-right tabular-nums">{b.own_rating || "–"}</td>
+                  <td class={[
+                    "text-right tabular-nums",
+                    b.own_rating && b.opp_rating && b.opp_rating > b.own_rating && "text-error"
+                  ]}>
+                    {b.opp_rating || "–"}
+                  </td>
+                  <td class="text-right tabular-nums">{points(b.score)}/{b.games}</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="mt-2 text-xs opacity-60">
+              Gemiddelde interclubrating per bord, zonder forfaits.
+            </p>
+          </.card>
+          <.card>
+            <:title>Per speler</:title>
+            <p :if={@stats.players == []} class="opacity-60">Nog geen partijen gespeeld.</p>
+            <table :if={@stats.players != []} class="w-full text-sm">
+              <thead class="text-left text-xs uppercase opacity-60">
+                <tr>
+                  <th class="py-2">Speler</th>
+                  <th class="text-right">Partijen</th>
+                  <th class="text-center">Wit / zwart</th>
+                  <th class="text-right">Gem. bord</th>
+                  <th class="text-right">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr :for={p <- @stats.players} class="border-t border-base-200">
+                  <td class="py-1.5"><.player_link id={p.id} /></td>
+                  <td class="text-right tabular-nums">{p.games}</td>
+                  <td class={[
+                    "text-center tabular-nums",
+                    abs(p.white - p.black) > 1 && "text-warning"
+                  ]}>
+                    {p.white} / {p.black}
+                  </td>
+                  <td class="text-right tabular-nums">{p.avg_board}</td>
+                  <td class="text-right tabular-nums">{points(p.score)}</td>
+                </tr>
+              </tbody>
+            </table>
           </.card>
         </div>
 
