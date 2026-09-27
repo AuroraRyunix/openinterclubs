@@ -1,0 +1,15 @@
+{
+  "name": "OpenInterclubs",
+  "short_name": "Interclubs",
+  "description": "Uitslagen, standen, spelers en uitslagenfiches van de KBSB-interclubs",
+  "lang": "nl-BE",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FD4F00",
+  "icons": [
+    { "src": "/images/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

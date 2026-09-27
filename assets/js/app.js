@@ -82,3 +82,8 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+
+// Installable app: register the service worker (offline copies of visited pages).
+if ("serviceWorker" in navigator && window.location.protocol === "https:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"))
+}
