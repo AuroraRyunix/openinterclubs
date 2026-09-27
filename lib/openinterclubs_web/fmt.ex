@@ -21,11 +21,17 @@ defmodule OpenInterclubsWeb.Fmt do
   def date(nil), do: ""
   def date(%Date{} = d), do: Calendar.strftime(d, "%d/%m/%Y")
 
-  @days ~w(ma di wo do vr za zo)
+  @days %{
+    "nl" => ~w(ma di wo do vr za zo),
+    "fr" => ~w(lu ma me je ve sa di),
+    "en" => ~w(Mon Tue Wed Thu Fri Sat Sun)
+  }
   def short_date(nil), do: ""
 
-  def short_date(%Date{} = d),
-    do: "#{Enum.at(@days, Date.day_of_week(d) - 1)} #{Calendar.strftime(d, "%d/%m")}"
+  def short_date(%Date{} = d) do
+    days = Map.get(@days, OpenInterclubsWeb.I18n.locale(), @days["nl"])
+    "#{Enum.at(days, Date.day_of_week(d) - 1)} #{Calendar.strftime(d, "%d/%m")}"
+  end
 
   def team_name({_, _} = key) do
     case Season.team(key) do
@@ -81,8 +87,8 @@ defmodule OpenInterclubsWeb.Fmt do
       URI.encode_query(%{club: club, team: team && team.name, round: r})
   end
 
-  def division_name(1), do: "Eerste afdeling"
-  def division_name(n), do: "Afdeling #{n}"
+  def division_name(1), do: OpenInterclubsWeb.I18n.t("Eerste afdeling")
+  def division_name(n), do: OpenInterclubsWeb.I18n.t("Afdeling %{n}", n: n)
 
   def rating(0), do: "–"
   def rating(nil), do: "–"

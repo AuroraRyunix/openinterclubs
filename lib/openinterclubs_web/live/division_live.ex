@@ -45,18 +45,20 @@ defmodule OpenInterclubsWeb.DivisionLive do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
       <.loading :if={!@loaded?} />
-      <p :if={@loaded? and is_nil(@s)}>Deze afdeling bestaat niet.</p>
+      <p :if={@loaded? and is_nil(@s)}>{t("Deze afdeling bestaat niet.")}</p>
       <div :if={@s}>
-        <.page_header kicker={division_name(@s.division)} title={"Reeks #{@s.label}"}>
-          <:subtitle>{length(@s.teams)} ploegen · {length(@s.rounds)} rondes</:subtitle>
+        <.page_header kicker={division_name(@s.division)} title={t("Reeks %{s}", s: @s.label)}>
+          <:subtitle>
+            {t("%{n} ploegen · %{r} rondes", n: length(@s.teams), r: length(@s.rounds))}
+          </:subtitle>
         </.page_header>
 
         <.tabs
           active={@tab}
           tabs={[
-            {"stand", "Rangschikking", ~p"/divisions/#{@s.label}"},
-            {"kruistabel", "Onderlinge resultaten", ~p"/divisions/#{@s.label}?tab=kruistabel"},
-            {"rondes", "Per ronde", ~p"/divisions/#{@s.label}?tab=rondes&round=#{@round}"}
+            {"stand", t("Rangschikking"), ~p"/divisions/#{@s.label}"},
+            {"kruistabel", t("Onderlinge resultaten"), ~p"/divisions/#{@s.label}?tab=kruistabel"},
+            {"rondes", t("Per ronde"), ~p"/divisions/#{@s.label}?tab=rondes&round=#{@round}"}
           ]}
         />
 
@@ -66,13 +68,13 @@ defmodule OpenInterclubsWeb.DivisionLive do
               <thead class="text-left text-xs uppercase opacity-60">
                 <tr>
                   <th class="py-2 pr-2">#</th>
-                  <th class="py-2">Ploeg</th>
-                  <th class="px-2 text-center" title="Gespeeld">Gesp.</th>
-                  <th class="px-2 text-center" title="Gewonnen">W</th>
-                  <th class="px-2 text-center" title="Gelijk">G</th>
-                  <th class="px-2 text-center" title="Verloren">V</th>
-                  <th class="px-2 text-right" title="Matchpunten">MP</th>
-                  <th class="px-2 text-right" title="Bordpunten">BP</th>
+                  <th class="py-2">{t("Ploeg")}</th>
+                  <th class="px-2 text-center" title={t("Gespeeld")}>Gesp.</th>
+                  <th class="px-2 text-center" title={t("Gewonnen")}>W</th>
+                  <th class="px-2 text-center" title={t("Gelijk")}>G</th>
+                  <th class="px-2 text-center" title={t("Verloren")}>V</th>
+                  <th class="px-2 text-right" title={t("Matchpunten")}>MP</th>
+                  <th class="px-2 text-right" title={t("Bordpunten")}>BP</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +126,7 @@ defmodule OpenInterclubsWeb.DivisionLive do
             </table>
           </div>
           <p class="mt-3 text-xs opacity-60">
-            Rij = thuisploeg, kolom = uitploeg. Klik op een uitslag voor de borden.
+            {t("Rij = thuisploeg, kolom = uitploeg. Klik op een uitslag voor de borden.")}
           </p>
         </.card>
 
@@ -145,7 +147,7 @@ defmodule OpenInterclubsWeb.DivisionLive do
             </.link>
           </nav>
           <.card :for={r <- @s.rounds} :if={r.round == @round}>
-            <:title>Ronde {r.round} · {date(r.date)}</:title>
+            <:title>{t("Ronde %{n}", n: r.round)} · {date(r.date)}</:title>
             <.encounter_row :for={e <- r.encounters} e={e} />
           </.card>
         </div>

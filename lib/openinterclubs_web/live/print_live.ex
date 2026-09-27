@@ -97,14 +97,14 @@ defmodule OpenInterclubsWeb.PrintLive do
     ~H"""
     <Layouts.app flash={@flash}>
       <div class="screen-only flex items-center gap-3 mb-6">
-        <.link class="btn" navigate={~p"/fiche?#{%{club: @idclub, round: @round}}"}>← Terug</.link>
-        <button class="btn btn-primary" onclick="window.print()">Alles afdrukken</button>
+        <.link class="btn" navigate={~p"/fiche?#{%{club: @idclub, round: @round}}"}>{t("← Terug")}</.link>
+        <button class="btn btn-primary" onclick="window.print()">{t("Alles afdrukken")}</button>
         <button :if={@fiches != []} id="export-pdfs" class="btn" phx-hook="ExportPdfs" data-zip={@zip}>
-          Download als aparte PDF's
+          {t("Download als aparte PDF's")}
         </button>
         <span>{@name} — ronde {@round}: {length(@fiches)} fiche(s)</span>
       </div>
-      <p :if={@fiches == []}>Geen ontmoetingen gevonden.</p>
+      <p :if={@fiches == []}>{t("Geen ontmoetingen gevonden.")}</p>
       <div :for={{f, file} <- @fiches} class="page" data-filename={file}>
         <.fiche fiche={f} />
       </div>

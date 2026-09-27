@@ -23,7 +23,7 @@ defmodule OpenInterclubsWeb.DivisionsLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
-      <.page_header kicker="Seizoen" title="Afdelingen" />
+      <.page_header kicker={t("Seizoen")} title={t("Afdelingen")} />
       <.loading :if={!@loaded?} />
       <section :for={{div, series} <- @groups} class="mb-10">
         <h2 class="mb-3 text-lg font-semibold">{division_name(div)}</h2>

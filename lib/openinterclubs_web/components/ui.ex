@@ -7,6 +7,7 @@ defmodule OpenInterclubsWeb.UI do
     router: OpenInterclubsWeb.Router
 
   import OpenInterclubsWeb.Fmt
+  import OpenInterclubsWeb.I18n, only: [t: 1]
 
   attr :title, :string, required: true
   attr :kicker, :string, default: nil
@@ -204,7 +205,7 @@ defmodule OpenInterclubsWeb.UI do
     ~H"""
     <div class="flex flex-col items-center justify-center gap-3 py-24 opacity-70">
       <span class="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      <p>Seizoensgegevens worden geladen van de KBSB…</p>
+      <p>{t("Seizoensgegevens worden geladen van de KBSB…")}</p>
     </div>
     """
   end
@@ -241,11 +242,11 @@ defmodule OpenInterclubsWeb.UI do
         <thead class="text-left text-xs uppercase opacity-60">
           <tr>
             <th :if={@offset > 0 or @show_club} class="py-2 pr-2">#</th>
-            <th class="py-2">Speler</th>
-            <th :if={@show_club} class="py-2">Club</th>
-            <th class="px-2 text-right">Rating</th>
+            <th class="py-2">{t("Speler")}</th>
+            <th :if={@show_club} class="py-2">{t("Club")}</th>
+            <th class="px-2 text-right">{t("Rating")}</th>
             <th class="px-2 text-right">FIDE</th>
-            <th class="px-2 text-right">Score</th>
+            <th class="px-2 text-right">{t("Score")}</th>
             <th class="px-2 text-right">TPR</th>
             <th class="px-2 text-right">+/−</th>
             <th class="px-2 text-right" title="Score min verwachte score">W−We</th>

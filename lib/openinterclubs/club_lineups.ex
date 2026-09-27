@@ -41,7 +41,10 @@ defmodule OpenInterclubs.ClubLineups do
   end
 
   def error_message(:no_access, club_name),
-    do: "Je hebt geen toegang tot de opstellingen van #{club_name}."
+    do:
+      OpenInterclubsWeb.I18n.t("Je hebt geen toegang tot de opstellingen van %{club}.",
+        club: club_name
+      )
 
   def error_message(:unauthorized, _), do: "Je KBSB-sessie is verlopen; meld je opnieuw aan."
   def error_message(_, _), do: "De opstelling kon niet opgehaald worden bij de KBSB."

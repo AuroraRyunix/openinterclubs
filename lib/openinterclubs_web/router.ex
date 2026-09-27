@@ -8,6 +8,7 @@ defmodule OpenInterclubsWeb.Router do
     plug :put_root_layout, html: {OpenInterclubsWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug OpenInterclubsWeb.Locale
   end
 
   pipeline :api do
@@ -31,6 +32,7 @@ defmodule OpenInterclubsWeb.Router do
     live "/top", TopLive
     get "/clubs/:id/teams/:number/calendar.ics", CalendarController, :team
     get "/seizoen", SeasonController, :select
+    get "/taal", LocaleController, :select
     get "/login", SessionController, :new
     post "/login", SessionController, :create
     post "/logout", SessionController, :delete

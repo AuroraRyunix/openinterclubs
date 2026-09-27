@@ -78,9 +78,9 @@ defmodule OpenInterclubsWeb.TeamLive do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
       <.loading :if={!@loaded?} />
-      <p :if={@loaded? and is_nil(@team)}>Deze ploeg bestaat niet.</p>
+      <p :if={@loaded? and is_nil(@team)}>{t("Deze ploeg bestaat niet.")}</p>
       <div :if={@team}>
-        <.page_header kicker={"Reeks #{series_slug(@team.series)}"} title={@team.name}>
+        <.page_header kicker={t("Reeks %{s}", s: series_slug(@team.series))} title={@team.name}>
           <:subtitle>
             <.link navigate={club_path(@team.club_id)} class="hover:text-primary">{@team.club_name}</.link>
           </:subtitle>
@@ -92,24 +92,24 @@ defmodule OpenInterclubsWeb.TeamLive do
             >
               <.icon name="hero-calendar-days" class="size-4" /> Agenda (.ics)
             </a>
-            <.btn href={series_path(@team.series)}>Rangschikking</.btn>
+            <.btn href={series_path(@team.series)}>{t("Rangschikking")}</.btn>
           </:actions>
         </.page_header>
 
         <div :if={@row} class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <.stat label="Plaats" value={"#{@row.rank}/#{length(@series.teams)}"} />
-          <.stat label="Matchpunten" value={@row.mp} />
-          <.stat label="Bordpunten" value={points(@row.bp)} />
-          <.stat label="W / G / V" value={"#{@row.won}/#{@row.drawn}/#{@row.lost}"} />
+          <.stat label={t("Plaats")} value={"#{@row.rank}/#{length(@series.teams)}"} />
+          <.stat label={t("Matchpunten")} value={@row.mp} />
+          <.stat label={t("Bordpunten")} value={points(@row.bp)} />
+          <.stat label={t("W / G / V")} value={"#{@row.won}/#{@row.drawn}/#{@row.lost}"} />
         </div>
 
         <.tabs
           active={@tab}
           tabs={[
-            {"uitslagen", "Uitslagen", team_path(@team.key)},
-            {"spelers", "Spelers", team_path(@team.key) <> "?tab=spelers"},
-            {"rondes", "Per ronde", team_path(@team.key) <> "?tab=rondes"},
-            {"stats", "Statistieken", team_path(@team.key) <> "?tab=stats"}
+            {"uitslagen", t("Uitslagen"), team_path(@team.key)},
+            {"spelers", t("Spelers"), team_path(@team.key) <> "?tab=spelers"},
+            {"rondes", t("Per ronde"), team_path(@team.key) <> "?tab=rondes"},
+            {"stats", t("Statistieken"), team_path(@team.key) <> "?tab=stats"}
           ]}
         />
 
@@ -123,7 +123,7 @@ defmodule OpenInterclubsWeb.TeamLive do
 
         <div :if={@tab == "spelers"} id="lineup">
           <nav class="mb-4 flex flex-wrap items-center gap-2 text-sm">
-            <span class="opacity-60">Bord:</span>
+            <span class="opacity-60">{t("Bord:")}</span>
             <.link
               patch={team_path(@team.key) <> "?tab=spelers"}
               class={[
@@ -131,7 +131,7 @@ defmodule OpenInterclubsWeb.TeamLive do
                 if(is_nil(@board), do: "bg-primary text-primary-content", else: "bg-base-200")
               ]}
             >
-              Alle
+              {t("Alle")}
             </.link>
             <.link
               :for={b <- 1..@boards}
@@ -148,10 +148,10 @@ defmodule OpenInterclubsWeb.TeamLive do
             <table class="w-full text-sm">
               <thead class="text-left text-xs uppercase opacity-60">
                 <tr>
-                  <th class="py-2">Speler</th>
-                  <th class="px-2 text-right">Rating</th>
-                  <th class="px-2">Borden</th>
-                  <th class="px-2 text-right">Score</th>
+                  <th class="py-2">{t("Speler")}</th>
+                  <th class="px-2 text-right">{t("Rating")}</th>
+                  <th class="px-2">{t("Borden")}</th>
+                  <th class="px-2 text-right">{t("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,25 +173,25 @@ defmodule OpenInterclubsWeb.TeamLive do
                 </tr>
               </tbody>
             </table>
-            <p :if={@lineup == []} class="opacity-60">Nog geen partijen gespeeld.</p>
+            <p :if={@lineup == []} class="opacity-60">{t("Nog geen partijen gespeeld.")}</p>
           </.card>
           <.card :if={@titulars != []} class="mt-4">
-            <:title>Titularissen</:title>
+            <:title>{t("Titularissen")}</:title>
             <.player_table players={@titulars} />
           </.card>
         </div>
 
         <div :if={@tab == "stats"} id="stats" class="grid gap-5 lg:grid-cols-2">
           <.card>
-            <:title>Per bord</:title>
-            <p :if={@stats.boards == []} class="opacity-60">Nog geen partijen gespeeld.</p>
+            <:title>{t("Per bord")}</:title>
+            <p :if={@stats.boards == []} class="opacity-60">{t("Nog geen partijen gespeeld.")}</p>
             <table :if={@stats.boards != []} class="w-full text-sm">
               <thead class="text-left text-xs uppercase opacity-60">
                 <tr>
-                  <th class="py-2">Bord</th>
-                  <th class="text-right">Wij</th>
-                  <th class="text-right">Tegenstanders</th>
-                  <th class="text-right">Score</th>
+                  <th class="py-2">{t("Bord")}</th>
+                  <th class="text-right">{t("Wij")}</th>
+                  <th class="text-right">{t("Tegenstanders")}</th>
+                  <th class="text-right">{t("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -209,20 +209,20 @@ defmodule OpenInterclubsWeb.TeamLive do
               </tbody>
             </table>
             <p class="mt-2 text-xs opacity-60">
-              Gemiddelde interclubrating per bord, zonder forfaits.
+              {t("Gemiddelde interclubrating per bord, zonder forfaits.")}
             </p>
           </.card>
           <.card>
-            <:title>Per speler</:title>
-            <p :if={@stats.players == []} class="opacity-60">Nog geen partijen gespeeld.</p>
+            <:title>{t("Per speler")}</:title>
+            <p :if={@stats.players == []} class="opacity-60">{t("Nog geen partijen gespeeld.")}</p>
             <table :if={@stats.players != []} class="w-full text-sm">
               <thead class="text-left text-xs uppercase opacity-60">
                 <tr>
-                  <th class="py-2">Speler</th>
-                  <th class="text-right">Partijen</th>
-                  <th class="text-center">Wit / zwart</th>
-                  <th class="text-right">Gem. bord</th>
-                  <th class="text-right">Score</th>
+                  <th class="py-2">{t("Speler")}</th>
+                  <th class="text-right">{t("Partijen")}</th>
+                  <th class="text-center">{t("Wit / zwart")}</th>
+                  <th class="text-right">{t("Gem. bord")}</th>
+                  <th class="text-right">{t("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -247,10 +247,10 @@ defmodule OpenInterclubsWeb.TeamLive do
           <.card :for={e <- @encounters}>
             <:title>
               <.link navigate={match_path(e)} class="hover:text-primary">
-                Ronde {e.round} · {team_name(e.home)} – {team_name(e.visit)}
+                {t("Ronde %{n}", n: e.round)} · {team_name(e.home)} – {team_name(e.visit)}
               </.link>
             </:title>
-            <p :if={e.games == []} class="text-sm opacity-60">Nog geen opstelling.</p>
+            <p :if={e.games == []} class="text-sm opacity-60">{t("Nog geen opstelling.")}</p>
             <table :if={e.games != []} class="w-full text-sm">
               <tr :for={g <- e.games} class="border-t border-base-200 first:border-0">
                 <td class="w-6 py-1 opacity-50">{g.board}</td>

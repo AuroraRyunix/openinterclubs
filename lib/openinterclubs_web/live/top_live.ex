@@ -58,8 +58,8 @@ defmodule OpenInterclubsWeb.TopLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
-      <.page_header kicker="Seizoen" title="Rangschikking spelers">
-        <:subtitle>Prestatie (TPR, zonder forfaits) · {@total} spelers</:subtitle>
+      <.page_header kicker={t("Seizoen")} title={t("Rangschikking spelers")}>
+        <:subtitle>{t("Prestatie (TPR, zonder forfaits) · %{n} spelers", n: @total)}</:subtitle>
       </.page_header>
 
       <.form
@@ -69,22 +69,22 @@ defmodule OpenInterclubsWeb.TopLive do
         class="mb-6 flex flex-wrap items-end gap-4"
       >
         <div class="w-40">
-          <.input field={@form[:min]} type="number" min="0" label="Min. partijen" />
+          <.input field={@form[:min]} type="number" min="0" label={t("Min. partijen")} />
         </div>
         <div class="w-72">
-          <.input field={@form[:q]} type="search" label="Naam" phx-debounce="200" />
+          <.input field={@form[:q]} type="search" label={t("Naam")} phx-debounce="200" />
         </div>
         <div class="flex gap-1 pb-2 text-sm">
-          <span class="mr-1 self-center opacity-60">Sorteer:</span>
+          <span class="mr-1 self-center opacity-60">{t("Sorteer:")}</span>
           <.link
             :for={
               {s, l} <- [
                 {"tpr", "TPR"},
                 {"diff", "+/−"},
                 {"w_we", "W−We"},
-                {"score", "Score"},
-                {"rating", "Rating"},
-                {"played", "Partijen"}
+                {"score", t("Score")},
+                {"rating", t("Rating")},
+                {"played", t("Partijen")}
               ]
             }
             patch={~p"/top?#{link_params(@filters, %{"sort" => s, "page" => 1})}"}
@@ -101,7 +101,7 @@ defmodule OpenInterclubsWeb.TopLive do
       <.loading :if={!@loaded?} />
       <.card :if={@loaded?} id="ranking">
         <p :if={@rows == []} class="opacity-60">
-          Nog geen spelers met {@filters["min"]} of meer partijen.
+          {t("Nog geen spelers met %{n} of meer partijen.", n: @filters["min"])}
         </p>
         <.player_table :if={@rows != []} players={@rows} show_club offset={@offset} />
         <nav :if={@pages > 1} class="mt-4 flex items-center justify-between text-sm">

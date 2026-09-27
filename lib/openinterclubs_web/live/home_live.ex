@@ -77,7 +77,7 @@ defmodule OpenInterclubsWeb.HomeLive do
               value={@q}
               phx-debounce="150"
               autocomplete="off"
-              placeholder="Zoek een club of speler (naam of nummer)…"
+              placeholder={t("Zoek een club of speler (naam of nummer)…")}
               class="w-full rounded-xl border border-base-300 bg-base-100 py-2.5 pl-12 pr-4 text-base shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15"
             />
           </div>
@@ -85,7 +85,7 @@ defmodule OpenInterclubsWeb.HomeLive do
 
         <div :if={@results} id="search-results" class="mt-4 grid max-w-3xl gap-4 sm:grid-cols-2">
           <div :if={@results.clubs != []} class="rounded-2xl bg-base-100 p-3 shadow-sm">
-            <p class="px-2 pb-1 text-xs font-semibold uppercase opacity-50">Clubs</p>
+            <p class="px-2 pb-1 text-xs font-semibold uppercase opacity-50">{t("Clubs")}</p>
             <.link
               :for={c <- @results.clubs}
               navigate={club_path(c.id)}
@@ -95,7 +95,7 @@ defmodule OpenInterclubsWeb.HomeLive do
             </.link>
           </div>
           <div :if={@results.players != []} class="rounded-2xl bg-base-100 p-3 shadow-sm">
-            <p class="px-2 pb-1 text-xs font-semibold uppercase opacity-50">Spelers</p>
+            <p class="px-2 pb-1 text-xs font-semibold uppercase opacity-50">{t("Spelers")}</p>
             <.link
               :for={p <- @results.players}
               navigate={player_path(p.id)}
@@ -106,13 +106,13 @@ defmodule OpenInterclubsWeb.HomeLive do
             </.link>
           </div>
           <p :if={@results.clubs == [] and @results.players == []} class="opacity-60">
-            Niets gevonden.
+            {t("Niets gevonden.")}
           </p>
         </div>
       </section>
 
       <div class="mb-6 flex flex-wrap items-center gap-2 text-sm">
-        <span class="opacity-60">Seizoen:</span>
+        <span class="opacity-60">{t("Seizoen:")}</span>
         <a
           href={~p"/seizoen?season=current"}
           class={[
@@ -120,7 +120,7 @@ defmodule OpenInterclubsWeb.HomeLive do
             if(is_nil(@season), do: "bg-primary text-primary-content", else: "bg-base-200")
           ]}
         >
-          Huidig
+          {t("Huidig")}
         </a>
         <a
           :for={s <- OpenInterclubs.Season.Archive.seasons()}
@@ -134,7 +134,7 @@ defmodule OpenInterclubsWeb.HomeLive do
           {OpenInterclubs.Season.Archive.label(s)}
         </a>
         <span :if={@loaded_at && is_nil(@season)} id="last-update" class="ml-auto opacity-60">
-          Laatste update: {last_update(@loaded_at)}
+          {t("Laatste update:")} {last_update(@loaded_at)}
         </span>
       </div>
 
@@ -142,30 +142,30 @@ defmodule OpenInterclubsWeb.HomeLive do
 
       <div :if={@loaded?} class="grid gap-6 lg:grid-cols-3">
         <div class="grid grid-cols-3 gap-3 lg:col-span-3">
-          <.stat label="Clubs" value={@stats.clubs} />
-          <.stat label="Ploegen" value={@stats.teams} />
-          <.stat label="Spelers" value={@stats.players} />
+          <.stat label={t("Clubs")} value={@stats.clubs} />
+          <.stat label={t("Ploegen")} value={@stats.teams} />
+          <.stat label={t("Spelers")} value={@stats.players} />
         </div>
 
         <.card class="lg:col-span-1">
-          <:title>Ronde {@round}</:title>
+          <:title>{t("Ronde %{n}", n: @round)}</:title>
           <p class="text-2xl font-bold">{short_date(@round_date)}</p>
           <p class="mb-4 text-sm opacity-60">{date(@round_date)}</p>
           <div class="flex flex-wrap gap-2">
-            <.btn href={~p"/rounds/#{@round}"}>Alle uitslagen</.btn>
-            <.btn href={~p"/fiche"}>Uitslagenfiche</.btn>
+            <.btn href={~p"/rounds/#{@round}"}>{t("Alle uitslagen")}</.btn>
+            <.btn href={~p"/fiche"}>{t("Uitslagenfiche")}</.btn>
           </div>
         </.card>
 
         <.card class="lg:col-span-2">
-          <:title>Clubs per provincie</:title>
+          <:title>{t("Clubs per provincie")}</:title>
           <div class="grid gap-2 sm:grid-cols-2">
             <details
               :for={{prov, clubs} <- @provinces}
               class="group rounded-xl bg-base-200/60 px-3 py-2"
             >
               <summary class="flex cursor-pointer list-none items-center justify-between font-medium">
-                {prov}
+                {t(prov)}
                 <span class="text-xs opacity-60">
                   {length(clubs)}
                   <.icon name="hero-chevron-down" class="size-3 transition group-open:rotate-180" />

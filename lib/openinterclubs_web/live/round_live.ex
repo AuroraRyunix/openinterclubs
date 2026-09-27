@@ -12,7 +12,8 @@ defmodule OpenInterclubsWeb.RoundLive do
         _ -> Season.current_round()
       end
 
-    {:noreply, socket |> assign(round: round, page_title: "Ronde #{round}") |> refreshed()}
+    {:noreply,
+     socket |> assign(round: round, page_title: t("Ronde %{n}", n: round)) |> refreshed()}
   end
 
   defp refresh(socket) do
@@ -29,7 +30,7 @@ defmodule OpenInterclubsWeb.RoundLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
-      <.page_header kicker="Uitslagen" title={"Ronde #{@round}"}>
+      <.page_header kicker={t("Uitslagen")} title={t("Ronde %{n}", n: @round)}>
         <:subtitle>{date(@date)}</:subtitle>
       </.page_header>
 

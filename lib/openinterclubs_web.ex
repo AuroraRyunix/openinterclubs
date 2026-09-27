@@ -50,6 +50,8 @@ defmodule OpenInterclubsWeb do
     quote do
       use Phoenix.LiveView
 
+      on_mount OpenInterclubsWeb.Locale
+
       unquote(html_helpers())
     end
   end
@@ -83,6 +85,7 @@ defmodule OpenInterclubsWeb do
       import OpenInterclubsWeb.CoreComponents
       import OpenInterclubsWeb.UI
       import OpenInterclubsWeb.Fmt
+      import OpenInterclubsWeb.I18n, only: [t: 1, t: 2]
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

@@ -103,7 +103,7 @@ defmodule OpenInterclubsWeb.FicheLive do
               {:noreply, assign(socket, fiche: fiche, own_side: side)}
             else
               {:noreply,
-               put_flash(socket, :info, "Nog geen opstelling ingediend op de KBSB-site.")}
+               put_flash(socket, :info, t("Nog geen opstelling ingediend op de KBSB-site."))}
             end
 
           {:error, reason} ->
@@ -181,7 +181,7 @@ defmodule OpenInterclubsWeb.FicheLive do
           name="club"
           list="club-list"
           class="input w-80"
-          placeholder="Zoek club op naam of nummer…"
+          placeholder={t("Zoek club op naam of nummer…")}
           autocomplete="off"
           phx-debounce="200"
           value={@club && club_label(@club)}
@@ -190,7 +190,7 @@ defmodule OpenInterclubsWeb.FicheLive do
           <option :for={c <- @clubs} value={club_label(c)} />
         </datalist>
         <select :if={@club} name="team" class="select">
-          <option value="">Ploeg…</option>
+          <option value="">{t("Ploeg…")}</option>
           {Phoenix.HTML.Form.options_for_select(
             Enum.map(
               @club["teams"],
@@ -200,8 +200,11 @@ defmodule OpenInterclubsWeb.FicheLive do
           )}
         </select>
         <select :if={@club} name="round" class="select">
-          <option value="">Ronde…</option>
-          {Phoenix.HTML.Form.options_for_select(Enum.map(@rounds, &{"Ronde #{&1}", &1}), @round)}
+          <option value="">{t("Ronde…")}</option>
+          {Phoenix.HTML.Form.options_for_select(
+            Enum.map(@rounds, &{t("Ronde %{n}", n: &1), &1}),
+            @round
+          )}
         </select>
       </form>
 
@@ -212,43 +215,44 @@ defmodule OpenInterclubsWeb.FicheLive do
           class="btn"
           phx-click="fill"
         >
-          Mijn opstelling invullen
+          {t("Mijn opstelling invullen")}
         </button>
         <button :if={@fiche} id="clear-all" class="btn" phx-click="clear" phx-value-side="all">
-          Alles wissen
+          {t("Alles wissen")}
         </button>
-        <button :if={@fiche} class="btn btn-primary" onclick="window.print()">Afdrukken / PDF</button>
+        <button :if={@fiche} class="btn btn-primary" onclick="window.print()">{t("Afdrukken / PDF")}</button>
         <.link class="btn" navigate={~p"/print/#{@club["idclub"]}/#{@round}"}>
-          Alle ploegen van {@club["name"]} — ronde {@round}
+          {t("Alle ploegen van %{club} — ronde %{r}", club: @club["name"], r: @round)}
         </.link>
       </div>
 
       <p class="screen-only mb-4 text-sm">
         <%= if @kbsb_user do %>
-          Aangemeld bij de KBSB als <b>{@kbsb_user}</b>.
+          {t("Aangemeld bij de KBSB als")} <b>{@kbsb_user}</b>.
           <.link
             :if={@club && @round}
             navigate={~p"/beheer/#{@club["idclub"]}/#{@round}"}
             id="to-admin"
             class="underline"
           >
-            Clubbeheer
+            {t("Clubbeheer")}
           </.link>
           <.form for={%{}} action={~p"/logout"} method="post" class="inline">
-            <button id="logout" class="underline">Afmelden</button>
+            <button id="logout" class="underline">{t("Afmelden")}</button>
           </.form>
         <% else %>
-          Opstellingen zijn niet meer publiek.
+          {t("Opstellingen zijn niet meer publiek.")}
           <.link href={~p"/login?#{%{return_to: "/fiche"}}"} id="login-link" class="underline">
-            Meld je aan met je KBSB-login
+            {t("Meld je aan met je KBSB-login")}
           </.link>
-          om je eigen opstelling in te vullen.
+          {t("om je eigen opstelling in te vullen.")}
         <% end %>
       </p>
 
       <p :if={@fiche} class="screen-only text-sm opacity-70 mb-2">
-        Je eigen ploeg wordt ingevuld met de opstelling van de KBSB-site, thuis of uit;
-        de tegenstander blijft leeg. „Mijn opstelling invullen” haalt de laatste versie op.
+        {t(
+          "Je eigen ploeg wordt ingevuld met de opstelling van de KBSB-site, thuis of uit; de tegenstander blijft leeg."
+        )}
       </p>
 
       <.fiche :if={@fiche} fiche={@fiche} editable />

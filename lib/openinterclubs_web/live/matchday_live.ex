@@ -47,7 +47,7 @@ defmodule OpenInterclubsWeb.MatchdayLive do
         </p>
         <h1 class="mb-4 text-2xl font-bold">{@club.name}</h1>
 
-        <p :if={@encounters == []} class="opacity-60">Geen ontmoetingen in deze ronde.</p>
+        <p :if={@encounters == []} class="opacity-60">{t("Geen ontmoetingen in deze ronde.")}</p>
 
         <.link
           :for={e <- @encounters}

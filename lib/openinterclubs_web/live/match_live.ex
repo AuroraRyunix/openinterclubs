@@ -25,20 +25,22 @@ defmodule OpenInterclubsWeb.MatchLive do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
       <.loading :if={!@loaded?} />
-      <p :if={@loaded? and is_nil(@e)}>Deze ontmoeting bestaat niet.</p>
+      <p :if={@loaded? and is_nil(@e)}>{t("Deze ontmoeting bestaat niet.")}</p>
       <div :if={@e}>
         <p class="mb-2 text-sm opacity-60">
-          <.link navigate={series_path(@e.series)} class="hover:text-primary">Reeks {series_slug(
-            @e.series
+          <.link navigate={series_path(@e.series)} class="hover:text-primary">{t("Reeks %{s}",
+            s: series_slug(@e.series)
           )}</.link>
           ·
-          <.link navigate={~p"/rounds/#{@e.round}"} class="hover:text-primary">Ronde {@e.round}</.link>
+          <.link navigate={~p"/rounds/#{@e.round}"} class="hover:text-primary">{t("Ronde %{n}",
+            n: @e.round
+          )}</.link>
           · {date(@e.date)}
         </p>
         <div class="mb-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 rounded-3xl bg-base-200 px-6 py-8">
           <div class="text-right">
             <.team_link key={@e.home} class="text-xl font-bold sm:text-2xl" />
-            <p class="text-xs uppercase opacity-50">Thuis</p>
+            <p class="text-xs uppercase opacity-50">{t("Thuis")}</p>
           </div>
           <div class="text-3xl font-extrabold tabular-nums sm:text-4xl">
             <%= if @e.status == :planned do %>
@@ -55,7 +57,7 @@ defmodule OpenInterclubsWeb.MatchLive do
           </div>
           <div>
             <.team_link key={@e.visit} class="text-xl font-bold sm:text-2xl" />
-            <p class="text-xs uppercase opacity-50">Uit</p>
+            <p class="text-xs uppercase opacity-50">{t("Uit")}</p>
           </div>
         </div>
 
@@ -66,7 +68,7 @@ defmodule OpenInterclubsWeb.MatchLive do
         </div>
 
         <.card id="boards">
-          <p :if={@e.games == []} class="opacity-60">Nog geen opstellingen ingediend.</p>
+          <p :if={@e.games == []} class="opacity-60">{t("Nog geen opstellingen ingediend.")}</p>
           <table :if={@e.games != []} class="w-full text-sm">
             <tbody>
               <tr :for={g <- @e.games} class="border-t border-base-200 first:border-0">

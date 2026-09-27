@@ -45,9 +45,12 @@ defmodule OpenInterclubsWeb.HeadToHeadLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
-      <.page_header kicker="Onderlinge duels" title={"#{name(@club_a, @a)} – #{name(@club_b, @b)}"}>
+      <.page_header
+        kicker={t("Onderlinge duels")}
+        title={"#{name(@club_a, @a)} – #{name(@club_b, @b)}"}
+      >
         <:subtitle>
-          Alle ontmoetingen tussen beide clubs, dit seizoen en de voorbije seizoenen.
+          {t("Alle ontmoetingen tussen beide clubs, dit seizoen en de voorbije seizoenen.")}
         </:subtitle>
       </.page_header>
 
@@ -64,12 +67,12 @@ defmodule OpenInterclubsWeb.HeadToHeadLive do
 
       <div :if={@totals} class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <.stat label={"Gewonnen door #{name(@club_a, @a)}"} value={@totals.won} />
-        <.stat label="Gelijk" value={@totals.drawn} />
+        <.stat label={t("Gelijk")} value={@totals.drawn} />
         <.stat label={"Gewonnen door #{name(@club_b, @b)}"} value={@totals.lost} />
-        <.stat label="Bordpunten" value={"#{points(@totals.a_bp)} – #{points(@totals.b_bp)}"} />
+        <.stat label={t("Bordpunten")} value={"#{points(@totals.a_bp)} – #{points(@totals.b_bp)}"} />
       </div>
 
-      <p :if={@seasons == []} class="opacity-60">Deze clubs speelden nog niet tegen elkaar.</p>
+      <p :if={@seasons == []} class="opacity-60">{t("Deze clubs speelden nog niet tegen elkaar.")}</p>
 
       <.card :for={s <- @seasons || []} class="mb-4" id={"h2h-#{s.season || "current"}"}>
         <:title>{if s.season, do: Archive.label(s.season), else: "Dit seizoen"}</:title>

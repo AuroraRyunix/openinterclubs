@@ -41,12 +41,27 @@ defmodule OpenInterclubsWeb.Layouts do
       <div class="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3 sm:px-6">
         <a href="/" class="font-bold tracking-tight">OpenInterclubs</a>
         <nav class="flex flex-1 gap-1 overflow-x-auto text-sm">
-          <.nav_link href={~p"/rounds"}>Uitslagen</.nav_link>
-          <.nav_link href={~p"/divisions"}>Afdelingen</.nav_link>
-          <.nav_link href={~p"/top"}>Spelers</.nav_link>
-          <.nav_link href={~p"/fiche"}>Uitslagenfiche</.nav_link>
+          <.nav_link href={~p"/rounds"}>{t("Uitslagen")}</.nav_link>
+          <.nav_link href={~p"/divisions"}>{t("Afdelingen")}</.nav_link>
+          <.nav_link href={~p"/top"}>{t("Spelers")}</.nav_link>
+          <.nav_link href={~p"/fiche"}>{t("Uitslagenfiche")}</.nav_link>
         </nav>
-        <a href={~p"/login"} class="text-sm opacity-75 hover:opacity-100">KBSB-login</a>
+        <a href={~p"/login"} class="text-sm opacity-75 hover:opacity-100">{t("KBSB-login")}</a>
+        <nav id="lang-switch" class="flex gap-1 text-xs font-semibold">
+          <a
+            :for={l <- OpenInterclubsWeb.I18n.locales()}
+            href={"/taal?lang=#{l}"}
+            class={[
+              "rounded px-1.5 py-0.5 uppercase",
+              if(l == OpenInterclubsWeb.I18n.locale(),
+                do: "bg-base-300",
+                else: "opacity-60 hover:opacity-100"
+              )
+            ]}
+          >
+            {l}
+          </a>
+        </nav>
         <.theme_toggle />
       </div>
     </header>
@@ -57,7 +72,7 @@ defmodule OpenInterclubsWeb.Layouts do
       class="screen-only bg-warning/20 px-4 py-2 text-center text-sm"
     >
       Je bekijkt seizoen <b>{OpenInterclubs.Season.Archive.label(@season)}</b>.
-      <a href={~p"/seizoen?season=current"} class="underline">Terug naar dit seizoen</a>
+      <a href={~p"/seizoen?season=current"} class="underline">{t("Terug naar dit seizoen")}</a>
     </div>
 
     <main class="px-4 py-8 sm:px-6 print:p-0">
@@ -67,9 +82,10 @@ defmodule OpenInterclubsWeb.Layouts do
     </main>
 
     <footer class="screen-only mx-auto max-w-6xl px-4 pb-10 pt-4 text-xs opacity-60 sm:px-6">
-      Gegevens: publieke API van de
+      {t("Gegevens: publieke API van de")}
       <a class="underline" href="https://www.frbe-kbsb-ksb.be">KBSB/FRBE</a>
-      · Feedback of fout gezien? <a class="underline" href="/feedback">Laat het weten</a>
+      · {t("Feedback of fout gezien?")}
+      <a class="underline" href="/feedback">{t("Laat het weten")}</a>
     </footer>
 
     <.flash_group flash={@flash} />

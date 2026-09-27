@@ -21,6 +21,16 @@ for the KBSB/FRBE chess interclubs, built on the public API at
   sheets of a round on separate pages, or downloads them as one ZIP with a
   PDF per sheet (`clubname_clubnumber_RXX_series.pdf`).
 
+- **Seizoenen** – switch to 2023-24, 2024-25 or 2025-26 (from the KBSB
+  archive); all pages then show that season.
+- **Onderlinge duels** – every match between two clubs over all seasons.
+- **Live** (`/live/:club`) – a club's matches of the round on one phone
+  screen, updating by itself.
+- Player cards show the expected score per game, W−We and an estimated FIDE
+  change; team pages have statistics per board and per player.
+- Interface in Dutch, French and English; installable as an app (PWA) with
+  offline copies of visited pages; feedback form that opens a GitHub issue.
+
 **For club and interclub admins** (KBSB login):
 
 - The result sheets fill in your **own** team's lineup (home or away),

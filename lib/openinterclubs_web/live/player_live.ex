@@ -25,7 +25,7 @@ defmodule OpenInterclubsWeb.PlayerLive do
     ~H"""
     <Layouts.app flash={@flash} season={@season}>
       <.loading :if={!@loaded?} />
-      <p :if={@loaded? and is_nil(@p)}>Speler niet gevonden in de interclub-lijsten.</p>
+      <p :if={@loaded? and is_nil(@p)}>{t("Speler niet gevonden in de interclub-lijsten.")}</p>
       <div :if={@p}>
         <div class="mb-8 flex flex-wrap items-center gap-6 rounded-3xl bg-gradient-to-br from-primary/15 via-base-200 to-base-100 p-6 sm:p-8">
           <div class="grid size-20 place-items-center rounded-2xl bg-primary text-3xl font-extrabold text-primary-content shadow">
@@ -40,41 +40,41 @@ defmodule OpenInterclubsWeb.PlayerLive do
               <.link navigate={club_path(@p.club_id)} class="hover:text-primary">{club_name(
                 @p.club_id
               )}</.link>
-              <span :if={@p.titular} class="opacity-60">· titularis {@p.titular}</span>
+              <span :if={@p.titular} class="opacity-60">· {t("titularis")} {@p.titular}</span>
             </p>
           </div>
         </div>
 
         <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-          <.stat label="Interclub" value={rating(@p.rating)} />
+          <.stat label={t("Interclub")} value={rating(@p.rating)} />
           <.stat label="FIDE" value={rating(@p.fide)} />
-          <.stat label="Nationaal" value={rating(@p.nat)} />
-          <.stat label="Score" value={"#{points(@p.score)}/#{@p.played}"} />
+          <.stat label={t("Nationaal")} value={rating(@p.nat)} />
+          <.stat label={t("Score")} value={"#{points(@p.score)}/#{@p.played}"} />
           <.stat label="TPR" value={@p.tpr || "–"} hint={"#{@p.rated_games} partijen zonder forfait"} />
           <.stat
             label="+/−"
             value={(@p.diff && if(@p.diff > 0, do: "+#{@p.diff}", else: @p.diff)) || "–"}
           />
-          <.stat label="W − We" value={signed(@p[:w_we])} hint="score t.o.v. verwachting" />
-          <.stat label="FIDE ±" value={signed(@p[:fide_change])} hint="schatting (K 20/10)" />
+          <.stat label="W − We" value={signed(@p[:w_we])} hint={t("score t.o.v. verwachting")} />
+          <.stat label="FIDE ±" value={signed(@p[:fide_change])} hint={t("schatting (K 20/10)")} />
         </div>
 
         <.card id="games">
-          <:title>Partijen</:title>
-          <p :if={@p.games == []} class="opacity-60">Nog geen partijen dit seizoen.</p>
+          <:title>{t("Partijen")}</:title>
+          <p :if={@p.games == []} class="opacity-60">{t("Nog geen partijen dit seizoen.")}</p>
           <div :if={@p.games != []} class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead class="text-left text-xs uppercase opacity-60">
                 <tr>
                   <th class="py-2">R</th>
-                  <th>Datum</th>
-                  <th>Bord</th>
+                  <th>{t("Datum")}</th>
+                  <th>{t("Bord")}</th>
                   <th></th>
-                  <th>Tegenstander</th>
-                  <th class="text-right">Rating</th>
-                  <th class="px-2 text-center">Verwacht</th>
-                  <th class="px-2 text-center">Uitslag</th>
-                  <th>Ontmoeting</th>
+                  <th>{t("Tegenstander")}</th>
+                  <th class="text-right">{t("Rating")}</th>
+                  <th class="px-2 text-center">{t("Verwacht")}</th>
+                  <th class="px-2 text-center">{t("Uitslag")}</th>
+                  <th>{t("Ontmoeting")}</th>
                 </tr>
               </thead>
               <tbody>

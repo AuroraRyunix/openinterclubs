@@ -183,7 +183,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
                 else: "ronde nog niet begonnen"}
             </:subtitle>
             <:actions>
-              <.btn href={~p"/print/#{@idclub}/#{@round}"}>Fiches / ZIP</.btn>
+              <.btn href={~p"/print/#{@idclub}/#{@round}"}>{t("Fiches / ZIP")}</.btn>
               <.btn :if={@round > 1} href={~p"/beheer/#{@idclub}/#{@round - 1}"}>
                 ← R{@round - 1}
               </.btn>
@@ -207,7 +207,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
               phx-click="validate"
               class="rounded-lg border border-base-300 px-4 py-2 font-medium transition hover:border-primary"
             >
-              Controleren
+              {t("Controleren")}
             </button>
             <button
               id="submit"
@@ -215,9 +215,11 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
               data-confirm="Alle opstellingen van deze ronde indienen bij de KBSB?"
               class="rounded-lg bg-primary px-4 py-2 font-semibold text-primary-content transition hover:opacity-90"
             >
-              Indienen bij KBSB
+              {t("Indienen bij KBSB")}
             </button>
-            <span :if={@errors == []} id="valid" class="text-sm text-success">✓ Geen fouten gevonden</span>
+            <span :if={@errors == []} id="valid" class="text-sm text-success">{t(
+              "✓ Geen fouten gevonden"
+            )}</span>
             <span :if={@errors not in [nil, []]} class="text-sm text-error">{length(@errors)} fout(en)</span>
           </div>
 
@@ -231,7 +233,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
                     {t.opponent.name}
                   </span>
                   <span class="text-xs font-normal opacity-60">
-                    Reeks {t.division}{t.index} · {ClubAdmin.filled(t)}/{t.nrgames} borden
+                    {t("Reeks %{s}", s: "#{t.division}#{t.index}")} · {ClubAdmin.filled(t)}/{t.nrgames}
                   </span>
                 </span>
               </:title>
@@ -294,7 +296,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
                   data-confirm={"Uitslag van #{t.name} – #{t.opponent.name} opslaan bij de KBSB?"}
                   class="rounded-lg bg-primary px-3 py-1.5 text-sm font-semibold text-primary-content"
                 >
-                  Uitslag opslaan
+                  {t("Uitslag opslaan")}
                 </button>
               </div>
             </.card>
