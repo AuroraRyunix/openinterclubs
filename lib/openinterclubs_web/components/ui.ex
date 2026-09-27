@@ -248,6 +248,7 @@ defmodule OpenInterclubsWeb.UI do
             <th class="px-2 text-right">Score</th>
             <th class="px-2 text-right">TPR</th>
             <th class="px-2 text-right">+/−</th>
+            <th class="px-2 text-right" title="Score min verwachte score">W−We</th>
           </tr>
         </thead>
         <tbody>
@@ -277,6 +278,9 @@ defmodule OpenInterclubsWeb.UI do
               p.diff && p.diff < 0 && "text-error"
             ]}>
               {p.diff && if(p.diff > 0, do: "+#{p.diff}", else: p.diff)}
+            </td>
+            <td class="px-2 text-right tabular-nums opacity-80">
+              {p[:w_we] && :erlang.float_to_binary(p.w_we * 1.0, decimals: 1)}
             </td>
           </tr>
         </tbody>

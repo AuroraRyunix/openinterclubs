@@ -2,7 +2,7 @@ defmodule OpenInterclubsWeb.TopLive do
   use OpenInterclubsWeb.SeasonLive
 
   @per_page 25
-  @sorts ~w(tpr diff score rating played)
+  @sorts ~w(tpr diff w_we score rating played)
 
   @impl true
   def mount(_params, session, socket),
@@ -81,6 +81,7 @@ defmodule OpenInterclubsWeb.TopLive do
               {s, l} <- [
                 {"tpr", "TPR"},
                 {"diff", "+/−"},
+                {"w_we", "W−We"},
                 {"score", "Score"},
                 {"rating", "Rating"},
                 {"played", "Partijen"}

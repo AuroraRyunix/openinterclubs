@@ -13,6 +13,13 @@ defmodule OpenInterclubsWeb.PlayerLive do
     assign(socket, p: p, page_title: p && p.name)
   end
 
+  defp signed(nil), do: "–"
+  defp signed(n) when n > 0, do: "+#{format(n)}"
+  defp signed(n), do: format(n)
+
+  defp format(n) when is_float(n), do: :erlang.float_to_binary(n, decimals: 1)
+  defp format(n), do: to_string(n)
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -38,7 +45,7 @@ defmodule OpenInterclubsWeb.PlayerLive do
           </div>
         </div>
 
-        <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
           <.stat label="Interclub" value={rating(@p.rating)} />
           <.stat label="FIDE" value={rating(@p.fide)} />
           <.stat label="Nationaal" value={rating(@p.nat)} />
@@ -48,6 +55,8 @@ defmodule OpenInterclubsWeb.PlayerLive do
             label="+/−"
             value={(@p.diff && if(@p.diff > 0, do: "+#{@p.diff}", else: @p.diff)) || "–"}
           />
+          <.stat label="W − We" value={signed(@p[:w_we])} hint="score t.o.v. verwachting" />
+          <.stat label="FIDE ±" value={signed(@p[:fide_change])} hint="schatting (K 20/10)" />
         </div>
 
         <.card id="games">
@@ -63,6 +72,7 @@ defmodule OpenInterclubsWeb.PlayerLive do
                   <th></th>
                   <th>Tegenstander</th>
                   <th class="text-right">Rating</th>
+                  <th class="px-2 text-center">Verwacht</th>
                   <th class="px-2 text-center">Uitslag</th>
                   <th>Ontmoeting</th>
                 </tr>
@@ -78,6 +88,9 @@ defmodule OpenInterclubsWeb.PlayerLive do
                   <td><.color_dot color={g.color} /></td>
                   <td><.player_link id={g.opponent} /></td>
                   <td class="text-right tabular-nums opacity-70">{rating(g.opponent_rating)}</td>
+                  <td class="px-2 text-center tabular-nums opacity-70">
+                    {g[:expected] && :erlang.float_to_binary(g.expected, decimals: 2)}
+                  </td>
                   <td class="px-2 text-center"><.game_result result={g.result} label={g.label} /></td>
                   <td class="text-xs">
                     <.team_link key={g.team} /> <span class="opacity-40">vs</span>

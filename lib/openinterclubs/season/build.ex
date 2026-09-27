@@ -296,6 +296,7 @@ defmodule OpenInterclubs.Season.Build do
            opp_team: Map.fetch!(e, other),
            opponent: opp,
            opponent_rating: opp && get_in(players, [opp, :rating]),
+           rating: get_in(players, [id, :rating]),
            result: g.result,
            score: Result.score(g.result, side),
            label: Result.label(g.result, side)
@@ -316,6 +317,17 @@ defmodule OpenInterclubs.Season.Build do
     score = rated |> Enum.map(& &1.score) |> Enum.sum()
     tpr = Tpr.tpr(Enum.map(rated, & &1.opponent_rating), score)
 
+    w_we =
+      rated
+      |> Enum.map(&(&1.score - (Tpr.expected(p.rating, &1.opponent_rating) || &1.score)))
+      |> Enum.reduce(0.0, &+/2)
+      |> Float.round(2)
+
+    games =
+      Enum.map(games, fn g ->
+        Map.put(g, :expected, g.opponent_rating && Tpr.expected(p.rating, g.opponent_rating))
+      end)
+
     %{
       p
       | games: games,
@@ -325,6 +337,8 @@ defmodule OpenInterclubs.Season.Build do
         diff: tpr && tpr - p.rating
     }
     |> Map.put(:rated_games, length(rated))
+    |> Map.put(:w_we, if(rated == [], do: nil, else: w_we))
+    |> Map.put(:fide_change, if(rated == [], do: nil, else: Tpr.fide_change(p.fide, w_we)))
   end
 
   # ---- round overview ----------------------------------------------------
