@@ -139,9 +139,8 @@ defmodule OpenInterclubs.ClubAdmin do
 
   @doc """
   Whether a round is open (results can be entered, lineups are visible):
-  the KBSB opens it at 14:00 Belgian time on the round date. Approximated
-  as 13:00 UTC (14:00 in winter, 15:00 in summer: never too early); the
-  KBSB enforces the real rule anyway.
+  the KBSB opens it at 14:00 Belgian time on the round date, i.e. 12:00 UTC
+  in summer time (CEST) and 13:00 UTC in winter time (CET).
   """
   def round_open?(date, now \\ DateTime.utc_now())
   def round_open?(nil, _now), do: false
@@ -154,6 +153,18 @@ defmodule OpenInterclubs.ClubAdmin do
   end
 
   def round_open?(%Date{} = d, now) do
-    DateTime.compare(now, DateTime.new!(d, ~T[13:00:00], "Etc/UTC")) == :gt
+    utc_hour = if summer_time?(d), do: 12, else: 13
+    DateTime.compare(now, DateTime.new!(d, Time.new!(utc_hour, 0, 0), "Etc/UTC")) != :lt
+  end
+
+  # EU summer time: from the last Sunday of March to the last Sunday of
+  # October (switch at 01:00 UTC; a 14:00 start is never near the switch).
+  defp summer_time?(%Date{year: y} = d) do
+    Date.compare(d, last_sunday(y, 3)) != :lt and Date.compare(d, last_sunday(y, 10)) == :lt
+  end
+
+  defp last_sunday(year, month) do
+    last = Date.end_of_month(Date.new!(year, month, 1))
+    Date.add(last, -rem(Date.day_of_week(last), 7))
   end
 end

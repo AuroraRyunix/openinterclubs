@@ -51,9 +51,18 @@ defmodule OpenInterclubs.ClubAdminTest do
     assert_raise FunctionClauseError, fn -> ClubAdmin.set_result([t], "2A-2", 1, "2-0") end
   end
 
-  test "round opens on the round date in the afternoon" do
-    refute ClubAdmin.round_open?("2026-09-27", ~U[2026-09-27 10:00:00Z])
-    assert ClubAdmin.round_open?("2026-09-27", ~U[2026-09-27 13:30:00Z])
-    assert ClubAdmin.round_open?("2026-09-27", ~U[2026-09-28 09:00:00Z])
+  test "round opens at 14:00 Belgian time, summer and winter" do
+    # summer time (CEST): 14:00 = 12:00 UTC
+    refute ClubAdmin.round_open?("2026-09-27", ~U[2026-09-27 11:59:00Z])
+    assert ClubAdmin.round_open?("2026-09-27", ~U[2026-09-27 12:00:00Z])
+    # winter time (CET): 14:00 = 13:00 UTC
+    refute ClubAdmin.round_open?("2026-11-15", ~U[2026-11-15 12:30:00Z])
+    assert ClubAdmin.round_open?("2026-11-15", ~U[2026-11-15 13:00:00Z])
+    # the day after is always open
+    assert ClubAdmin.round_open?("2026-11-15", ~U[2026-11-16 09:00:00Z])
+    # last Sunday of October 2026 is the 25th: already winter time
+    refute ClubAdmin.round_open?("2026-10-25", ~U[2026-10-25 12:30:00Z])
+    # last Sunday of March 2027 is the 28th: already summer time
+    assert ClubAdmin.round_open?("2027-03-28", ~U[2027-03-28 12:00:00Z])
   end
 end
