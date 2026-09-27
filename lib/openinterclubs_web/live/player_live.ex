@@ -50,7 +50,15 @@ defmodule OpenInterclubsWeb.PlayerLive do
           <.stat label="FIDE" value={rating(@p.fide)} />
           <.stat label={t("Nationaal")} value={rating(@p.nat)} />
           <.stat label={t("Score")} value={"#{points(@p.score)}/#{@p.played}"} />
-          <.stat label="TPR" value={@p.tpr || "–"} hint={"#{@p.rated_games} partijen zonder forfait"} />
+          <.stat
+            label="TPR"
+            value={@p.tpr || "–"}
+            hint={
+              if @p.tpr,
+                do: t("%{n} partijen zonder forfait", n: @p.rated_games),
+                else: t("vanaf %{n} partijen", n: OpenInterclubs.Season.Build.min_tpr_games())
+            }
+          />
           <.stat
             label="+/−"
             value={(@p.diff && if(@p.diff > 0, do: "+#{@p.diff}", else: @p.diff)) || "–"}

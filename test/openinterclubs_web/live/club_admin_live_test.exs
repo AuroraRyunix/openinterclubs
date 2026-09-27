@@ -46,13 +46,13 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
   defp login(conn), do: init_test_session(conn, kbsb_token: "tok")
 
   test "asks to log in first", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/beheer/472/1")
+    {:ok, _view, html} = live(conn, ~p"/mgmt/472/1")
     assert html =~ "aan met je KBSB-login"
   end
 
   test "no access: refused, nothing loaded", %{conn: conn} do
     stub(access: [])
-    {:ok, view, _} = live(login(conn), ~p"/beheer/472/1")
+    {:ok, view, _} = live(login(conn), ~p"/mgmt/472/1")
     assert has_element?(view, "#forbidden")
     refute_received {:put, _, _}
   end
@@ -70,7 +70,7 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
       ]
     )
 
-    {:ok, view, _} = live(login(conn), ~p"/beheer/472/1")
+    {:ok, view, _} = live(login(conn), ~p"/mgmt/472/1")
 
     assert has_element?(view, "#team-2A-2")
     view |> element("#validate") |> render_click()
@@ -96,7 +96,7 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
       ]
     )
 
-    {:ok, view, _} = live(login(conn), ~p"/beheer/472/1")
+    {:ok, view, _} = live(login(conn), ~p"/mgmt/472/1")
     view |> element("#submit") |> render_click()
     refute_received {:put, "icplanning", _}
 
@@ -107,7 +107,7 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
 
   test "changing a board goes into the planning", %{conn: conn} do
     stub([])
-    {:ok, view, _} = live(login(conn), ~p"/beheer/472/1")
+    {:ok, view, _} = live(login(conn), ~p"/mgmt/472/1")
 
     view
     |> element("#plan-2A-2-1")
@@ -121,7 +121,7 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
 
   test "open round: results can be saved for a team", %{conn: conn} do
     stub(date: "2000-01-01")
-    {:ok, view, _} = live(login(conn), ~p"/beheer/472/1")
+    {:ok, view, _} = live(login(conn), ~p"/mgmt/472/1")
     refute has_element?(view, "#submit")
 
     view
@@ -143,7 +143,7 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
   test "confirm as captain sends the member number for the own side", %{conn: conn} do
     stub(date: "2000-01-01")
     conn = init_test_session(conn, kbsb_token: "tok", kbsb_idnumber: 12345)
-    {:ok, view, _} = live(conn, ~p"/beheer/472/1")
+    {:ok, view, _} = live(conn, ~p"/mgmt/472/1")
 
     view |> element("#confirm-2A-2") |> render_click()
     view |> element("#save-results-2A-2") |> render_click()

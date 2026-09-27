@@ -268,11 +268,11 @@ defmodule OpenInterclubsWeb.FicheLive do
           {t("Aangemeld bij de KBSB als")} <b>{@kbsb_user}</b>.
           <.link
             :if={@club && @round}
-            navigate={~p"/beheer/#{@club["idclub"]}/#{@round}"}
+            navigate={~p"/mgmt/#{@club["idclub"]}/#{@round}"}
             id="to-admin"
             class="underline"
           >
-            {t("Clubbeheer")}
+            {t("Mgmt")}
           </.link>
           <.form for={%{}} action={~p"/logout"} method="post" class="inline">
             <button id="logout" class="underline">{t("Afmelden")}</button>

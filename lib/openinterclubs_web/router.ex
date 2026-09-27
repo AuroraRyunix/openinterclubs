@@ -40,8 +40,10 @@ defmodule OpenInterclubsWeb.Router do
     live "/feedback", FeedbackLive
     live "/fiche", FicheLive
     live "/print/:idclub/:round", PrintLive
-    live "/beheer", ClubAdminIndexLive
-    live "/beheer/:idclub/:round", ClubAdminLive
+    live "/mgmt", ClubAdminIndexLive
+    get "/beheer", RedirectController, :beheer
+    get "/beheer/:idclub/:round", RedirectController, :beheer
+    live "/mgmt/:idclub/:round", ClubAdminLive
   end
 
   # Other scopes may use custom stacks.

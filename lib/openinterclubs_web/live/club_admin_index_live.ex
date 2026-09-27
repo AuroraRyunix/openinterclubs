@@ -17,7 +17,7 @@ defmodule OpenInterclubsWeb.ClubAdminIndexLive do
         q: "",
         results: [],
         error: nil,
-        page_title: t("Clubbeheer")
+        page_title: t("Mgmt")
       )
 
     socket =
@@ -72,13 +72,13 @@ defmodule OpenInterclubsWeb.ClubAdminIndexLive do
     ~H"""
     <Layouts.app flash={@flash}>
       <div class="mx-auto max-w-xl">
-        <.page_header kicker={t("Ronde %{n}", n: @round)} title={t("Clubbeheer")}>
+        <.page_header kicker={t("Ronde %{n}", n: @round)} title={t("Mgmt")}>
           <:subtitle>{t("Opstellingen controleren en indienen, uitslagen ingeven.")}</:subtitle>
         </.page_header>
 
         <%= if is_nil(@token) do %>
           <p>
-            <.link href={~p"/login?#{%{return_to: "/beheer"}}"} class="underline">
+            <.link href={~p"/login?#{%{return_to: "/mgmt"}}"} class="underline">
               {t("Meld je aan met je KBSB-login")}
             </.link>
           </p>
@@ -92,7 +92,7 @@ defmodule OpenInterclubsWeb.ClubAdminIndexLive do
             <.link
               :if={is_integer(@own)}
               id="own-club"
-              navigate={~p"/beheer/#{@own}/#{@round}"}
+              navigate={~p"/mgmt/#{@own}/#{@round}"}
               class="flex items-center justify-between rounded-xl bg-primary px-4 py-3 font-semibold text-primary-content transition hover:opacity-90"
             >
               <span>{club_name(@own)} ({@own})</span>
@@ -114,7 +114,7 @@ defmodule OpenInterclubsWeb.ClubAdminIndexLive do
             </form>
             <.link
               :for={c <- @results}
-              navigate={~p"/beheer/#{c.id}/#{@round}"}
+              navigate={~p"/mgmt/#{c.id}/#{@round}"}
               class="mt-1 flex justify-between rounded-lg px-2 py-1.5 transition hover:bg-base-200"
             >
               <span>{c.name}</span><span class="opacity-50">{c.id}</span>

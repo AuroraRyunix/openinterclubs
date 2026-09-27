@@ -23,7 +23,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
         confirm: MapSet.new(),
         errors: nil,
         saved_at: nil,
-        page_title: "Clubbeheer"
+        page_title: "Mgmt"
       )
 
     cond do
@@ -70,7 +70,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
             ),
           teams: teams,
           open: open,
-          page_title: "Clubbeheer #{club["name"]}"
+          page_title: "Mgmt #{club["name"]}"
         )
 
       {:error, reason} ->
@@ -179,7 +179,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
         <% :login -> %>
           <p>
             Meld je eerst <.link
-              href={~p"/login?#{%{return_to: "/beheer/#{@idclub}/#{@round}"}}"}
+              href={~p"/login?#{%{return_to: "/mgmt/#{@idclub}/#{@round}"}}"}
               class="underline"
             >
               aan met je KBSB-login
@@ -190,7 +190,7 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
             Je hebt geen beheerrechten voor club {@idclub}.
           </p>
         <% :ok -> %>
-          <.page_header kicker={"Clubbeheer · ronde #{@round}"} title={@club["name"]}>
+          <.page_header kicker={"Mgmt · ronde #{@round}"} title={@club["name"]}>
             <:subtitle>
               {length(@teams)} ploegen · {if @open,
                 do: "ronde is open",
@@ -198,10 +198,10 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
             </:subtitle>
             <:actions>
               <.btn href={~p"/print/#{@idclub}/#{@round}"}>{t("Fiches / ZIP")}</.btn>
-              <.btn :if={@round > 1} href={~p"/beheer/#{@idclub}/#{@round - 1}"}>
+              <.btn :if={@round > 1} href={~p"/mgmt/#{@idclub}/#{@round - 1}"}>
                 ← R{@round - 1}
               </.btn>
-              <.btn href={~p"/beheer/#{@idclub}/#{@round + 1}"}>R{@round + 1} →</.btn>
+              <.btn href={~p"/mgmt/#{@idclub}/#{@round + 1}"}>R{@round + 1} →</.btn>
             </:actions>
           </.page_header>
 

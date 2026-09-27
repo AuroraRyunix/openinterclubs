@@ -47,6 +47,22 @@ defmodule OpenInterclubs.Kbsb do
     end
   end
 
+  @doc "A member's display name (public member record), e.g. \"Jorian Burssens\"."
+  def member_name(idnumber) when is_integer(idnumber) do
+    case Req.get(
+           root_url() <> "/api/v1/member/anon/member/#{idnumber}",
+           [retry: false] ++ req_options()
+         ) do
+      {:ok, %Req.Response{status: 200, body: %{"first_name" => f, "last_name" => l}}} ->
+        {:ok, String.trim("#{f} #{l}")}
+
+      _ ->
+        :error
+    end
+  end
+
+  def member_name(_), do: :error
+
   @doc "The club a member belongs to (public member record)."
   def member_club(idnumber) when is_integer(idnumber) do
     case Req.get(

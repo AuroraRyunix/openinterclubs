@@ -60,7 +60,7 @@ defmodule OpenInterclubsWeb.SeasonPagesTest do
   test "pages re-render when the season updates", %{conn: conn} do
     {:ok, view, _} = live(conn, ~p"/players/1")
     OpenInterclubs.Season.put(OpenInterclubs.SeasonFixtures.model())
-    assert render(view) =~ "2450"
+    assert render(view) =~ "vanaf 3 partijen"
   end
 
   test "match day page shows the club's encounters of the round", %{conn: conn} do

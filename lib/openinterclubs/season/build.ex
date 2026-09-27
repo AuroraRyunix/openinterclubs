@@ -7,6 +7,9 @@ defmodule OpenInterclubs.Season.Build do
 
   alias OpenInterclubs.Season.{Result, Tpr}
 
+  @min_tpr_games 3
+  def min_tpr_games, do: @min_tpr_games
+
   @boards %{1 => 8, 2 => 8, 3 => 6, 4 => 4, 5 => 4, 6 => 4}
 
   @provinces %{
@@ -315,7 +318,11 @@ defmodule OpenInterclubs.Season.Build do
     scored = Enum.filter(games, &(&1.score != nil))
     rated = Enum.reject(scored, &(Result.forfeit?(&1.result) or is_nil(&1.opponent_rating)))
     score = rated |> Enum.map(& &1.score) |> Enum.sum()
-    tpr = Tpr.tpr(Enum.map(rated, & &1.opponent_rating), score)
+    # A TPR over one or two games says little (1/1 = opponent + 800), so
+    # it is only given from @min_tpr_games rated games.
+    tpr =
+      if length(rated) >= @min_tpr_games,
+        do: Tpr.tpr(Enum.map(rated, & &1.opponent_rating), score)
 
     w_we =
       rated

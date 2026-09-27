@@ -30,8 +30,10 @@ defmodule OpenInterclubs.Season.BuildTest do
     p1 = m.players[1]
     assert p1.played == 2 and p1.score == 2.0
     assert [%{color: :white, label: "1"}, %{color: :black, label: "1", opponent: 21}] = p1.games
+    # only 2 rated games: no TPR yet (needs 3); the formula itself:
     # 2/2 against 1800 and 1500 → avg 1650 + 800
-    assert p1.tpr == 2450
+    assert p1.tpr == nil
+    assert Tpr.tpr([1800, 1500], 2.0) == 2450
     # 2000 vs 1800 expects 0.76, vs 1500 (capped at 400) 0.91 → W−We 0.33
     assert_in_delta p1.w_we, 0.33, 0.01
     assert [%{expected: e1} | _] = p1.games

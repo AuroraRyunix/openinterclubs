@@ -2,9 +2,12 @@ defmodule OpenInterclubsWeb.SessionControllerTest do
   use OpenInterclubsWeb.ConnCase, async: false
 
   test "successful login stores the token in the session", %{conn: conn} do
-    Req.Test.stub(OpenInterclubs.Kbsb, fn conn ->
-      assert conn.request_path == "/api/v1/member/login"
-      Req.Test.json(conn, [12345, "jwt-token"])
+    Req.Test.stub(OpenInterclubs.Kbsb, fn
+      %{request_path: "/api/v1/member/login"} = conn ->
+        Req.Test.json(conn, [12345, "jwt-token"])
+
+      %{request_path: "/api/v1/member/anon/member/12345"} = conn ->
+        Req.Test.json(conn, %{"first_name" => "Jorian", "last_name" => "Burssens"})
     end)
 
     conn = post(conn, ~p"/login", %{user: "12345", password: "secret", return_to: "/fiche"})
@@ -12,6 +15,7 @@ defmodule OpenInterclubsWeb.SessionControllerTest do
     assert get_session(conn, :kbsb_token) == "jwt-token"
     assert get_session(conn, :kbsb_user) == "12345"
     assert get_session(conn, :kbsb_idnumber) == 12345
+    assert get_session(conn, :kbsb_name) == "Jorian Burssens"
   end
 
   test "wrong credentials show an error and store nothing", %{conn: conn} do

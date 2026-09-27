@@ -65,9 +65,9 @@ defmodule OpenInterclubsWeb.ClubLive do
           <:actions>
             <.btn
               :if={OpenInterclubsWeb.Locale.current_user()}
-              href={~p"/beheer/#{@club.id}/#{Season.current_round()}"}
+              href={~p"/mgmt/#{@club.id}/#{Season.current_round()}"}
             >
-              <.icon name="hero-clipboard-document-list" class="size-4" /> Clubbeheer
+              <.icon name="hero-clipboard-document-list" class="size-4" /> {t("Mgmt")}
             </.btn>
             <.btn href={~p"/live/#{@club.id}"}>
               <.icon name="hero-signal" class="size-4" /> Live

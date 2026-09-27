@@ -18,6 +18,7 @@ defmodule OpenInterclubsWeb.SessionController do
         |> configure_session(renew: true)
         |> put_session(:kbsb_token, token)
         |> put_session(:kbsb_idnumber, idnumber)
+        |> put_session(:kbsb_name, display_name(idnumber, user))
         |> put_session(:kbsb_user, String.trim(user))
         |> put_flash(:info, OpenInterclubsWeb.I18n.t("Aangemeld bij de KBSB."))
         |> redirect(to: safe_return(params["return_to"]))
@@ -38,6 +39,13 @@ defmodule OpenInterclubsWeb.SessionController do
     |> configure_session(drop: true)
     |> put_flash(:info, OpenInterclubsWeb.I18n.t("Afgemeld."))
     |> redirect(to: ~p"/fiche")
+  end
+
+  defp display_name(idnumber, user) do
+    case Kbsb.member_name(idnumber) do
+      {:ok, name} when name != "" -> name
+      _ -> String.trim(user)
+    end
   end
 
   defp describe("WrongUsernamePasswordCombination"),

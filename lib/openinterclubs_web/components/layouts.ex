@@ -48,8 +48,8 @@ defmodule OpenInterclubsWeb.Layouts do
           <.nav_link href={~p"/divisions"}>{t("Afdelingen")}</.nav_link>
           <.nav_link href={~p"/top"}>{t("Spelers")}</.nav_link>
           <.nav_link href={~p"/fiche"}>{t("Uitslagenfiche")}</.nav_link>
-          <.nav_link :if={OpenInterclubsWeb.Locale.current_user()} href={~p"/beheer"}>
-            {t("Clubbeheer")}
+          <.nav_link :if={OpenInterclubsWeb.Locale.current_user()} href={~p"/mgmt"}>
+            {t("Mgmt")}
           </.nav_link>
         </nav>
         <div class="order-2 ml-auto flex items-center gap-3 md:order-3">
@@ -59,9 +59,12 @@ defmodule OpenInterclubsWeb.Layouts do
             class="flex items-center gap-1 whitespace-nowrap text-sm opacity-75 hover:opacity-100"
           >
             <.icon name="hero-user-circle" class="size-5" />
-            <span class="hidden sm:inline">
-              {if OpenInterclubsWeb.Locale.current_user(), do: t("Afmelden"), else: t("KBSB-login")}
-            </span>
+            <%= if user = OpenInterclubsWeb.Locale.current_user() do %>
+              <span class="hidden max-w-40 truncate font-medium opacity-100 sm:inline">{user}</span>
+              <span class="hidden sm:inline">· {t("Afmelden")}</span>
+            <% else %>
+              <span class="hidden sm:inline">{t("KBSB-login")}</span>
+            <% end %>
           </a>
           <nav id="lang-switch" class="flex gap-0.5 text-xs font-semibold">
             <a

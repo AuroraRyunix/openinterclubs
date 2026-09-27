@@ -103,7 +103,7 @@ defmodule OpenInterclubsWeb.I18n do
     "Live" => "Live",
     "Geen ontmoetingen in deze ronde." => "Pas de rencontres dans cette ronde.",
     "Geen ontmoetingen gevonden." => "Aucune rencontre trouvée.",
-    "Clubbeheer" => "Gestion du club",
+    "Clubbeheer" => "Mgmt",
     "Fiches / ZIP" => "Feuilles / ZIP",
     "Controleren" => "Vérifier",
     "Indienen bij KBSB" => "Envoyer à la FRBE",
@@ -200,7 +200,10 @@ defmodule OpenInterclubsWeb.I18n do
       "Seuls les clubs pour lesquels la FRBE vous donne des droits s'ouvrent.",
     "Bevestigen als kapitein" => "Confirmer en tant que capitaine",
     "Bevestigd door thuiskapitein" => "Confirmé par le capitaine visité",
-    "Bevestigd door uitkapitein" => "Confirmé par le capitaine visiteur"
+    "Bevestigd door uitkapitein" => "Confirmé par le capitaine visiteur",
+    "Mgmt" => "Mgmt",
+    "%{n} partijen zonder forfait" => "%{n} parties sans forfait",
+    "vanaf %{n} partijen" => "à partir de %{n} parties"
   }
 
   @en %{
@@ -293,7 +296,7 @@ defmodule OpenInterclubsWeb.I18n do
     "Live" => "Live",
     "Geen ontmoetingen in deze ronde." => "No matches this round.",
     "Geen ontmoetingen gevonden." => "No matches found.",
-    "Clubbeheer" => "Club admin",
+    "Clubbeheer" => "Mgmt",
     "Fiches / ZIP" => "Sheets / ZIP",
     "Controleren" => "Check",
     "Indienen bij KBSB" => "Submit to KBSB",
@@ -389,7 +392,10 @@ defmodule OpenInterclubsWeb.I18n do
       "Only clubs the KBSB gives you rights for will open.",
     "Bevestigen als kapitein" => "Confirm as captain",
     "Bevestigd door thuiskapitein" => "Confirmed by home captain",
-    "Bevestigd door uitkapitein" => "Confirmed by away captain"
+    "Bevestigd door uitkapitein" => "Confirmed by away captain",
+    "Mgmt" => "Mgmt",
+    "%{n} partijen zonder forfait" => "%{n} games without forfeits",
+    "vanaf %{n} partijen" => "from %{n} games"
   }
 
   def locale, do: Process.get(:oi_locale, "nl")
