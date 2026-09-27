@@ -12,14 +12,19 @@ defmodule OpenInterclubsWeb.Locale do
   def call(conn, _opts) do
     locale = get_session(conn, "locale") || from_header(conn)
     I18n.put_locale(locale)
+    Process.put(:oi_user, get_session(conn, :kbsb_user))
     conn |> put_session("locale", I18n.locale()) |> assign(:locale, I18n.locale())
   end
 
   # LiveView on_mount hook.
   def on_mount(:default, _params, session, socket) do
     I18n.put_locale(session["locale"])
+    Process.put(:oi_user, session["kbsb_user"])
     {:cont, Phoenix.Component.assign(socket, :locale, I18n.locale())}
   end
+
+  @doc "The logged-in KBSB user (for the header), or nil."
+  def current_user, do: Process.get(:oi_user)
 
   defp from_header(conn) do
     conn

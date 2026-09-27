@@ -45,15 +45,20 @@ defmodule OpenInterclubsWeb.Layouts do
           <.nav_link href={~p"/divisions"}>{t("Afdelingen")}</.nav_link>
           <.nav_link href={~p"/top"}>{t("Spelers")}</.nav_link>
           <.nav_link href={~p"/fiche"}>{t("Uitslagenfiche")}</.nav_link>
+          <.nav_link :if={OpenInterclubsWeb.Locale.current_user()} href={~p"/beheer"}>
+            {t("Clubbeheer")}
+          </.nav_link>
         </nav>
         <div class="order-2 ml-auto flex items-center gap-3 md:order-3">
           <a
             href={~p"/login"}
-            title={t("KBSB-login")}
+            title={OpenInterclubsWeb.Locale.current_user() || t("KBSB-login")}
             class="flex items-center gap-1 whitespace-nowrap text-sm opacity-75 hover:opacity-100"
           >
             <.icon name="hero-user-circle" class="size-5" />
-            <span class="hidden sm:inline">{t("KBSB-login")}</span>
+            <span class="hidden sm:inline">
+              {if OpenInterclubsWeb.Locale.current_user(), do: t("Afmelden"), else: t("KBSB-login")}
+            </span>
           </a>
           <nav id="lang-switch" class="flex gap-0.5 text-xs font-semibold">
             <a

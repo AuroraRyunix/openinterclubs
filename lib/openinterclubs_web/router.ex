@@ -40,6 +40,7 @@ defmodule OpenInterclubsWeb.Router do
     live "/feedback", FeedbackLive
     live "/fiche", FicheLive
     live "/print/:idclub/:round", PrintLive
+    live "/beheer", ClubAdminIndexLive
     live "/beheer/:idclub/:round", ClubAdminLive
   end
 

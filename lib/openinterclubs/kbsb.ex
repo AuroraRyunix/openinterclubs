@@ -47,6 +47,22 @@ defmodule OpenInterclubs.Kbsb do
     end
   end
 
+  @doc "The club a member belongs to (public member record)."
+  def member_club(idnumber) when is_integer(idnumber) do
+    case Req.get(
+           root_url() <> "/api/v1/member/anon/member/#{idnumber}",
+           [retry: false] ++ req_options()
+         ) do
+      {:ok, %Req.Response{status: 200, body: %{"idclub" => c}}} when is_integer(c) and c > 0 ->
+        {:ok, c}
+
+      _ ->
+        :error
+    end
+  end
+
+  def member_club(_), do: :error
+
   @roles ~w(InterclubAdmin InterclubCaptain ClubAdmin)
 
   @doc """

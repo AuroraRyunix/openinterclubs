@@ -189,7 +189,15 @@ defmodule OpenInterclubsWeb.I18n do
     "Luxemburg" => "Luxembourg",
     "Namen & Waals-Brabant" => "Namur & Brabant wallon",
     "Andere" => "Autre",
-    "Veeg opzij om de volledige fiche te zien." => "Faites glisser pour voir toute la feuille."
+    "Veeg opzij om de volledige fiche te zien." => "Faites glisser pour voir toute la feuille.",
+    "Opstellingen controleren en indienen, uitslagen ingeven." =>
+      "Vérifier et envoyer les compositions, encoder les résultats.",
+    "Jouw club" => "Votre club",
+    "Andere club" => "Autre club",
+    "Geen beheerrechten gevonden voor je eigen club. Kies hieronder een club." =>
+      "Aucun droit de gestion trouvé pour votre club. Choisissez un club ci-dessous.",
+    "Je ziet enkel clubs waarvoor de KBSB je rechten geeft." =>
+      "Seuls les clubs pour lesquels la FRBE vous donne des droits s'ouvrent."
   }
 
   @en %{
@@ -367,7 +375,15 @@ defmodule OpenInterclubsWeb.I18n do
     "Luxemburg" => "Luxembourg",
     "Namen & Waals-Brabant" => "Namur & Walloon Brabant",
     "Andere" => "Other",
-    "Veeg opzij om de volledige fiche te zien." => "Swipe sideways to see the whole sheet."
+    "Veeg opzij om de volledige fiche te zien." => "Swipe sideways to see the whole sheet.",
+    "Opstellingen controleren en indienen, uitslagen ingeven." =>
+      "Check and submit lineups, enter results.",
+    "Jouw club" => "Your club",
+    "Andere club" => "Another club",
+    "Geen beheerrechten gevonden voor je eigen club. Kies hieronder een club." =>
+      "No admin rights found for your own club. Pick a club below.",
+    "Je ziet enkel clubs waarvoor de KBSB je rechten geeft." =>
+      "Only clubs the KBSB gives you rights for will open."
   }
 
   def locale, do: Process.get(:oi_locale, "nl")
