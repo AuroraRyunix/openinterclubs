@@ -69,10 +69,7 @@ defmodule OpenInterclubsWeb.Layouts do
     <footer class="screen-only mx-auto max-w-6xl px-4 pb-10 pt-4 text-xs opacity-60 sm:px-6">
       Gegevens: publieke API van de
       <a class="underline" href="https://www.frbe-kbsb-ksb.be">KBSB/FRBE</a>
-      · Feedback of fout gezien?
-      <a class="underline" href="https://github.com/AuroraRyunix/openinterclubs/issues">
-        Meld het op GitHub
-      </a>
+      · Feedback of fout gezien? <a class="underline" href="/feedback">Laat het weten</a>
     </footer>
 
     <.flash_group flash={@flash} />

@@ -33,6 +33,7 @@ defmodule OpenInterclubsWeb.Router do
     post "/login", SessionController, :create
     post "/logout", SessionController, :delete
 
+    live "/feedback", FeedbackLive
     live "/fiche", FicheLive
     live "/print/:idclub/:round", PrintLive
     live "/beheer/:idclub/:round", ClubAdminLive
