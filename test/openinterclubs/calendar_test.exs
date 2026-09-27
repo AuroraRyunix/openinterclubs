@@ -31,9 +31,8 @@ defmodule OpenInterclubs.CalendarTest do
 
     conn1 = get(conn, "/clubs/401/teams/1/calendar.ics")
 
-    assert response_content_type(conn1, :ics) =~ "text/calendar" or
-             conn1.resp_headers
-             |> Enum.any?(fn {k, v} -> k == "content-type" and v =~ "text/calendar" end)
+    assert [type] = Plug.Conn.get_resp_header(conn1, "content-type")
+    assert type =~ "text/calendar"
 
     assert response(conn1, 200) =~ "LOCATION:Straat 1\\, 9000 Gent"
 
