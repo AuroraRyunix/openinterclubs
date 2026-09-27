@@ -2,7 +2,7 @@ defmodule OpenInterclubsWeb.MatchLive do
   use OpenInterclubsWeb.SeasonLive
 
   @impl true
-  def mount(_params, _session, socket), do: {:ok, subscribe(socket)}
+  def mount(_params, session, socket), do: {:ok, subscribe(socket, session)}
 
   @impl true
   def handle_params(%{"series" => slug, "round" => r, "club" => c, "team" => n}, _uri, socket) do
@@ -23,7 +23,7 @@ defmodule OpenInterclubsWeb.MatchLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} season={@season}>
       <.loading :if={!@loaded?} />
       <p :if={@loaded? and is_nil(@e)}>Deze ontmoeting bestaat niet.</p>
       <div :if={@e}>

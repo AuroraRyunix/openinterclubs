@@ -4,12 +4,12 @@ defmodule OpenInterclubsWeb.ClubLive do
   alias OpenInterclubs.Kbsb
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"id" => id}, session, socket) do
     id = String.to_integer(id)
 
     {:ok,
      socket
-     |> subscribe()
+     |> subscribe(session)
      |> assign(id: id, venues: nil)
      |> start_async(:venues, fn -> Kbsb.venue(id) end)}
   end
@@ -45,7 +45,7 @@ defmodule OpenInterclubsWeb.ClubLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} season={@season}>
       <.loading :if={!@loaded?} />
       <p :if={@loaded? and is_nil(@club)}>Deze club bestaat niet.</p>
       <div :if={@club}>

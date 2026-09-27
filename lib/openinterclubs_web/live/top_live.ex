@@ -5,8 +5,8 @@ defmodule OpenInterclubsWeb.TopLive do
   @sorts ~w(tpr diff score rating played)
 
   @impl true
-  def mount(_params, _session, socket),
-    do: {:ok, socket |> subscribe() |> assign(page_title: "Spelers")}
+  def mount(_params, session, socket),
+    do: {:ok, socket |> subscribe(session) |> assign(page_title: "Spelers")}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -57,7 +57,7 @@ defmodule OpenInterclubsWeb.TopLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} season={@season}>
       <.page_header kicker="Seizoen" title="Rangschikking spelers">
         <:subtitle>Prestatie (TPR, zonder forfaits) · {@total} spelers</:subtitle>
       </.page_header>

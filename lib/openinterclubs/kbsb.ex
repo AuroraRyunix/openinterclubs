@@ -138,6 +138,12 @@ defmodule OpenInterclubs.Kbsb do
   defp root_url,
     do: base_url() |> URI.parse() |> Map.merge(%{path: nil, query: nil}) |> URI.to_string()
 
+  @doc "All series of a past season with only `round` in them (season like \"2526\")."
+  def archive_results(season, round), do: get("/icresultsarchive?season=#{season}&round=#{round}")
+
+  @doc "Official standings of a past season."
+  def archive_standings(season), do: get("/icstandingsarchive?season=#{season}")
+
   @doc "Playing halls of a club."
   def venue(idclub), do: get("/venue/#{idclub}")
 

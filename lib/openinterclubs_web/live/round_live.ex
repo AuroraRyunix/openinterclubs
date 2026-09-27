@@ -2,7 +2,7 @@ defmodule OpenInterclubsWeb.RoundLive do
   use OpenInterclubsWeb.SeasonLive
 
   @impl true
-  def mount(_params, _session, socket), do: {:ok, subscribe(socket)}
+  def mount(_params, session, socket), do: {:ok, subscribe(socket, session)}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -28,7 +28,7 @@ defmodule OpenInterclubsWeb.RoundLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} season={@season}>
       <.page_header kicker="Uitslagen" title={"Ronde #{@round}"}>
         <:subtitle>{date(@date)}</:subtitle>
       </.page_header>

@@ -73,7 +73,41 @@ defmodule OpenInterclubs.Season do
     end
   end
 
+  # ---- season selection ---------------------------------------------------
+
+  @current "current"
+
+  @doc """
+  Select which season this process (a LiveView) reads: `nil`/"current" or an
+  archived season like "2526". Archived seasons are loaded on first use.
+  """
+  def use_season(season) when season in [nil, "", @current], do: Process.delete(:oi_season)
+
+  def use_season(season) do
+    if season in OpenInterclubs.Season.Archive.seasons() and ensure_archive(season) == :ok,
+      do: Process.put(:oi_season, season),
+      else: Process.delete(:oi_season)
+  end
+
+  @doc "The season this process reads (nil = current)."
+  def selected, do: Process.get(:oi_season)
+
+  def ensure_archive(season) do
+    if :ets.member(@table, {season, :loaded_at}),
+      do: :ok,
+      else: GenServer.call(__MODULE__, {:load_archive, season}, 120_000)
+  end
+
+  defp scoped(key) do
+    case Process.get(:oi_season) do
+      nil -> key
+      season -> {season, key}
+    end
+  end
+
   defp get(key, default \\ nil) do
+    key = scoped(key)
+
     case :ets.lookup(@table, key) do
       [{^key, v}] -> v
       _ -> default
@@ -82,11 +116,12 @@ defmodule OpenInterclubs.Season do
     ArgumentError -> default
   end
 
-  @doc "Store an already built model (used by tests and the loader)."
-  def put(model) do
+  @doc "Store an already built model (used by tests and the loaders)."
+  def put(model, season \\ nil) do
+    key = fn k -> if season, do: {season, k}, else: k end
     {players, model} = Map.pop(model, :players, %{})
-    for {k, v} <- model, do: :ets.insert(@table, {k, v})
-    :ets.insert(@table, Enum.map(players, fn {id, p} -> {{:player, id}, p} end))
+    for {k, v} <- model, do: :ets.insert(@table, {key.(k), v})
+    :ets.insert(@table, Enum.map(players, fn {id, p} -> {key.({:player, id}), p} end))
 
     index =
       players
@@ -94,9 +129,12 @@ defmodule OpenInterclubs.Season do
       |> Enum.map(&Map.delete(&1, :games))
       |> Enum.sort_by(&{&1.last_name, &1.first_name})
 
-    :ets.insert(@table, {:player_index, index})
-    :ets.insert(@table, {:loaded_at, DateTime.utc_now()})
-    Phoenix.PubSub.broadcast(OpenInterclubs.PubSub, @topic, :season_updated)
+    :ets.insert(@table, {key.(:player_index), index})
+    :ets.insert(@table, {key.(:loaded_at), DateTime.utc_now()})
+
+    if is_nil(season),
+      do: Phoenix.PubSub.broadcast(OpenInterclubs.PubSub, @topic, :season_updated)
+
     :ok
   end
 
@@ -112,6 +150,21 @@ defmodule OpenInterclubs.Season do
     autoload = Keyword.get(opts, :autoload, true)
     if autoload, do: send(self(), :refresh)
     {:ok, %{autoload: autoload}}
+  end
+
+  @impl true
+  def handle_call({:load_archive, season}, _from, state) do
+    reply =
+      if :ets.member(@table, {season, :loaded_at}) do
+        :ok
+      else
+        case OpenInterclubs.Season.Archive.load(season) do
+          {:ok, model} -> put(model, season)
+          error -> error
+        end
+      end
+
+    {:reply, reply, state}
   end
 
   @impl true

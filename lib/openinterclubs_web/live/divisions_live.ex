@@ -2,8 +2,8 @@ defmodule OpenInterclubsWeb.DivisionsLive do
   use OpenInterclubsWeb.SeasonLive
 
   @impl true
-  def mount(_params, _session, socket),
-    do: {:ok, socket |> subscribe() |> assign(page_title: "Afdelingen")}
+  def mount(_params, session, socket),
+    do: {:ok, socket |> subscribe(session) |> assign(page_title: "Afdelingen")}
 
   @impl true
   def handle_params(_params, _uri, socket), do: {:noreply, refreshed(socket)}
@@ -22,7 +22,7 @@ defmodule OpenInterclubsWeb.DivisionsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} season={@season}>
       <.page_header kicker="Seizoen" title="Afdelingen" />
       <.loading :if={!@loaded?} />
       <section :for={{div, series} <- @groups} class="mb-10">

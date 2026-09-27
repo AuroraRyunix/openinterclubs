@@ -31,6 +31,8 @@ defmodule OpenInterclubsWeb.Layouts do
     default: nil,
     doc: "the current [scope](https://phoenix.hexdocs.pm/scopes.html)"
 
+  attr :season, :string, default: nil, doc: "archived season being viewed, if any"
+
   slot :inner_block, required: true
 
   def app(assigns) do
@@ -48,6 +50,15 @@ defmodule OpenInterclubsWeb.Layouts do
         <.theme_toggle />
       </div>
     </header>
+
+    <div
+      :if={@season}
+      id="season-banner"
+      class="screen-only bg-warning/20 px-4 py-2 text-center text-sm"
+    >
+      Je bekijkt seizoen <b>{OpenInterclubs.Season.Archive.label(@season)}</b>.
+      <a href={~p"/seizoen?season=current"} class="underline">Terug naar dit seizoen</a>
+    </div>
 
     <main class="px-4 py-8 sm:px-6 print:p-0">
       <div class="mx-auto max-w-6xl">

@@ -14,9 +14,12 @@ defmodule OpenInterclubsWeb.SeasonLive do
       @impl true
       def handle_info(:season_updated, socket), do: {:noreply, refresh(socket)}
 
-      defp subscribe(socket) do
+      # Subscribe to live updates and select the season from the session
+      # (nil = current, or an archived season like "2526").
+      defp subscribe(socket, session) do
         if connected?(socket), do: Season.subscribe()
-        assign(socket, loaded?: Season.loaded?())
+        Season.use_season(session["season"])
+        assign(socket, loaded?: Season.loaded?(), season: Season.selected())
       end
 
       defp refreshed(socket), do: socket |> assign(loaded?: Season.loaded?()) |> refresh()

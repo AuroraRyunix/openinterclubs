@@ -2,8 +2,8 @@ defmodule OpenInterclubsWeb.HomeLive do
   use OpenInterclubsWeb.SeasonLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket |> subscribe() |> assign(q: "", page_title: "Interclubs")}
+  def mount(_params, session, socket) do
+    {:ok, socket |> subscribe(session) |> assign(q: "", page_title: "Interclubs")}
   end
 
   @impl true
@@ -22,6 +22,7 @@ defmodule OpenInterclubsWeb.HomeLive do
       provinces: Enum.group_by(clubs, & &1.province) |> Enum.sort_by(&elem(&1, 0)),
       round: round,
       round_date: Enum.find_value(Season.rounds(), &(&1.round == round && &1.date)),
+      loaded_at: Season.loaded_at(),
       stats: %{
         clubs: length(clubs),
         teams: map_size(Season.teams()),
@@ -29,6 +30,12 @@ defmodule OpenInterclubsWeb.HomeLive do
       },
       results: search(socket.assigns.q, clubs)
     )
+  end
+
+  # Shown in Belgian time (CET/CEST approximated from the date).
+  defp last_update(%DateTime{} = dt) do
+    offset = if dt.month in 4..10, do: 2, else: 1
+    dt |> DateTime.add(offset * 3600) |> Calendar.strftime("%d/%m %H:%M")
   end
 
   defp search(q, clubs) do
@@ -56,7 +63,7 @@ defmodule OpenInterclubsWeb.HomeLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} season={@season}>
       <section class="mb-8">
         <form id="search-form" phx-change="search" phx-submit="search" class="max-w-xl">
           <div class="relative">
@@ -103,6 +110,33 @@ defmodule OpenInterclubsWeb.HomeLive do
           </p>
         </div>
       </section>
+
+      <div class="mb-6 flex flex-wrap items-center gap-2 text-sm">
+        <span class="opacity-60">Seizoen:</span>
+        <a
+          href={~p"/seizoen?season=current"}
+          class={[
+            "rounded-lg px-3 py-1",
+            if(is_nil(@season), do: "bg-primary text-primary-content", else: "bg-base-200")
+          ]}
+        >
+          Huidig
+        </a>
+        <a
+          :for={s <- OpenInterclubs.Season.Archive.seasons()}
+          href={~p"/seizoen?season=#{s}"}
+          id={"season-#{s}"}
+          class={[
+            "rounded-lg px-3 py-1",
+            if(@season == s, do: "bg-primary text-primary-content", else: "bg-base-200")
+          ]}
+        >
+          {OpenInterclubs.Season.Archive.label(s)}
+        </a>
+        <span :if={@loaded_at && is_nil(@season)} id="last-update" class="ml-auto opacity-60">
+          Laatste update: {last_update(@loaded_at)}
+        </span>
+      </div>
 
       <.loading :if={!@loaded?} />
 
