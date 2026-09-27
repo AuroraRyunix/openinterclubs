@@ -84,6 +84,13 @@ defmodule OpenInterclubsWeb.TeamLive do
             <.link navigate={club_path(@team.club_id)} class="hover:text-primary">{@team.club_name}</.link>
           </:subtitle>
           <:actions>
+            <a
+              href={"/clubs/#{@team.club_id}/teams/#{@team.number}/calendar.ics"}
+              id="calendar"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-base-300 bg-base-100 px-3 py-1.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+            >
+              <.icon name="hero-calendar-days" class="size-4" /> Agenda (.ics)
+            </a>
             <.btn href={series_path(@team.series)}>Rangschikking</.btn>
           </:actions>
         </.page_header>
