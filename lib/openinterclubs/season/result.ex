@@ -4,7 +4,16 @@ defmodule OpenInterclubs.Season.Result do
   point of view ("1-0" = the home player won, whatever the colour).
   """
 
-  @type t :: :home | :draw | :visit | :home_ff | :visit_ff | :both_ff | nil
+  @type t ::
+          :home
+          | :draw
+          | :visit
+          | :home_ff
+          | :visit_ff
+          | :both_ff
+          | :home_half
+          | :visit_half
+          | nil
 
   @doc "Parse an API game, honouring an arbiter's `overruled` value."
   def parse(%{"overruled" => o} = g) when o not in [nil, "", "NOR"],
@@ -21,6 +30,11 @@ defmodule OpenInterclubs.Season.Result do
       "1-0FF" -> :home_ff
       "0-1FF" -> :visit_ff
       "0-0FF" -> :both_ff
+      # special results: one side scores ½, the other 0
+      d when d in ["½-0", "1/2-0"] -> :home_half
+      d when d in ["0-½", "0-1/2"] -> :visit_half
+      # a forfeited team match: no board results
+      "TEAMFF" -> :both_ff
       _ -> nil
     end
   end
@@ -30,6 +44,8 @@ defmodule OpenInterclubs.Season.Result do
   def score(r, :home) when r in [:home, :home_ff], do: 1.0
   def score(r, :visit) when r in [:visit, :visit_ff], do: 1.0
   def score(:draw, _), do: 0.5
+  def score(:home_half, :home), do: 0.5
+  def score(:visit_half, :visit), do: 0.5
   def score(nil, _), do: nil
   def score(_, _), do: 0.0
 

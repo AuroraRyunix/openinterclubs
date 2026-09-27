@@ -49,6 +49,9 @@ defmodule OpenInterclubs.Season.BuildTest do
     assert Result.parse(%{"result" => "½-½", "overruled" => "NOR"}) == :draw
     assert Result.parse(%{"result" => ""}) == nil
     assert Result.display(:home_ff) == "1F-0F"
+    assert Result.parse(%{"result" => "½-0"}) == :home_half
+    assert Result.score(:home_half, :home) == 0.5 and Result.score(:home_half, :visit) == 0.0
+    assert Result.parse(%{"result" => "Team FF"}) == :both_ff
   end
 
   test "tpr dp table is symmetric" do

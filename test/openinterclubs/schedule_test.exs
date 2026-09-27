@@ -20,7 +20,7 @@ defmodule OpenInterclubs.ScheduleTest do
     assert Enum.sort(rebuilt) == Enum.sort(real)
   end
 
-  test "keeps encounters the API did return and skips byes" do
+  test "keeps encounters the API did return; 10-team series use their own table" do
     assert Schedule.complete(@series) == @series
 
     small = %{
@@ -28,7 +28,11 @@ defmodule OpenInterclubs.ScheduleTest do
       "rounds" => [%{"round" => 1, "encounters" => []}]
     }
 
-    # 1-12 and 2-11 are byes in a 10-team series
-    assert length(hd(Schedule.complete(small)["rounds"])["encounters"]) == 4
+    # division 6: 10 teams use the KBSB 10-team table (5 matches a round)
+    assert [{1, 10}, {2, 9}, {3, 8}, {4, 7}, {5, 6}] =
+             for(
+               e <- hd(Schedule.complete(small)["rounds"])["encounters"],
+               do: {e["pairingnr_home"], e["pairingnr_visit"]}
+             )
   end
 end
