@@ -66,6 +66,9 @@ defmodule OpenInterclubsWeb.ClubLive do
             <.btn href={~p"/beheer/#{@club.id}/#{Season.current_round()}"}>
               <.icon name="hero-clipboard-document-list" class="size-4" /> Clubbeheer
             </.btn>
+            <.btn href={~p"/live/#{@club.id}"}>
+              <.icon name="hero-signal" class="size-4" /> Live
+            </.btn>
             <.btn href={~p"/clubs/#{@club.id}/vs/#{h2h_default(@club.id)}"}>
               <.icon name="hero-arrows-right-left" class="size-4" /> Onderlinge duels
             </.btn>

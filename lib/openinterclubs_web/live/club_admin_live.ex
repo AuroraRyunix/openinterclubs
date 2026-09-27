@@ -191,6 +191,16 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
             </:actions>
           </.page_header>
 
+          <p
+            :if={!@open and Enum.any?(@teams, &(ClubAdmin.filled(&1) < &1.nrgames))}
+            id="missing-lineups"
+            class="mb-4 rounded-lg bg-warning/20 px-4 py-2 text-sm"
+          >
+            Nog onvolledige opstelling: {@teams
+            |> Enum.filter(&(ClubAdmin.filled(&1) < &1.nrgames))
+            |> Enum.map_join(", ", &"#{&1.name} (#{ClubAdmin.filled(&1)}/#{&1.nrgames})")}
+          </p>
+
           <div :if={!@open} class="mb-6 flex flex-wrap items-center gap-3">
             <button
               id="validate"

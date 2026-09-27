@@ -26,6 +26,7 @@ defmodule OpenInterclubsWeb.Router do
     live "/clubs/:id", ClubLive
     live "/clubs/:id/teams/:number", TeamLive
     live "/clubs/:a/vs/:b", HeadToHeadLive
+    live "/live/:id", MatchdayLive
     live "/players/:id", PlayerLive
     live "/top", TopLive
     get "/clubs/:id/teams/:number/calendar.ics", CalendarController, :team

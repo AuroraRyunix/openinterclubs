@@ -62,4 +62,9 @@ defmodule OpenInterclubsWeb.SeasonPagesTest do
     OpenInterclubs.Season.put(OpenInterclubs.SeasonFixtures.model())
     assert render(view) =~ "2450"
   end
+
+  test "match day page shows the club's encounters of the round", %{conn: conn} do
+    {:ok, view, _} = live(conn, ~p"/live/401?round=1")
+    assert has_element?(view, "#live-4B-401-1")
+  end
 end
