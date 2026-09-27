@@ -99,10 +99,9 @@ defmodule OpenInterclubsWeb.Layouts do
     </main>
 
     <footer class="screen-only mx-auto max-w-6xl px-4 pb-10 pt-4 text-xs opacity-60 sm:px-6">
-      {t("Gegevens: publieke API van de")}
-      <a class="underline" href="https://www.frbe-kbsb-ksb.be">KBSB/FRBE</a>
-      · {t("Feedback of fout gezien?")}
-      <a class="underline" href="/feedback">{t("Laat het weten")}</a>
+      <a class="underline" href="https://github.com/AuroraRyunix/openinterclubs">
+        github.com/AuroraRyunix/openinterclubs
+      </a>
     </footer>
 
     <.flash_group flash={@flash} />

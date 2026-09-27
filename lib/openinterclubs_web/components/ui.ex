@@ -177,16 +177,11 @@ defmodule OpenInterclubsWeb.UI do
 
   attr :key, :any, required: true
   attr :class, :any, default: nil
-  attr :badge, :boolean, default: false
 
   def team_link(assigns) do
     ~H"""
-    <.link
-      navigate={team_path(@key)}
-      class={["inline-flex items-center gap-2 hover:text-primary hover:underline", @class]}
-    >
-      <.club_badge :if={@badge} id={elem(@key, 0)} />
-      <span>{team_name(@key)}</span>
+    <.link navigate={team_path(@key)} class={["hover:text-primary hover:underline", @class]}>
+      {team_name(@key)}
     </.link>
     """
   end
@@ -225,17 +220,12 @@ defmodule OpenInterclubsWeb.UI do
       navigate={match_path(@e)}
       class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-base-200"
     >
-      <span class={[
-        "flex min-w-0 items-center justify-end gap-2 text-right",
-        @highlight == @e.home && "font-semibold"
-      ]}>
-        <span class="truncate">{team_name(@e.home)}</span>
-        <.club_badge id={elem(@e.home, 0)} mobile={false} />
+      <span class={["truncate text-right", @highlight == @e.home && "font-semibold"]}>
+        {team_name(@e.home)}
       </span>
       <.score e={@e} />
-      <span class={["flex min-w-0 items-center gap-2", @highlight == @e.visit && "font-semibold"]}>
-        <.club_badge id={elem(@e.visit, 0)} mobile={false} />
-        <span class="truncate">{team_name(@e.visit)}</span>
+      <span class={["truncate", @highlight == @e.visit && "font-semibold"]}>
+        {team_name(@e.visit)}
       </span>
     </.link>
     """
@@ -298,60 +288,5 @@ defmodule OpenInterclubsWeb.UI do
       </table>
     </div>
     """
-  end
-
-  @badge_colors ~w(#1f3a5f #2e6f73 #5b4a86 #8a5a3c #3f6e3a #8a3f55 #4a5a78 #6f6326)
-  @particles ~w(de het van la le du des den der sk ksk kbsk kosk cercle club schaakclub schaakkring)
-
-  @doc "Round badge with a club's initials in a stable colour (clubs have no logos in the API)."
-  attr :id, :integer, required: true
-  attr :name, :string, default: nil
-  attr :size, :string, default: "sm", values: ~w(sm md lg)
-  attr :class, :any, default: nil
-  attr :mobile, :boolean, default: true, doc: "false hides the badge on small screens"
-
-  def club_badge(assigns) do
-    name = assigns.name || OpenInterclubsWeb.Fmt.club_name(assigns.id)
-
-    assigns =
-      assign(assigns,
-        initials: initials(name),
-        color: Enum.at(@badge_colors, rem(assigns.id || 0, length(@badge_colors)))
-      )
-
-    ~H"""
-    <span
-      aria-hidden="true"
-      style={"background:#{@color}"}
-      class={[
-        "shrink-0 place-items-center rounded-full font-bold text-white",
-        if(@mobile, do: "inline-grid", else: "hidden sm:inline-grid"),
-        @size == "sm" && "size-6 text-[0.6rem]",
-        @size == "md" && "size-9 text-xs",
-        @size == "lg" && "size-14 text-lg",
-        @class
-      ]}
-    >
-      {@initials}
-    </span>
-    """
-  end
-
-  @doc false
-  def initials(name) do
-    words =
-      name
-      |> to_string()
-      |> String.replace(~r/[^\p{L}\p{N} ]/u, " ")
-      |> String.split()
-
-    significant = Enum.reject(words, &(String.downcase(&1) in @particles))
-    words = if significant == [], do: words, else: significant
-
-    case words do
-      [] -> "?"
-      [w] -> w |> String.slice(0, 2) |> String.upcase()
-      [a, b | _] -> String.upcase(String.first(a) <> String.first(b))
-    end
   end
 end
