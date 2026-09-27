@@ -91,7 +91,7 @@ defmodule OpenInterclubsWeb.HomeLive do
               navigate={club_path(c.id)}
               class="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition hover:bg-base-200"
             >
-              <span>{c.name}</span>
+              <span class="flex items-center gap-2"><.club_badge id={c.id} name={c.name} />{c.name}</span>
               <span class="opacity-50">{c.id}</span>
             </.link>
           </div>
@@ -178,7 +178,9 @@ defmodule OpenInterclubsWeb.HomeLive do
                     navigate={club_path(c.id)}
                     class="flex justify-between rounded px-1 hover:text-primary"
                   >
-                    <span>{c.name}</span>
+                    <span class="flex items-center gap-2">
+                      <.club_badge id={c.id} name={c.name} />{c.name}
+                    </span>
                     <span class="opacity-40">{c.id}</span>
                   </.link>
                 </li>

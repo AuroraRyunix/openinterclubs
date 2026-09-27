@@ -60,6 +60,7 @@ defmodule OpenInterclubsWeb.ClubLive do
       <.loading :if={!@loaded?} />
       <p :if={@loaded? and is_nil(@club)}>{t("Deze club bestaat niet.")}</p>
       <div :if={@club}>
+        <div class="mb-2"><.club_badge id={@club.id} name={@club.name} size="lg" /></div>
         <.page_header kicker={"Club #{@club.id} · #{t(@club.province)}"} title={@club.name}>
           <:subtitle>{length(@teams)} ploegen · {length(@players)} spelers</:subtitle>
           <:actions>

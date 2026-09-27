@@ -83,7 +83,7 @@ defmodule OpenInterclubsWeb.DivisionLive do
                   class="border-t border-base-200 transition hover:bg-base-200/60"
                 >
                   <td class="py-2 pr-2 font-semibold opacity-60">{row.rank}</td>
-                  <td class="py-2"><.team_link key={row.team} /></td>
+                  <td class="py-2"><.team_link key={row.team} badge /></td>
                   <td class="px-2 text-center tabular-nums">{row.played}</td>
                   <td class="px-2 text-center tabular-nums">{row.won}</td>
                   <td class="px-2 text-center tabular-nums">{row.drawn}</td>
