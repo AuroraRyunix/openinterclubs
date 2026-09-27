@@ -42,6 +42,17 @@ defmodule OpenInterclubsWeb.ClubLive do
     )
   end
 
+  # First opponent of this club's first team, else any other club.
+  defp h2h_default(id) do
+    with [key | _] <- (Season.club(id) || %{teams: []}).teams,
+         [e | _] <- Season.team_encounters(key) do
+      opp = if e.home == key, do: e.visit, else: e.home
+      elem(opp, 0)
+    else
+      _ -> Season.clubs() |> Map.keys() |> Enum.find(id, &(&1 != id))
+    end
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -54,6 +65,9 @@ defmodule OpenInterclubsWeb.ClubLive do
           <:actions>
             <.btn href={~p"/beheer/#{@club.id}/#{Season.current_round()}"}>
               <.icon name="hero-clipboard-document-list" class="size-4" /> Clubbeheer
+            </.btn>
+            <.btn href={~p"/clubs/#{@club.id}/vs/#{h2h_default(@club.id)}"}>
+              <.icon name="hero-arrows-right-left" class="size-4" /> Onderlinge duels
             </.btn>
             <.btn href={~p"/print/#{@club.id}/#{Season.current_round()}"}>
               <.icon name="hero-printer" class="size-4" /> Fiches ronde {Season.current_round()}
