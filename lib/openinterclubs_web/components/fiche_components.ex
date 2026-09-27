@@ -7,68 +7,70 @@ defmodule OpenInterclubsWeb.FicheComponents do
 
   def fiche(assigns) do
     ~H"""
-    <div class="fiche">
-      <table class="fiche-head">
-        <tr>
-          <td>
-            AFDELING : <b>{@fiche.division}</b><br />DIVISION :
-          </td>
-          <td>REEKS : <b>{@fiche.index}</b><br />SERIE :</td>
-          <td>DATUM : <b>{format_date(@fiche.date)}</b><br />DATE :</td>
-          <td class="ronde">RONDE : <b>{@fiche.round}</b></td>
-        </tr>
-      </table>
-      <table class="fiche-body">
-        <thead>
+    <div class="fiche-scroll">
+      <div class="fiche">
+        <table class="fiche-head">
           <tr>
-            <th rowspan="2" class="nr">(5)</th>
-            <th rowspan="2" class="team">
-              VISITES THUISPLOEG
-              <div class="club">{@fiche.home.name} ({@fiche.home.idclub})</div>
-              <.side_actions :if={@editable} side="home" />
-            </th>
-            <th rowspan="2" class="team">
-              VISITEURS BEZOEKERS
-              <div class="club">{@fiche.visit.name} ({@fiche.visit.idclub})</div>
-              <.side_actions :if={@editable} side="visit" />
-            </th>
-            <th class="res">Uitslag<br />Résultat<br />(1)</th>
-            <th colspan="3">COMPUTER<br />ORDINATEUR</th>
-          </tr>
-          <tr>
-            <th></th>
-            <th class="id">(2)</th>
-            <th class="id">(3)</th>
-            <th class="res4">(4)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :for={b <- @fiche.boards}>
-            <td class="nr">{b.board}</td>
-            <td><.player fiche={@fiche} board={b} side={:home} editable={@editable} /></td>
-            <td><.player fiche={@fiche} board={b} side={:visit} editable={@editable} /></td>
-            <td class="res">-</td>
-            <td class="id">{b.home && b.home.idnumber}</td>
-            <td class="id">{b.visit && b.visit.idnumber}</td>
-            <td class="res4"></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="fiche-foot">
-        <div class="legend">
-          (1) Victoire / Winst = 1; Nulle / Remise = 1/2; Défaite / Verlies = 0; Forfait = -<br />
-          (2) Stamnummers thuisspelers / Matricules visités<br />
-          (3) Matricules visiteurs / Stamnummers bezoekers<br />
-          (4) Thuisspeler wint / Visité gagne = 1; Thuisspeler verliest / Visité perd = 0;
-          Remise / Nulle = 5; Forfait = -<br /> (5) Klub : naam en nummer / Club : nom et numéro
-        </div>
-        <table class="total">
-          <tr>
-            <td>Total<br />Totaal</td>
-            <td class="res">-</td>
+            <td>
+              AFDELING : <b>{@fiche.division}</b><br />DIVISION :
+            </td>
+            <td>REEKS : <b>{@fiche.index}</b><br />SERIE :</td>
+            <td>DATUM : <b>{format_date(@fiche.date)}</b><br />DATE :</td>
+            <td class="ronde">RONDE : <b>{@fiche.round}</b></td>
           </tr>
         </table>
-        <div class="sign"><i>Signatures<br />Handtekening</i></div>
+        <table class="fiche-body">
+          <thead>
+            <tr>
+              <th rowspan="2" class="nr">(5)</th>
+              <th rowspan="2" class="team">
+                VISITES THUISPLOEG
+                <div class="club">{@fiche.home.name} ({@fiche.home.idclub})</div>
+                <.side_actions :if={@editable} side="home" />
+              </th>
+              <th rowspan="2" class="team">
+                VISITEURS BEZOEKERS
+                <div class="club">{@fiche.visit.name} ({@fiche.visit.idclub})</div>
+                <.side_actions :if={@editable} side="visit" />
+              </th>
+              <th class="res">Uitslag<br />Résultat<br />(1)</th>
+              <th colspan="3">COMPUTER<br />ORDINATEUR</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th class="id">(2)</th>
+              <th class="id">(3)</th>
+              <th class="res4">(4)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr :for={b <- @fiche.boards}>
+              <td class="nr">{b.board}</td>
+              <td><.player fiche={@fiche} board={b} side={:home} editable={@editable} /></td>
+              <td><.player fiche={@fiche} board={b} side={:visit} editable={@editable} /></td>
+              <td class="res">-</td>
+              <td class="id">{b.home && b.home.idnumber}</td>
+              <td class="id">{b.visit && b.visit.idnumber}</td>
+              <td class="res4"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="fiche-foot">
+          <div class="legend">
+            (1) Victoire / Winst = 1; Nulle / Remise = 1/2; Défaite / Verlies = 0; Forfait = -<br />
+            (2) Stamnummers thuisspelers / Matricules visités<br />
+            (3) Matricules visiteurs / Stamnummers bezoekers<br />
+            (4) Thuisspeler wint / Visité gagne = 1; Thuisspeler verliest / Visité perd = 0;
+            Remise / Nulle = 5; Forfait = -<br /> (5) Klub : naam en nummer / Club : nom et numéro
+          </div>
+          <table class="total">
+            <tr>
+              <td>Total<br />Totaal</td>
+              <td class="res">-</td>
+            </tr>
+          </table>
+          <div class="sign"><i>Signatures<br />Handtekening</i></div>
+        </div>
       </div>
     </div>
     """

@@ -8,7 +8,17 @@ import JSZip from "../vendor/jszip.min.js"
 const MARGIN = 10 // mm
 
 async function fichePdf(el) {
-  const canvas = await html2canvas(el, {scale: 2, backgroundColor: "#ffffff", logging: false})
+  // Render at desktop width, whatever the device, so phones give the same PDF.
+  const canvas = await html2canvas(el, {
+    scale: 2,
+    backgroundColor: "#ffffff",
+    logging: false,
+    width: el.scrollWidth,
+    height: el.scrollHeight,
+    windowWidth: 1280,
+    scrollX: 0,
+    scrollY: 0
+  })
   const pdf = new jsPDF({orientation: "landscape", unit: "mm", format: "a4", compress: true})
   const pageW = pdf.internal.pageSize.getWidth() - 2 * MARGIN
   const pageH = pdf.internal.pageSize.getHeight() - 2 * MARGIN

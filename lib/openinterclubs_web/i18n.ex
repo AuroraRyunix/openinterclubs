@@ -188,7 +188,8 @@ defmodule OpenInterclubsWeb.I18n do
     "Limburg" => "Limbourg",
     "Luxemburg" => "Luxembourg",
     "Namen & Waals-Brabant" => "Namur & Brabant wallon",
-    "Andere" => "Autre"
+    "Andere" => "Autre",
+    "Veeg opzij om de volledige fiche te zien." => "Faites glisser pour voir toute la feuille."
   }
 
   @en %{
@@ -365,7 +366,8 @@ defmodule OpenInterclubsWeb.I18n do
     "Limburg" => "Limburg",
     "Luxemburg" => "Luxembourg",
     "Namen & Waals-Brabant" => "Namur & Walloon Brabant",
-    "Andere" => "Other"
+    "Andere" => "Other",
+    "Veeg opzij om de volledige fiche te zien." => "Swipe sideways to see the whole sheet."
   }
 
   def locale, do: Process.get(:oi_locale, "nl")

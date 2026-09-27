@@ -96,7 +96,7 @@ defmodule OpenInterclubsWeb.PrintLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="screen-only flex items-center gap-3 mb-6">
+      <div class="screen-only mb-6 flex flex-wrap items-center gap-3">
         <.link class="btn" navigate={~p"/fiche?#{%{club: @idclub, round: @round}}"}>{t("← Terug")}</.link>
         <button class="btn btn-primary" onclick="window.print()">{t("Alles afdrukken")}</button>
         <button :if={@fiches != []} id="export-pdfs" class="btn" phx-hook="ExportPdfs" data-zip={@zip}>

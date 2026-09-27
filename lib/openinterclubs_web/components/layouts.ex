@@ -38,31 +38,40 @@ defmodule OpenInterclubsWeb.Layouts do
   def app(assigns) do
     ~H"""
     <header class="screen-only sticky top-0 z-30 border-b border-base-300 bg-base-100/85 backdrop-blur">
-      <div class="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3 sm:px-6">
-        <a href="/" class="font-bold tracking-tight">OpenInterclubs</a>
-        <nav class="flex flex-1 gap-1 overflow-x-auto text-sm">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 sm:px-6 md:flex-nowrap md:py-3">
+        <a href="/" class="order-1 font-bold tracking-tight">OpenInterclubs</a>
+        <nav class="order-3 -mx-2 flex w-full gap-1 overflow-x-auto text-sm md:order-2 md:mx-0 md:w-auto md:flex-1">
           <.nav_link href={~p"/rounds"}>{t("Uitslagen")}</.nav_link>
           <.nav_link href={~p"/divisions"}>{t("Afdelingen")}</.nav_link>
           <.nav_link href={~p"/top"}>{t("Spelers")}</.nav_link>
           <.nav_link href={~p"/fiche"}>{t("Uitslagenfiche")}</.nav_link>
         </nav>
-        <a href={~p"/login"} class="text-sm opacity-75 hover:opacity-100">{t("KBSB-login")}</a>
-        <nav id="lang-switch" class="flex gap-1 text-xs font-semibold">
+        <div class="order-2 ml-auto flex items-center gap-3 md:order-3">
           <a
-            :for={l <- OpenInterclubsWeb.I18n.locales()}
-            href={"/taal?lang=#{l}"}
-            class={[
-              "rounded px-1.5 py-0.5 uppercase",
-              if(l == OpenInterclubsWeb.I18n.locale(),
-                do: "bg-base-300",
-                else: "opacity-60 hover:opacity-100"
-              )
-            ]}
+            href={~p"/login"}
+            title={t("KBSB-login")}
+            class="flex items-center gap-1 whitespace-nowrap text-sm opacity-75 hover:opacity-100"
           >
-            {l}
+            <.icon name="hero-user-circle" class="size-5" />
+            <span class="hidden sm:inline">{t("KBSB-login")}</span>
           </a>
-        </nav>
-        <.theme_toggle />
+          <nav id="lang-switch" class="flex gap-0.5 text-xs font-semibold">
+            <a
+              :for={l <- OpenInterclubsWeb.I18n.locales()}
+              href={"/taal?lang=#{l}"}
+              class={[
+                "rounded px-1.5 py-1 uppercase",
+                if(l == OpenInterclubsWeb.I18n.locale(),
+                  do: "bg-base-300",
+                  else: "opacity-60 hover:opacity-100"
+                )
+              ]}
+            >
+              {l}
+            </a>
+          </nav>
+          <div class="hidden sm:block"><.theme_toggle /></div>
+        </div>
       </div>
     </header>
 

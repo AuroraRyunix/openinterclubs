@@ -66,15 +66,15 @@ defmodule OpenInterclubsWeb.TopLive do
         for={@form}
         id="top-filter"
         phx-change="filter"
-        class="mb-6 flex flex-wrap items-end gap-4"
+        class="mb-6 flex flex-wrap items-end gap-x-4 gap-y-2"
       >
         <div class="w-40">
           <.input field={@form[:min]} type="number" min="0" label={t("Min. partijen")} />
         </div>
-        <div class="w-72">
+        <div class="w-full sm:w-72">
           <.input field={@form[:q]} type="search" label={t("Naam")} phx-debounce="200" />
         </div>
-        <div class="flex gap-1 pb-2 text-sm">
+        <div class="flex flex-wrap items-center gap-1 pb-2 text-sm">
           <span class="mr-1 self-center opacity-60">{t("Sorteer:")}</span>
           <.link
             :for={
@@ -89,7 +89,7 @@ defmodule OpenInterclubsWeb.TopLive do
             }
             patch={~p"/top?#{link_params(@filters, %{"sort" => s, "page" => 1})}"}
             class={[
-              "rounded-lg px-3 py-1",
+              "whitespace-nowrap rounded-lg px-3 py-1",
               if(@filters["sort"] == s, do: "bg-primary text-primary-content", else: "bg-base-200")
             ]}
           >

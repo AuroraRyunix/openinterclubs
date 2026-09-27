@@ -120,6 +120,43 @@ defmodule OpenInterclubsWeb.FicheLive do
      assign(socket, fiche: Fiche.clear(socket.assigns.fiche, String.to_existing_atom(side)))}
   end
 
+  # Phones: one row per board with both players, instead of the small
+  # dropdowns inside the sheet (which then only shows names).
+  attr :fiche, :any, required: true
+
+  defp mobile_editor(assigns) do
+    ~H"""
+    <div id="mobile-editor" class="screen-only mb-4 space-y-2 md:hidden">
+      <div class="grid grid-cols-[1.5rem_1fr_1fr] gap-2 px-1 text-xs font-semibold opacity-60">
+        <span></span>
+        <span class="truncate">{@fiche.home.name}</span>
+        <span class="truncate">{@fiche.visit.name}</span>
+      </div>
+      <div
+        :for={b <- @fiche.boards}
+        class="grid grid-cols-[1.5rem_1fr_1fr] items-center gap-2 rounded-xl bg-base-200 p-2"
+      >
+        <span class="text-center text-sm font-bold opacity-60">{b.board}</span>
+        <form :for={side <- [:home, :visit]} phx-change="set_player" id={"m-board-#{b.board}-#{side}"}>
+          <input type="hidden" name="board" value={b.board} />
+          <input type="hidden" name="side" value={side} />
+          <select
+            name="idnumber"
+            class="w-full rounded-lg border border-base-300 bg-base-100 px-2 py-2 text-sm"
+          >
+            <option value="">—</option>
+            {Phoenix.HTML.Form.options_for_select(
+              Map.fetch!(@fiche, side).options,
+              (current = Map.get(b, side)) && current.idnumber
+            )}
+          </select>
+        </form>
+      </div>
+      <p class="px-1 text-xs opacity-60">{t("Veeg opzij om de volledige fiche te zien.")}</p>
+    </div>
+    """
+  end
+
   defp select(params, socket) do
     params =
       params
@@ -175,12 +212,12 @@ defmodule OpenInterclubsWeb.FicheLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <form id="select-form" phx-change="select" class="screen-only flex flex-wrap gap-3 mb-6">
+      <form id="select-form" phx-change="select" class="screen-only mb-6 flex flex-wrap gap-3">
         <input
           id="club-search"
           name="club"
           list="club-list"
-          class="input w-80"
+          class="input w-full sm:w-80"
           placeholder={t("Zoek club op naam of nummer…")}
           autocomplete="off"
           phx-debounce="200"
@@ -208,7 +245,7 @@ defmodule OpenInterclubsWeb.FicheLive do
         </select>
       </form>
 
-      <div :if={@club && @round} class="screen-only flex gap-3 mb-4">
+      <div :if={@club && @round} class="screen-only mb-4 flex flex-wrap gap-3">
         <button
           :if={@fiche && @own_side}
           id="fill-all"
@@ -255,6 +292,7 @@ defmodule OpenInterclubsWeb.FicheLive do
         )}
       </p>
 
+      <.mobile_editor :if={@fiche} fiche={@fiche} />
       <.fiche :if={@fiche} fiche={@fiche} editable />
     </Layouts.app>
     """

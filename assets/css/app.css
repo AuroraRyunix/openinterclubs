@@ -111,7 +111,16 @@
   font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
   padding: 16px;
-  max-width: 900px;
+  /* Always the full A4 sheet, also on phones (scroll sideways), so the PDF
+     export looks the same from every device. */
+  width: 1000px;
+  box-sizing: border-box;
+}
+.fiche-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+/* On phones players are chosen in the list above the sheet, not in it. */
+@media (max-width: 767px) {
+  .fiche .screen-only { display: none !important; }
+  .fiche .print-only { display: inline; }
 }
 .fiche table { border-collapse: collapse; width: 100%; }
 .fiche-head td { border: 1px solid #000; border-right: 0; border-left: 0; padding: 8px 14px; vertical-align: top; }
@@ -138,7 +147,8 @@
   .screen-only, .navbar, #flash-group { display: none !important; }
   .print-only { display: inline; }
   body { background: #fff !important; }
-  .fiche { padding: 0; max-width: none; }
+  .fiche { padding: 0; width: auto; }
+  .fiche-scroll { overflow: visible; }
   .page { break-after: page; }
   .page:last-child { break-after: auto; }
 }
