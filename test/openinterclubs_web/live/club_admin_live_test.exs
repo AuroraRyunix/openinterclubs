@@ -139,4 +139,18 @@ defmodule OpenInterclubsWeb.ClubAdminLiveTest do
              "result" => "1-0"
            }
   end
+
+  test "confirm as captain sends the member number for the own side", %{conn: conn} do
+    stub(date: "2000-01-01")
+    conn = init_test_session(conn, kbsb_token: "tok", kbsb_idnumber: 12345)
+    {:ok, view, _} = live(conn, ~p"/beheer/472/1")
+
+    view |> element("#confirm-2A-2") |> render_click()
+    view |> element("#save-results-2A-2") |> render_click()
+
+    assert_received {:put, "icresults", %{"results" => [item]}}
+    assert item["signhome_idnumber"] == 12345
+    assert is_binary(item["signhome_ts"])
+    refute Map.has_key?(item, "signvisit_idnumber")
+  end
 end

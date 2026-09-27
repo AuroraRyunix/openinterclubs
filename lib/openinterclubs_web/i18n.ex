@@ -197,7 +197,10 @@ defmodule OpenInterclubsWeb.I18n do
     "Geen beheerrechten gevonden voor je eigen club. Kies hieronder een club." =>
       "Aucun droit de gestion trouvé pour votre club. Choisissez un club ci-dessous.",
     "Je ziet enkel clubs waarvoor de KBSB je rechten geeft." =>
-      "Seuls les clubs pour lesquels la FRBE vous donne des droits s'ouvrent."
+      "Seuls les clubs pour lesquels la FRBE vous donne des droits s'ouvrent.",
+    "Bevestigen als kapitein" => "Confirmer en tant que capitaine",
+    "Bevestigd door thuiskapitein" => "Confirmé par le capitaine visité",
+    "Bevestigd door uitkapitein" => "Confirmé par le capitaine visiteur"
   }
 
   @en %{
@@ -383,7 +386,10 @@ defmodule OpenInterclubsWeb.I18n do
     "Geen beheerrechten gevonden voor je eigen club. Kies hieronder een club." =>
       "No admin rights found for your own club. Pick a club below.",
     "Je ziet enkel clubs waarvoor de KBSB je rechten geeft." =>
-      "Only clubs the KBSB gives you rights for will open."
+      "Only clubs the KBSB gives you rights for will open.",
+    "Bevestigen als kapitein" => "Confirm as captain",
+    "Bevestigd door thuiskapitein" => "Confirmed by home captain",
+    "Bevestigd door uitkapitein" => "Confirmed by away captain"
   }
 
   def locale, do: Process.get(:oi_locale, "nl")

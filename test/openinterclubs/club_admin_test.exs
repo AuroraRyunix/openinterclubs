@@ -65,4 +65,37 @@ defmodule OpenInterclubs.ClubAdminTest do
     # last Sunday of March 2027 is the 28th: already summer time
     assert ClubAdmin.round_open?("2027-03-28", ~U[2027-03-28 12:00:00Z])
   end
+
+  test "confirming signs only the club's own side" do
+    [home_team] = ClubAdmin.teams(club_series(), 472, 1)
+    now = ~U[2026-09-27 16:00:00Z]
+
+    item = ClubAdmin.result_item(home_team, confirm_by: 12345, now: now)
+    assert %{signhome_idnumber: 12345, signhome_ts: "2026-09-27T16:00:00Z"} = item
+    refute Map.has_key?(item, :signvisit_idnumber)
+
+    [away_team] = ClubAdmin.teams(club_series(), 402, 1)
+    item = ClubAdmin.result_item(away_team, confirm_by: 777, now: now)
+    assert %{signvisit_idnumber: 777} = item
+    refute Map.has_key?(item, :signhome_idnumber)
+
+    # without confirming, no signature fields at all
+    refute Map.has_key?(ClubAdmin.result_item(home_team), :signhome_idnumber)
+  end
+
+  test "existing signatures are read from the encounter" do
+    [s] = club_series()
+    [r] = s["rounds"]
+
+    enc =
+      Enum.map(
+        r["encounters"],
+        &Map.merge(&1, %{"signhome_idnumber" => 14108, "signhome_ts" => "2026-09-27T17:00:00Z"})
+      )
+
+    series = [%{s | "rounds" => [%{r | "encounters" => enc}]}]
+
+    [t] = ClubAdmin.teams(series, 472, 1)
+    assert t.signatures == %{home: %{idnumber: 14108, ts: "2026-09-27T17:00:00Z"}, visit: nil}
+  end
 end

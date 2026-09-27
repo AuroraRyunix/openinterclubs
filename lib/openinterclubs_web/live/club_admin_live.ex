@@ -19,6 +19,8 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
         idclub: idclub,
         round: round,
         token: token,
+        idnumber: session["kbsb_idnumber"],
+        confirm: MapSet.new(),
         errors: nil,
         saved_at: nil,
         page_title: "Clubbeheer"
@@ -129,11 +131,23 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
     end
   end
 
-  def handle_event("save_results", %{"team" => key}, socket) do
-    %{token: token, teams: teams} = socket.assigns
-    team = Enum.find(teams, &(&1.key == key))
+  def handle_event("toggle_confirm", %{"team" => key}, socket) do
+    confirm = socket.assigns.confirm
 
-    case team && Kbsb.save_results(token, [ClubAdmin.result_item(team)]) do
+    confirm =
+      if MapSet.member?(confirm, key),
+        do: MapSet.delete(confirm, key),
+        else: MapSet.put(confirm, key)
+
+    {:noreply, assign(socket, confirm: confirm)}
+  end
+
+  def handle_event("save_results", %{"team" => key}, socket) do
+    %{token: token, teams: teams, confirm: confirm, idnumber: idnumber} = socket.assigns
+    team = Enum.find(teams, &(&1.key == key))
+    confirm_by = if MapSet.member?(confirm, key) and is_integer(idnumber), do: idnumber
+
+    case team && Kbsb.save_results(token, [ClubAdmin.result_item(team, confirm_by: confirm_by)]) do
       :ok ->
         {:noreply, socket |> load() |> put_flash(:info, "Uitslag van #{team.name} opgeslagen.")}
 
@@ -288,7 +302,30 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
                 </tr>
               </table>
 
-              <div :if={@open} class="mt-3 flex justify-end">
+              <p :for={{side, s} <- signatures(t)} class="mt-2 text-xs text-success">
+                ✓ {t(
+                  if side == :home,
+                    do: "Bevestigd door thuiskapitein",
+                    else: "Bevestigd door uitkapitein"
+                )}
+                {name(@names, s.idnumber)} ({s.idnumber}) · {format_ts(s.ts)}
+              </p>
+
+              <div :if={@open} class="mt-3 flex flex-wrap items-center justify-end gap-3">
+                <label
+                  :if={is_integer(@idnumber)}
+                  class="flex cursor-pointer items-center gap-2 text-sm"
+                >
+                  <input
+                    type="checkbox"
+                    id={"confirm-#{t.key}"}
+                    phx-click="toggle_confirm"
+                    phx-value-team={t.key}
+                    checked={MapSet.member?(@confirm, t.key)}
+                    class="size-4"
+                  />
+                  {t("Bevestigen als kapitein")}
+                </label>
                 <button
                   id={"save-results-#{t.key}"}
                   phx-click="save_results"
@@ -305,6 +342,19 @@ defmodule OpenInterclubsWeb.ClubAdminLive do
       <% end %>
     </Layouts.app>
     """
+  end
+
+  defp signatures(team) do
+    for side <- [:home, :visit], s = team.signatures[side], s, do: {side, s}
+  end
+
+  defp format_ts(nil), do: ""
+
+  defp format_ts(ts) when is_binary(ts) do
+    case DateTime.from_iso8601(ts) do
+      {:ok, dt, _} -> Calendar.strftime(dt, "%d/%m %H:%M UTC")
+      _ -> ts
+    end
   end
 
   defp players(idclub) do

@@ -51,11 +51,19 @@ defmodule OpenInterclubs.ClubAdmin do
         lineup: Enum.map(games, &nonzero(&1[own])),
         opponent_lineup: Enum.map(games, &nonzero(&1[opp])),
         results: Enum.map(games, &(&1["result"] || "")),
-        played: e["played"] == true
+        played: e["played"] == true,
+        # Existing captain confirmations (member number + time) per side.
+        signatures: %{
+          home: sig(e["signhome_idnumber"], e["signhome_ts"]),
+          visit: sig(e["signvisit_idnumber"], e["signvisit_ts"])
+        }
       }
     end
     |> Enum.sort_by(&{&1.division, &1.index, &1.name})
   end
+
+  defp sig(id, ts) when is_integer(id) and id > 0, do: %{idnumber: id, ts: ts}
+  defp sig(_, _), do: nil
 
   defp pad(games, n), do: games ++ List.duplicate(%{}, max(n - length(games), 0))
 
@@ -101,8 +109,13 @@ defmodule OpenInterclubs.ClubAdmin do
     }
   end
 
-  @doc "Payload item for `clb/icresults` for one team's encounter."
-  def result_item(team) do
+  @doc """
+  Payload item for `clb/icresults` for one team's encounter. With
+  `confirm_by: idnumber` the result is signed for the club's OWN side
+  (signhome_* when playing home, signvisit_* when away); the other side's
+  signature is left untouched (the backend only sets non-zero values).
+  """
+  def result_item(team, opts \\ []) do
     {home, visit} =
       if team.playinghome,
         do: {team.lineup, team.opponent_lineup},
@@ -128,13 +141,24 @@ defmodule OpenInterclubs.ClubAdmin do
             %{idnumber_home: h || 0, idnumber_visit: v || 0, result: r}
           end)
       },
-      %{
-        icclub_home: team.encounter["icclub_home"],
-        icclub_visit: team.encounter["icclub_visit"],
-        pairingnr_home: team.encounter["pairingnr_home"],
-        pairingnr_visit: team.encounter["pairingnr_visit"]
-      }
+      signature(team, opts[:confirm_by], opts[:now] || DateTime.utc_now())
     )
+    |> Map.merge(%{
+      icclub_home: team.encounter["icclub_home"],
+      icclub_visit: team.encounter["icclub_visit"],
+      pairingnr_home: team.encounter["pairingnr_home"],
+      pairingnr_visit: team.encounter["pairingnr_visit"]
+    })
+  end
+
+  defp signature(_team, nil, _now), do: %{}
+
+  defp signature(team, idnumber, now) when is_integer(idnumber) do
+    ts = now |> DateTime.truncate(:second) |> DateTime.to_iso8601()
+
+    if team.playinghome,
+      do: %{signhome_idnumber: idnumber, signhome_ts: ts},
+      else: %{signvisit_idnumber: idnumber, signvisit_ts: ts}
   end
 
   @doc """
