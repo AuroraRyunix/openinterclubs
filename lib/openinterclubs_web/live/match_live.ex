@@ -37,7 +37,7 @@ defmodule OpenInterclubsWeb.MatchLive do
           )}</.link>
           · {date(@e.date)}
         </p>
-        <div class="mb-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 rounded-3xl bg-base-200 px-6 py-8">
+        <div class="mb-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 rounded-md bg-base-200 px-6 py-8">
           <div class="text-right">
             <.team_link key={@e.home} class="text-xl font-bold sm:text-2xl" badge />
             <p class="text-xs uppercase opacity-50">{t("Thuis")}</p>

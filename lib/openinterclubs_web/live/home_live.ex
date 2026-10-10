@@ -84,7 +84,7 @@ defmodule OpenInterclubsWeb.HomeLive do
         </form>
 
         <div :if={@results} id="search-results" class="mt-4 grid max-w-3xl gap-4 sm:grid-cols-2">
-          <div :if={@results.clubs != []} class="rounded-2xl bg-base-100 p-3 shadow-sm">
+          <div :if={@results.clubs != []} class="rounded-md bg-base-100 p-3 shadow-sm">
             <p class="px-2 pb-1 text-xs font-semibold uppercase opacity-50">{t("Clubs")}</p>
             <.link
               :for={c <- @results.clubs}
@@ -95,7 +95,7 @@ defmodule OpenInterclubsWeb.HomeLive do
               <span class="opacity-50">{c.id}</span>
             </.link>
           </div>
-          <div :if={@results.players != []} class="rounded-2xl bg-base-100 p-3 shadow-sm">
+          <div :if={@results.players != []} class="rounded-md bg-base-100 p-3 shadow-sm">
             <p class="px-2 pb-1 text-xs font-semibold uppercase opacity-50">{t("Spelers")}</p>
             <.link
               :for={p <- @results.players}

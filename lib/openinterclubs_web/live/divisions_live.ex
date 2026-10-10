@@ -32,7 +32,7 @@ defmodule OpenInterclubsWeb.DivisionsLive do
             :for={s <- series}
             navigate={series_path(s.key)}
             id={"division-#{s.label}"}
-            class="group rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
+            class="group rounded-md border border-base-300 bg-base-100 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
           >
             <div class="mb-2 flex items-baseline justify-between">
               <span class="text-2xl font-extrabold">{s.label}</span>

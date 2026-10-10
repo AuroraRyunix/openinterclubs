@@ -16,12 +16,12 @@ defmodule OpenInterclubsWeb.UI do
 
   def page_header(assigns) do
     ~H"""
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-base-300 pb-4">
       <div>
         <p :if={@kicker} class="text-xs font-semibold uppercase tracking-widest text-primary">
           {@kicker}
         </p>
-        <h1 class="text-3xl font-bold tracking-tight">{@title}</h1>
+        <h1 class="text-3xl font-bold tracking-tight text-primary">{@title}</h1>
         <p :if={@subtitle != []} class="mt-1 text-sm opacity-70">{render_slot(@subtitle)}</p>
       </div>
       <div :if={@actions != []} class="flex flex-wrap gap-2">{render_slot(@actions)}</div>
@@ -38,7 +38,7 @@ defmodule OpenInterclubsWeb.UI do
     ~H"""
     <section
       class={[
-        "rounded-2xl border border-base-300 bg-base-100 shadow-sm transition-shadow hover:shadow-md",
+        "rounded-md border border-base-300 bg-base-100",
         @class
       ]}
       {@rest}

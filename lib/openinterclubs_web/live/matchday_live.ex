@@ -53,7 +53,7 @@ defmodule OpenInterclubsWeb.MatchdayLive do
           :for={e <- @encounters}
           navigate={match_path(e)}
           id={"live-#{series_slug(e.series)}-#{elem(e.home, 0)}-#{elem(e.home, 1)}"}
-          class="mb-3 block rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm transition active:scale-[0.99]"
+          class="mb-3 block rounded-md border border-base-300 bg-base-100 p-4 shadow-sm transition active:scale-[0.99]"
         >
           <div class="mb-2 flex items-center justify-between gap-2">
             <div class="min-w-0">

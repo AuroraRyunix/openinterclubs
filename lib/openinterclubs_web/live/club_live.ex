@@ -97,7 +97,7 @@ defmodule OpenInterclubsWeb.ClubLive do
           <.link
             :for={t <- @teams}
             navigate={team_path(t.team.key)}
-            class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
+            class="rounded-md border border-base-300 bg-base-100 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
           >
             <p class="text-xs uppercase opacity-50">
               {t("Reeks %{s}", s: series_slug(t.team.series))}

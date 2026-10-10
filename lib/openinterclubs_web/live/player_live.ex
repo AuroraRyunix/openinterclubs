@@ -27,8 +27,8 @@ defmodule OpenInterclubsWeb.PlayerLive do
       <.loading :if={!@loaded?} />
       <p :if={@loaded? and is_nil(@p)}>{t("Speler niet gevonden in de interclub-lijsten.")}</p>
       <div :if={@p}>
-        <div class="mb-8 flex flex-wrap items-center gap-6 rounded-3xl bg-gradient-to-br from-primary/15 via-base-200 to-base-100 p-6 sm:p-8">
-          <div class="grid size-20 place-items-center rounded-2xl bg-primary text-3xl font-extrabold text-primary-content shadow">
+        <div class="mb-8 flex flex-wrap items-center gap-6 rounded-md border border-base-300 bg-base-100 p-6 sm:p-8">
+          <div class="grid size-20 place-items-center rounded-md bg-primary text-3xl font-extrabold text-primary-content shadow">
             {String.first(@p.first_name || "?")}{String.first(@p.last_name || "")}
           </div>
           <div class="flex-1">
