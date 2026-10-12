@@ -204,7 +204,7 @@ defmodule OpenInterclubsWeb.UI do
       <.link navigate={player_path(@id)} class={["hover:text-primary hover:underline", @class]}>
         {player_name(@id)}
       </.link>
-      <span class="ml-1 text-xs tabular-nums opacity-50" title={t("Stamnummer")}>{@id}</span>
+      <span class="ml-1 text-xs tabular-nums opacity-50" title={t("Stamnummer")}>#{@id}</span>
     <% else %>
       <span class="opacity-40">—</span>
     <% end %>

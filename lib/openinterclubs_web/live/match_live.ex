@@ -78,7 +78,9 @@ defmodule OpenInterclubsWeb.MatchLive do
                 <td class="w-8 py-2.5 font-semibold opacity-50">{g.board}</td>
                 <td class="text-right">
                   <.player_link id={g.home} />
-                  <span class="ml-1 text-xs tabular-nums opacity-50">{player_rating(g.home)}</span>
+                  <span class="ml-1 text-xs font-bold tabular-nums" title="Rating">{player_rating(
+                    g.home
+                  )}</span>
                 </td>
                 <td class="w-8 text-center">
                   <.color_dot color={if g.white == :home, do: :white, else: :black} />
@@ -91,7 +93,9 @@ defmodule OpenInterclubsWeb.MatchLive do
                 </td>
                 <td>
                   <.player_link id={g.visit} />
-                  <span class="ml-1 text-xs tabular-nums opacity-50">{player_rating(g.visit)}</span>
+                  <span class="ml-1 text-xs font-bold tabular-nums" title="Rating">{player_rating(
+                    g.visit
+                  )}</span>
                 </td>
               </tr>
             </tbody>
