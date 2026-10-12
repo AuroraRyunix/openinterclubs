@@ -203,7 +203,8 @@ defmodule OpenInterclubsWeb.I18n do
     "Bevestigd door uitkapitein" => "Confirmé par le capitaine visiteur",
     "Mgmt" => "Mgmt",
     "%{n} partijen zonder forfait" => "%{n} parties sans forfait",
-    "vanaf %{n} partijen" => "à partir de %{n} parties"
+    "vanaf %{n} partijen" => "à partir de %{n} parties",
+    "Bijgewerkt" => "Mis à jour"
   }
 
   @en %{
@@ -395,7 +396,8 @@ defmodule OpenInterclubsWeb.I18n do
     "Bevestigd door uitkapitein" => "Confirmed by away captain",
     "Mgmt" => "Mgmt",
     "%{n} partijen zonder forfait" => "%{n} games without forfeits",
-    "vanaf %{n} partijen" => "from %{n} games"
+    "vanaf %{n} partijen" => "from %{n} games",
+    "Bijgewerkt" => "Updated"
   }
 
   def locale, do: Process.get(:oi_locale, "nl")

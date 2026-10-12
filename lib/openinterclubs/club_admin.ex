@@ -183,7 +183,8 @@ defmodule OpenInterclubs.ClubAdmin do
 
   # EU summer time: from the last Sunday of March to the last Sunday of
   # October (switch at 01:00 UTC; a 14:00 start is never near the switch).
-  defp summer_time?(%Date{year: y} = d) do
+  @doc false
+  def summer_time?(%Date{year: y} = d) do
     Date.compare(d, last_sunday(y, 3)) != :lt and Date.compare(d, last_sunday(y, 10)) == :lt
   end
 

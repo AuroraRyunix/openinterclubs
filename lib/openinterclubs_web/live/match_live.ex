@@ -61,6 +61,9 @@ defmodule OpenInterclubsWeb.MatchLive do
           </div>
         </div>
 
+        <p id="match-updated" class="mb-2 text-right text-xs opacity-60">
+          {t("Bijgewerkt")} {updated_at()}
+        </p>
         <div class="mb-4 flex justify-end">
           <.btn href={fiche_path(@e)} id="to-fiche">
             <.icon name="hero-printer" class="size-4" /> Uitslagenfiche
@@ -97,6 +100,19 @@ defmodule OpenInterclubsWeb.MatchLive do
       </div>
     </Layouts.app>
     """
+  end
+
+  defp updated_at do
+    case Season.loaded_at() do
+      %DateTime{} = dt ->
+        offset =
+          if OpenInterclubs.ClubAdmin.summer_time?(DateTime.to_date(dt)), do: 7200, else: 3600
+
+        dt |> DateTime.add(offset) |> Calendar.strftime("%H:%M")
+
+      _ ->
+        "–"
+    end
   end
 
   defp player_rating(nil), do: ""

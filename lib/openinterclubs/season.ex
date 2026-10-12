@@ -194,12 +194,28 @@ defmodule OpenInterclubs.Season do
     {:noreply, state}
   end
 
-  # Sundays (match day) refresh every 2 minutes, otherwise every 15.
-  defp interval do
-    if Date.day_of_week(Date.utc_today()) == 7, do: :timer.minutes(2), else: :timer.minutes(15)
+  @doc """
+  Refresh interval: every minute on a round date between 14:00 and 20:00
+  Belgian time (results and lineups change then), otherwise every 5 minutes.
+  """
+  def interval(now \\ DateTime.utc_now()) do
+    if match_window?(now), do: :timer.minutes(1), else: :timer.minutes(5)
+  end
+
+  defp match_window?(now) do
+    offset = if OpenInterclubs.ClubAdmin.summer_time?(DateTime.to_date(now)), do: 2, else: 1
+    local = DateTime.add(now, offset * 3600)
+    date = DateTime.to_date(local)
+
+    local.hour in 14..19 and
+      Enum.any?(rounds(), &(&1.date && Date.compare(&1.date, date) == :eq))
   end
 
   defp load do
+    # Series data must be fresh on every refresh; player lists may use the
+    # normal 5 minute cache.
+    OpenInterclubs.Kbsb.Cache.delete_matching(&String.starts_with?(&1, "/icresults"))
+
     with {:ok, clubs} <- Kbsb.clubs() do
       clubs = Enum.filter(clubs, &(&1["teams"] != []))
 
