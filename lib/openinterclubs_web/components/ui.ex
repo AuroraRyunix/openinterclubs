@@ -256,7 +256,7 @@ defmodule OpenInterclubsWeb.UI do
       <table class="w-full text-sm">
         <thead class="text-left text-xs uppercase opacity-60">
           <tr>
-            <th :if={@offset > 0 or @show_club} class="py-2 pr-2">#</th>
+            <th class="py-2 pr-2">#</th>
             <th class="py-2">{t("Speler")}</th>
             <th :if={@show_club} class="py-2">{t("Club")}</th>
             <th class="px-2 text-right">{t("Rating")}</th>
@@ -272,7 +272,7 @@ defmodule OpenInterclubsWeb.UI do
             :for={{p, i} <- Enum.with_index(@players, @offset + 1)}
             class="border-t border-base-200 transition hover:bg-base-200/60"
           >
-            <td :if={@offset > 0 or @show_club} class="py-2 pr-2 opacity-50">{i}</td>
+            <td class="py-2 pr-2 opacity-50">{i}</td>
             <td class="py-2">
               <.player_link id={p.id} />
               <span :if={p.titular} class="ml-1 text-xs opacity-50">{p.titular}</span>

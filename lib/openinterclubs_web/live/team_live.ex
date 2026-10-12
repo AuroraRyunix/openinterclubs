@@ -151,6 +151,7 @@ defmodule OpenInterclubsWeb.TeamLive do
             <table class="w-full text-sm">
               <thead class="text-left text-xs uppercase opacity-60">
                 <tr>
+                  <th class="py-2 pr-2">#</th>
                   <th class="py-2">{t("Speler")}</th>
                   <th class="px-2 text-right">{t("Rating")}</th>
                   <th class="px-2">{t("Borden")}</th>
@@ -159,10 +160,15 @@ defmodule OpenInterclubsWeb.TeamLive do
               </thead>
               <tbody>
                 <tr
-                  :for={l <- @lineup}
-                  :if={is_nil(@board) or Map.has_key?(l.boards, @board)}
+                  :for={
+                    {l, n} <-
+                      @lineup
+                      |> Enum.filter(&(is_nil(@board) or Map.has_key?(&1.boards, @board)))
+                      |> Enum.with_index(1)
+                  }
                   class="border-t border-base-200"
                 >
+                  <td class="py-2 pr-2 opacity-50">{n}</td>
                   <td class="py-2"><.player_link id={l.id} /></td>
                   <td class="px-2 text-right tabular-nums">{l.player && rating(l.player.rating)}</td>
                   <td class="px-2 text-xs opacity-70">
