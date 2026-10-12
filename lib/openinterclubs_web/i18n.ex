@@ -204,7 +204,8 @@ defmodule OpenInterclubsWeb.I18n do
     "Mgmt" => "Mgmt",
     "%{n} partijen zonder forfait" => "%{n} parties sans forfait",
     "vanaf %{n} partijen" => "à partir de %{n} parties",
-    "Bijgewerkt" => "Mis à jour"
+    "Bijgewerkt" => "Mis à jour",
+    "Clubnummer" => "Numéro du club"
   }
 
   @en %{
@@ -397,7 +398,8 @@ defmodule OpenInterclubsWeb.I18n do
     "Mgmt" => "Mgmt",
     "%{n} partijen zonder forfait" => "%{n} games without forfeits",
     "vanaf %{n} partijen" => "from %{n} games",
-    "Bijgewerkt" => "Updated"
+    "Bijgewerkt" => "Updated",
+    "Clubnummer" => "Club number"
   }
 
   def locale, do: Process.get(:oi_locale, "nl")

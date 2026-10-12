@@ -178,6 +178,7 @@ defmodule OpenInterclubsWeb.UI do
   attr :key, :any, required: true
   attr :class, :any, default: nil
   attr :badge, :boolean, default: false
+  attr :number, :boolean, default: false, doc: "also show the club number"
 
   def team_link(assigns) do
     ~H"""
@@ -187,6 +188,9 @@ defmodule OpenInterclubsWeb.UI do
     >
       <.club_badge :if={@badge} id={elem(@key, 0)} />
       <span>{team_name(@key)}</span>
+      <span :if={@number} class="text-xs font-normal tabular-nums opacity-50" title={t("Clubnummer")}>
+        {elem(@key, 0)}
+      </span>
     </.link>
     """
   end
@@ -200,6 +204,7 @@ defmodule OpenInterclubsWeb.UI do
       <.link navigate={player_path(@id)} class={["hover:text-primary hover:underline", @class]}>
         {player_name(@id)}
       </.link>
+      <span class="ml-1 text-xs tabular-nums opacity-50" title={t("Stamnummer")}>{@id}</span>
     <% else %>
       <span class="opacity-40">—</span>
     <% end %>
