@@ -205,7 +205,8 @@ defmodule OpenInterclubsWeb.I18n do
     "%{n} partijen zonder forfait" => "%{n} parties sans forfait",
     "vanaf %{n} partijen" => "à partir de %{n} parties",
     "Bijgewerkt" => "Mis à jour",
-    "Clubnummer" => "Numéro du club"
+    "Clubnummer" => "Numéro du club",
+    "Exporteren naar Excel" => "Exporter vers Excel"
   }
 
   @en %{
@@ -399,7 +400,8 @@ defmodule OpenInterclubsWeb.I18n do
     "%{n} partijen zonder forfait" => "%{n} games without forfeits",
     "vanaf %{n} partijen" => "from %{n} games",
     "Bijgewerkt" => "Updated",
-    "Clubnummer" => "Club number"
+    "Clubnummer" => "Club number",
+    "Exporteren naar Excel" => "Export to Excel"
   }
 
   def locale, do: Process.get(:oi_locale, "nl")

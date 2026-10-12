@@ -2,7 +2,7 @@ defmodule OpenInterclubsWeb.TopLive do
   use OpenInterclubsWeb.SeasonLive
 
   @per_page 25
-  @sorts ~w(tpr diff w_we score rating played)
+  @sorts OpenInterclubs.Rankings.sorts()
 
   @impl true
   def mount(_params, session, socket),
@@ -34,15 +34,8 @@ defmodule OpenInterclubsWeb.TopLive do
   end
 
   defp refresh(socket) do
-    %{"min" => min, "sort" => sort, "q" => q, "page" => page} = socket.assigns.filters
-    q = String.downcase(String.trim(q))
-    field = String.to_existing_atom(sort)
-
-    all =
-      Season.players()
-      |> Enum.filter(&(&1.played >= min))
-      |> Enum.filter(&(q == "" or String.contains?(String.downcase(&1.name), q)))
-      |> Enum.sort_by(&{Map.get(&1, field) || -9999, &1.rating}, :desc)
+    %{"page" => page} = socket.assigns.filters
+    all = OpenInterclubs.Rankings.list(socket.assigns.filters)
 
     assign(socket,
       total: length(all),
@@ -97,6 +90,16 @@ defmodule OpenInterclubsWeb.TopLive do
           </.link>
         </div>
       </.form>
+
+      <div class="mb-3 flex justify-end">
+        <a
+          href={~p"/export/spelers.xlsx?#{Map.take(@filters, ["min", "sort", "q"])}"}
+          id="export-xlsx"
+          class="inline-flex items-center gap-1.5 rounded-md border border-base-300 bg-base-100 px-3 py-1.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+        >
+          <.icon name="hero-arrow-down-tray" class="size-4" /> {t("Exporteren naar Excel")}
+        </a>
+      </div>
 
       <.loading :if={!@loaded?} />
       <.card :if={@loaded?} id="ranking">

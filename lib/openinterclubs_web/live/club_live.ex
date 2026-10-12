@@ -113,6 +113,15 @@ defmodule OpenInterclubsWeb.ClubLive do
           </.link>
         </div>
 
+        <div :if={@tab == "spelers"} class="mb-3 flex justify-end">
+          <a
+            href={~p"/export/clubs/#{@club.id}/spelers.xlsx"}
+            id="export-xlsx"
+            class="inline-flex items-center gap-1.5 rounded-md border border-base-300 bg-base-100 px-3 py-1.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+          >
+            <.icon name="hero-arrow-down-tray" class="size-4" /> {t("Exporteren naar Excel")}
+          </a>
+        </div>
         <.card :if={@tab == "spelers"} id="players">
           <.player_table players={@players} />
         </.card>

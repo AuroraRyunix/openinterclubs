@@ -24,33 +24,7 @@ defmodule OpenInterclubsWeb.TeamLive do
     encounters = Season.team_encounters(key)
     s = team && Season.series(team.series)
 
-    # Every player who played for this team, with their games for it.
-    games =
-      for e <- encounters,
-          g <- e.games,
-          side <- [:home, :visit],
-          Map.fetch!(e, side) == key,
-          id = Map.get(g, side),
-          id do
-        {id, g.board}
-      end
-
-    lineup =
-      games
-      |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
-      |> Enum.map(fn {id, boards} ->
-        p = Season.player(id)
-        own = if p, do: Enum.filter(p.games, &(&1.team == key and &1.score != nil)), else: []
-
-        %{
-          id: id,
-          player: p,
-          boards: Enum.frequencies(boards),
-          games: length(own),
-          score: own |> Enum.map(& &1.score) |> Enum.sum()
-        }
-      end)
-      |> Enum.sort_by(&(-((&1.player && &1.player.rating) || 0)))
+    lineup = OpenInterclubs.TeamStats.lineup(key)
 
     assign(socket,
       team: team,
@@ -125,6 +99,15 @@ defmodule OpenInterclubsWeb.TeamLive do
         </.card>
 
         <div :if={@tab == "spelers"} id="lineup">
+          <div class="mb-3 flex justify-end">
+            <a
+              href={~p"/export/clubs/#{@team.club_id}/teams/#{@team.number}/spelers.xlsx"}
+              id="export-xlsx"
+              class="inline-flex items-center gap-1.5 rounded-md border border-base-300 bg-base-100 px-3 py-1.5 text-sm font-medium transition hover:border-primary hover:text-primary"
+            >
+              <.icon name="hero-arrow-down-tray" class="size-4" /> {t("Exporteren naar Excel")}
+            </a>
+          </div>
           <nav class="mb-4 flex flex-wrap items-center gap-2 text-sm">
             <span class="opacity-60">{t("Bord:")}</span>
             <.link

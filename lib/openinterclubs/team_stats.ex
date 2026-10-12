@@ -4,6 +4,36 @@ defmodule OpenInterclubs.TeamStats do
   alias OpenInterclubs.Season
   alias OpenInterclubs.Season.Result
 
+  @doc """
+  Every player who played for the team (by lineup), sorted by rating, with
+  the boards they played, their games and score for this team.
+  """
+  def lineup(key) do
+    for(
+      e <- Season.team_encounters(key),
+      g <- e.games,
+      side <- [:home, :visit],
+      Map.fetch!(e, side) == key,
+      id = Map.get(g, side),
+      id,
+      do: {id, g.board}
+    )
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+    |> Enum.map(fn {id, boards} ->
+      p = Season.player(id)
+      own = if p, do: Enum.filter(p.games, &(&1.team == key and &1.score != nil)), else: []
+
+      %{
+        id: id,
+        player: p,
+        boards: Enum.frequencies(boards),
+        games: length(own),
+        score: own |> Enum.map(& &1.score) |> Enum.sum()
+      }
+    end)
+    |> Enum.sort_by(&(-((&1.player && &1.player.rating) || 0)))
+  end
+
   @doc "Returns %{boards: [...], players: [...]} for a team key."
   def for_team(key) do
     games =

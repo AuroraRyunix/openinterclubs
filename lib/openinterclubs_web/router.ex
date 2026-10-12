@@ -31,6 +31,9 @@ defmodule OpenInterclubsWeb.Router do
     live "/players/:id", PlayerLive
     live "/top", TopLive
     get "/clubs/:id/teams/:number/calendar.ics", CalendarController, :team
+    get "/export/spelers.xlsx", ExportController, :top
+    get "/export/clubs/:id/spelers.xlsx", ExportController, :club_players
+    get "/export/clubs/:id/teams/:number/spelers.xlsx", ExportController, :team_players
     get "/seizoen", SeasonController, :select
     get "/taal", LocaleController, :select
     get "/login", SessionController, :new
