@@ -38,6 +38,7 @@ defmodule OpenInterclubsWeb.Router do
     get "/taal", LocaleController, :select
     get "/login", SessionController, :new
     post "/login", SessionController, :create
+    post "/login/2fa", SessionController, :two_factor
     post "/logout", SessionController, :delete
 
     live "/feedback", FeedbackLive

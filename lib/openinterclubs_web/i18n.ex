@@ -206,7 +206,16 @@ defmodule OpenInterclubsWeb.I18n do
     "vanaf %{n} partijen" => "à partir de %{n} parties",
     "Bijgewerkt" => "Mis à jour",
     "Clubnummer" => "Numéro du club",
-    "Exporteren naar Excel" => "Exporter vers Excel"
+    "Exporteren naar Excel" => "Exporter vers Excel",
+    "Verificatiecode" => "Code de vérification",
+    "Je account (%{user}) is beveiligd met twee-staps-verificatie. Geef de code uit je authenticator-app." =>
+      "Votre compte (%{user}) est protégé par une vérification en deux étapes. Entrez le code de votre application d'authentification.",
+    "Code" => "Code",
+    "Bevestigen" => "Confirmer",
+    "Opnieuw beginnen" => "Recommencer",
+    "Opnieuw aanmelden." => "Veuillez vous reconnecter.",
+    "Code niet aanvaard." => "Code refusé.",
+    "Sessie verlopen, begin opnieuw." => "Session expirée, recommencez."
   }
 
   @en %{
@@ -401,7 +410,16 @@ defmodule OpenInterclubsWeb.I18n do
     "vanaf %{n} partijen" => "from %{n} games",
     "Bijgewerkt" => "Updated",
     "Clubnummer" => "Club number",
-    "Exporteren naar Excel" => "Export to Excel"
+    "Exporteren naar Excel" => "Export to Excel",
+    "Verificatiecode" => "Verification code",
+    "Je account (%{user}) is beveiligd met twee-staps-verificatie. Geef de code uit je authenticator-app." =>
+      "Your account (%{user}) is protected by two-step verification. Enter the code from your authenticator app.",
+    "Code" => "Code",
+    "Bevestigen" => "Confirm",
+    "Opnieuw beginnen" => "Start over",
+    "Opnieuw aanmelden." => "Please log in again.",
+    "Code niet aanvaard." => "Code not accepted.",
+    "Sessie verlopen, begin opnieuw." => "Session expired, please start over."
   }
 
   def locale, do: Process.get(:oi_locale, "nl")

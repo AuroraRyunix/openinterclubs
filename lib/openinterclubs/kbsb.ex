@@ -28,22 +28,85 @@ defmodule OpenInterclubs.Kbsb do
   # ---- authenticated (club) endpoints ------------------------------------
 
   @doc """
-  Log in with a KBSB member login. Returns `{:ok, token, idnumber}`;
-  `idnumber` is nil when the KBSB doesn't return it. Nothing is stored here.
+  Log in with a KBSB member login (step 1).
+
+  * `{:ok, token, idnumber}`: logged in (`idnumber` may be nil);
+  * `{:two_factor, challenge}`: the account has 2FA; ask for the code and
+    call `login_2fa/2` with the challenge;
+  * `{:error, reason}`.
+
+  Nothing is stored here; the password is only passed on to the KBSB.
   """
   def login(user, password) do
     user = String.trim(user)
 
-    with {:ok, body} <- post("/api/v1/member/login", %{email: user, password: password}),
-         {:ok, token} <- extract_token(body) do
-      idnumber =
-        cond do
-          is_list(body) and Enum.any?(body, &is_integer/1) -> Enum.find(body, &is_integer/1)
-          match?({_, ""}, Integer.parse(user)) -> String.to_integer(user)
-          true -> nil
-        end
+    with {:ok, body} <- post("/api/v1/member/login", %{email: user, password: password}) do
+      login_reply(body, user)
+    end
+  end
 
-      {:ok, token, idnumber}
+  @doc """
+  Step 2 for accounts with 2FA: the one-time code plus what step 1 returned
+  (`csrf`, `session_id` and the signed `state`).
+  """
+  def login_2fa(%{csrf: csrf, session_id: sid, state: state, user: user}, code) do
+    body = %{
+      csrf: csrf,
+      code2FA: code |> to_string() |> String.replace(~r/\s+/, ""),
+      session_id: sid,
+      state: state,
+      # the KBSB takes the identity from `state`; the field is only kept for
+      # backends that still read it
+      email: user
+    }
+
+    with {:ok, reply} <- post("/api/v1/member/login2fa", body) do
+      case login_reply(reply, user) do
+        {:two_factor, _} -> {:error, :two_factor_again}
+        other -> other
+      end
+    end
+  end
+
+  # LoginReply: %{"id", "jwttoken", "csrf", "session_id", "state", "is2FAneeded"};
+  # older backends answered [idnumber, token] or a bare token.
+  defp login_reply(%{"is2FAneeded" => true} = m, user) do
+    {:two_factor,
+     %{
+       csrf: m["csrf"] || "",
+       session_id: m["session_id"] || "",
+       state: m["state"] || "",
+       user: user
+     }}
+  end
+
+  defp login_reply(%{"jwttoken" => t} = m, user) when is_binary(t) and t != "" do
+    {:ok, t, member_number(m["id"], t, user)}
+  end
+
+  defp login_reply(body, user) do
+    with {:ok, token} <- extract_token(body) do
+      id = if is_list(body), do: Enum.find(body, &is_integer/1)
+      {:ok, token, member_number(id, token, user)}
+    end
+  end
+
+  # The member number: the reply's id, else the token's `sub`, else the
+  # login if it is a number.
+  defp member_number(id, _token, _user) when is_integer(id) and id > 0, do: id
+
+  defp member_number(_id, token, user) do
+    with [_, payload, _] <- String.split(token, "."),
+         {:ok, json} <- Base.url_decode64(payload, padding: false),
+         {:ok, %{"sub" => sub}} <- Jason.decode(json),
+         {n, ""} <- Integer.parse(to_string(sub)) do
+      n
+    else
+      _ ->
+        case Integer.parse(user) do
+          {n, ""} -> n
+          _ -> nil
+        end
     end
   end
 

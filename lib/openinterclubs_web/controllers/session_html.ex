@@ -54,4 +54,49 @@ defmodule OpenInterclubsWeb.SessionHTML do
     </Layouts.app>
     """
   end
+
+  def two_factor(assigns) do
+    ~H"""
+    <Layouts.app flash={@flash}>
+      <div class="mx-auto max-w-sm">
+        <h1 class="mb-2 text-2xl font-bold">{t("Verificatiecode")}</h1>
+        <p class="mb-6 text-sm opacity-70">
+          {t(
+            "Je account (%{user}) is beveiligd met twee-staps-verificatie. Geef de code uit je authenticator-app.",
+            user: @user
+          )}
+        </p>
+
+        <p
+          :if={@error}
+          id="login-error"
+          class="mb-4 rounded-md bg-error/15 px-3 py-2 text-sm text-error"
+        >
+          {@error}
+        </p>
+
+        <.form for={%{}} action={~p"/login/2fa"} method="post" id="login-2fa-form" class="space-y-4">
+          <input type="hidden" name="return_to" value={@return_to} />
+          <.input
+            name="code"
+            value=""
+            label={t("Code")}
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            pattern="[0-9 ]*"
+            maxlength="12"
+            required
+            autofocus
+          />
+          <button class="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-content transition hover:opacity-90">
+            {t("Bevestigen")}
+          </button>
+        </.form>
+        <p class="mt-4 text-sm">
+          <.link href={~p"/login"} class="underline">{t("Opnieuw beginnen")}</.link>
+        </p>
+      </div>
+    </Layouts.app>
+    """
+  end
 end

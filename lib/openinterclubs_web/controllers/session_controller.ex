@@ -14,14 +14,17 @@ defmodule OpenInterclubsWeb.SessionController do
   def create(conn, %{"user" => user, "password" => password} = params) do
     case Kbsb.login(user, password) do
       {:ok, token, idnumber} ->
+        finish_login(conn, token, idnumber, user, params["return_to"])
+
+      {:two_factor, challenge} ->
+        # The challenge (not the password) waits in the encrypted session.
         conn
-        |> configure_session(renew: true)
-        |> put_session(:kbsb_token, token)
-        |> put_session(:kbsb_idnumber, idnumber)
-        |> put_session(:kbsb_name, display_name(idnumber, user))
-        |> put_session(:kbsb_user, String.trim(user))
-        |> put_flash(:info, OpenInterclubsWeb.I18n.t("Aangemeld bij de KBSB."))
-        |> redirect(to: safe_return(params["return_to"]))
+        |> put_session(:kbsb_2fa, Map.put(challenge, :tries, 0))
+        |> render(:two_factor,
+          user: challenge.user,
+          error: nil,
+          return_to: safe_return(params["return_to"])
+        )
 
       {:error, reason} ->
         conn
@@ -33,6 +36,57 @@ defmodule OpenInterclubsWeb.SessionController do
         )
     end
   end
+
+  @max_tries 5
+
+  def two_factor(conn, %{"code" => code} = params) do
+    case get_session(conn, :kbsb_2fa) do
+      %{user: user, tries: tries} = challenge when tries < @max_tries ->
+        case Kbsb.login_2fa(challenge, code) do
+          {:ok, token, idnumber} ->
+            conn
+            |> delete_session(:kbsb_2fa)
+            |> finish_login(token, idnumber, user, params["return_to"])
+
+          {:error, reason} ->
+            conn
+            |> put_session(:kbsb_2fa, %{challenge | tries: tries + 1})
+            |> put_status(401)
+            |> render(:two_factor,
+              user: user,
+              error: describe_2fa(reason),
+              return_to: safe_return(params["return_to"])
+            )
+        end
+
+      _ ->
+        # No pending login, or too many wrong codes: start over.
+        conn
+        |> delete_session(:kbsb_2fa)
+        |> put_flash(:error, OpenInterclubsWeb.I18n.t("Opnieuw aanmelden."))
+        |> redirect(to: ~p"/login")
+    end
+  end
+
+  defp finish_login(conn, token, idnumber, user, return_to) do
+    conn
+    |> configure_session(renew: true)
+    |> put_session(:kbsb_token, token)
+    |> put_session(:kbsb_idnumber, idnumber)
+    |> put_session(:kbsb_name, display_name(idnumber, user))
+    |> put_session(:kbsb_user, String.trim(user))
+    |> put_flash(:info, OpenInterclubsWeb.I18n.t("Aangemeld bij de KBSB."))
+    |> redirect(to: safe_return(return_to))
+  end
+
+  # The signed state lives 5 minutes; after that the KBSB answers BadToken.
+  defp describe_2fa("BadToken"),
+    do: OpenInterclubsWeb.I18n.t("Sessie verlopen, begin opnieuw.")
+
+  defp describe_2fa(reason) when is_binary(reason),
+    do: OpenInterclubsWeb.I18n.t("Code niet aanvaard.") <> " (#{reason})"
+
+  defp describe_2fa(_), do: OpenInterclubsWeb.I18n.t("Code niet aanvaard.")
 
   def delete(conn, _params) do
     conn
@@ -48,7 +102,7 @@ defmodule OpenInterclubsWeb.SessionController do
     end
   end
 
-  defp describe("WrongUsernamePasswordCombination"),
+  defp describe(reason) when reason in ["WrongUsernamePasswordCombination", "NotAuthorized"],
     do: OpenInterclubsWeb.I18n.t("Verkeerd lidnummer of wachtwoord.")
 
   defp describe(reason) when is_binary(reason), do: "KBSB: #{reason}"
